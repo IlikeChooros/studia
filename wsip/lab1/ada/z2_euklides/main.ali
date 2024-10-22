@@ -1,0 +1,62 @@
+V "GNAT Lib v10"
+M P W=b
+P ZX
+
+RN
+RV NO_IO
+RV NO_DYNAMIC_SIZED_OBJECTS
+RV SPARK_05
+
+U main%b		main.adb		8754dfc3 NE OO SU
+W ada%s			ada.ads			ada.ali
+W ada.integer_text_io%s	a-inteio.ads		a-inteio.ali
+W ada.text_io%s		a-textio.adb		a-textio.ali
+Z system.concat_2%s	s-conca2.adb		s-conca2.ali
+Z system.img_int%s	s-imgint.adb		s-imgint.ali
+
+D ada.ads		20230707070819 76789da1 ada%s
+D a-except.ads		20230707070819 a7106115 ada.exceptions%s
+D a-inteio.ads		20230707070819 f64b89a4 ada.integer_text_io%s
+D a-ioexce.ads		20230707070819 e4a01f64 ada.io_exceptions%s
+D a-stream.ads		20230707070819 119b8fb3 ada.streams%s
+D a-tags.ads		20230707070819 491b781d ada.tags%s
+D a-textio.ads		20230707070819 aef4d56d ada.text_io%s
+D a-tiinio.ads		20230707070819 390edddb ada.text_io.integer_io%s
+D a-unccon.ads		20230707070819 0e9b276f ada.unchecked_conversion%s
+D interfac.ads		20230707070819 5ab55268 interfaces%s
+D i-cstrea.ads		20230707070819 e53d8b8e interfaces.c_streams%s
+D main.adb		20241022194114 dfeb830a main%b
+D system.ads		20230707070819 4635ec04 system%s
+D s-conca2.ads		20230707070819 02a0d7d0 system.concat_2%s
+D s-crtl.ads		20230707070819 0ebbdb71 system.crtl%s
+D s-exctab.ads		20230707070819 54135002 system.exception_table%s
+D s-ficobl.ads		20230707070819 078245e4 system.file_control_block%s
+D s-imgint.ads		20230707070819 02dbe0c2 system.img_int%s
+D s-parame.ads		20230707070819 48ec542b system.parameters%s
+D s-secsta.ads		20230707070819 20bbe636 system.secondary_stack%s
+D s-soflin.ads		20230707070819 a7318a92 system.soft_links%s
+D s-stache.ads		20230707070819 a37c21ec system.stack_checking%s
+D s-stalib.ads		20230707070819 09bd3940 system.standard_library%s
+D s-stoele.ads		20230707070819 2dc34a04 system.storage_elements%s
+D s-traent.ads		20230707070819 005bf670 system.traceback_entries%s
+D s-unstyp.ads		20230707070819 34867c83 system.unsigned_types%s
+D s-wchcon.ads		20230707070819 1b7d22d2 system.wch_con%s
+G a e
+G c Z b b [main standard 4 11 none]
+X 1 ada.ads
+16K9*Ada 20e8 12|1r6 1r23 2r6 2r31
+X 3 a-inteio.ads
+18K13*Integer_Text_IO[8|46] 12|2w10 2r35
+X 7 a-textio.ads
+57K13*Text_IO 727e16 12|1w10 1r27
+465U14*Put 12|11s5 13s5
+508U14*Put_Line 12|27s5
+X 8 a-tiinio.ads
+59U14*Get 12|12s5[3|18] 14s5[3|18]
+X 12 main.adb
+4U11*Main 4b11 28l5 28t9
+5i5 a{integer} 12m9 18r20 22r14 23m9
+6i5 b{integer} 14m9 17r12 22r20 23r14 24m9
+7i5 c{integer} 22m9 24r14
+8i5 nwd{integer} 18m13 27r24
+
