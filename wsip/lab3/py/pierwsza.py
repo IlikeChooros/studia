@@ -7,7 +7,7 @@ def is_prime(n: int) -> bool:
     """
 
     if n <= 0:
-        return False
+        raise ValueError('Liczba musi być większa od 0')
 
     if n == 2 or n == 3:
         return True
@@ -27,10 +27,13 @@ def is_prime(n: int) -> bool:
 def main():
     n: int = int(input("Podaj liczbę: "))
 
-    if is_prime(n):
-        print(f'Liczba {n} jest pierwsza')
-    else:
-        print(f'{n} nie jest pierwsza')
+    try:
+        if is_prime(n):
+            print(f'Liczba {n} jest pierwsza')
+        else:
+            print(f'{n} nie jest pierwsza')
+    except ValueError as e:
+        print(e)
 
 
 if __name__ == '__main__':
