@@ -116,7 +116,7 @@ void print_array(array_t* arr)
 {
 	if (arr->size == 0)
 	{
-		printf("brak\n");
+		printf("Brak czynników pierwszych\n");
 		return;
 	}
 
@@ -158,7 +158,6 @@ int main(int argc, char* argv[])
 	scanf("%d", &n);
 
 	array_t arr = prime_distribution(n);
-	printf("Rozklad liczby %d na czynniki pierwsze: ", n);
 	print_array(&arr);
 	free_array(&arr);
 

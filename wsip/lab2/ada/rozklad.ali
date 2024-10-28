@@ -1,0 +1,105 @@
+V "GNAT Lib v10"
+M P W=b
+P ZX
+
+RN
+RV NO_ALLOCATORS
+RV NO_FLOATING_POINT
+RV NO_IO
+RV NO_LOCAL_ALLOCATORS
+RV NO_STANDARD_ALLOCATORS_AFTER_ELABORATION
+RV NO_STANDARD_STORAGE_POOLS
+RV NO_DEFAULT_INITIALIZATION
+RV NO_DYNAMIC_SIZED_OBJECTS
+RV SPARK_05
+
+U main%b		rozklad.adb		76df33d4 NE OO SU
+W ada%s			ada.ads			ada.ali
+W ada.integer_text_io%s	a-inteio.ads		a-inteio.ali
+W ada.numerics%s	a-numeri.ads		a-numeri.ali
+W ada.numerics.elementary_functions%s  a-nuelfu.ads  a-nuelfu.ali
+Z ada.tags%s		a-tags.adb		a-tags.ali
+W ada.text_io%s		a-textio.adb		a-textio.ali
+
+D ada.ads		20230707070819 76789da1 ada%s
+D a-except.ads		20230707070819 a7106115 ada.exceptions%s
+D a-inteio.ads		20230707070819 f64b89a4 ada.integer_text_io%s
+D a-ioexce.ads		20230707070819 e4a01f64 ada.io_exceptions%s
+D a-numeri.ads		20230707070819 bb51c45a ada.numerics%s
+D a-nuelfu.ads		20230707070819 03e83d1c ada.numerics.elementary_functions%s
+D a-ngelfu.ads		20230707070819 55716239 ada.numerics.generic_elementary_functions%s
+D a-stream.ads		20230707070819 119b8fb3 ada.streams%s
+D a-tags.ads		20230707070819 491b781d ada.tags%s
+D a-textio.ads		20230707070819 aef4d56d ada.text_io%s
+D a-tiinio.ads		20230707070819 390edddb ada.text_io.integer_io%s
+D a-unccon.ads		20230707070819 0e9b276f ada.unchecked_conversion%s
+D interfac.ads		20230707070819 5ab55268 interfaces%s
+D i-cstrea.ads		20230707070819 e53d8b8e interfaces.c_streams%s
+D rozklad.adb		20241028113644 2d885201 main%b
+D system.ads		20230707070819 4635ec04 system%s
+D s-crtl.ads		20230707070819 0ebbdb71 system.crtl%s
+D s-exctab.ads		20230707070819 54135002 system.exception_table%s
+D s-ficobl.ads		20230707070819 078245e4 system.file_control_block%s
+D s-parame.ads		20230707070819 48ec542b system.parameters%s
+D s-secsta.ads		20230707070819 20bbe636 system.secondary_stack%s
+D s-soflin.ads		20230707070819 a7318a92 system.soft_links%s
+D s-stache.ads		20230707070819 a37c21ec system.stack_checking%s
+D s-stalib.ads		20230707070819 09bd3940 system.standard_library%s
+D s-stoele.ads		20230707070819 2dc34a04 system.storage_elements%s
+D s-traent.ads		20230707070819 005bf670 system.traceback_entries%s
+D s-unstyp.ads		20230707070819 34867c83 system.unsigned_types%s
+D s-wchcon.ads		20230707070819 1b7d22d2 system.wch_con%s
+G a e
+G c Z b b [main standard 5 11 none]
+X 1 ada.ads
+16K9*Ada 20e8 15|1r6 1r23 2r6 2r45 3r6 3r31
+X 3 a-inteio.ads
+18K13*Integer_Text_IO[11|46] 15|3w10 3r35
+X 5 a-numeri.ads
+16K13*Numerics 32e17 15|2r10 2r49
+X 6 a-nuelfu.ads
+18K22*Elementary_Functions[7|39] 15|2w19 2r58
+X 7 a-ngelfu.ads
+52V13*Sqrt{float} 15|47s25[6|18] 58s33[6|18]
+79V13*Log{float} 15|33s27[6|18]
+79f21 Base{float} 15|33r41[6|18]
+X 10 a-textio.ads
+57K13*Text_IO 727e16 15|1w10 1r27
+86I12*Field{integer}
+264U14*New_Line 15|130s9
+465U14*Put 15|81s13 90s13 139s5
+508U14*Put_Line 15|110s13
+X 11 a-tiinio.ads
+59U14*Get 15|140s5[3|18]
+80U14*Put 15|89s13[3|18] 91s13[3|18] 93s13[3|18]
+82i7 Width{10|86I12} 15|89r20[3|18] 91r22[3|18] 93r20[3|18]
+X 15 rozklad.adb
+5U11*Main 5b11 144l5 144t9
+8A10 dist_array(integer)<integer> 9r38 35r29
+9P10 dist_array_access(8A10) 13r23 24r23
+12R10 Prime_Distribution_Result 15e15 18r52 100r42 136r13
+13p9 Distribution{9P10} 114r24 117r30 124r32
+14i9 Size{integer} 109r19 116r26
+18V14 prime_distribution{12R10} 18b14 18>33 73l9 73t27 141s15
+18i33 n{integer} 19r25 28r12 33r37
+19i9 num{integer} 39r15 41m13 41r20 47r36 53r19 55m17 55r24 58r44 66r12 68r35
+20i9 div{integer} 36m9 39r23 41r26 42r35 46m9 50r15 53r27 55r30 56r39 62m13
+. 62r20
+21i9 root{integer} 47m9 50r22 58m17
+22i9 size{integer} 42r26 43m13 43r21 56r30 57m17 57r25 68r26 69m13 69r21
+. 72r31
+23i9 log2_n{integer} 33m9 35r45
+24p9 distribution{9P10} 29r21 35m9 42r13 56r17 68r13 72r17
+77U15 Print_Format 77b15 77>28 77>40 77>54 96l9 96t21 121s17 129s9
+77i28 n{integer} 89r17 93r17
+77i40 pow{integer} 85r12 91r17
+77b54 first{boolean} 80r16
+100U15 Print_Distribution 100b15 100>34 132l9 132t27 142s5
+100r34 Result{12R10} 109r12 114r17 116r19 117r23 124r25
+101i9 occurances{integer} 118m17 118r31 121r36 123m17 129r28
+102b9 first{boolean} 121r48 122m17 129r40
+103i9 prev{integer} 114m9 117r16 121r30 124m17 129r22
+104i9 i{integer} 116r15 117r43 119m17 119r22 124r45
+135i5 n{integer} 140m9 141r34
+136r5 Result{12R10} 141m5 142r24
+
