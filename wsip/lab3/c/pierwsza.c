@@ -1,28 +1,38 @@
 #include <stdio.h>
 #include <math.h>
 #include <stdlib.h>
+#include <string.h>
 
-// Sprawdza, czy liczba `n` jest pierwsza, zwraca 0 - nie, 1 - tak, -1 - błąd
-int is_prime(int n)
+// Zlicza ile jest liczb pierwszych w podanym 'sicie'
+int count_primes(int* sieve, int size)
+{
+    int sum = 0;
+    for(int i = 0; i < size; i++)
+        sum += sieve[i];
+    return sum;
+}
+
+// Sprawdza, ile jest liczb pierwszych do 'n'
+int primes_up_to_n(int n)
 {
     if (n <= 0)
         return -1;
 
-    if (n == 2 || n == 3)
-        return 1;
+    int root = (int)sqrt(n) + 1;
+    int sieve[n + 1];
     
-    if (n % 2 == 0|| n % 3 == 0 || n == 1)
-        return 0;
+    for (int i = 0; i < n + 1; i++)
+        sieve[i] = 1;
 
-    const int root = sqrt(n);
+    sieve[0] =  0;
+    sieve[1] =  0;
 
-    for (int i = 5; i <= root; i += 6)
-    {
-        if (n % i == 0 || (n % (i + 3) == 0) || n % (i + 2) == 0)
-            return 0;
-    }
+    for (int i = 2; i < root; i++)
+        if (sieve[i])
+            for (int j = i*i; j < n + 1; j += i)
+                sieve[j] = 0;
 
-    return 1;
+    return count_primes(sieve, n + 1);
 }
 
 
@@ -33,13 +43,11 @@ int main(int argc, char* argv[])
     printf("Podaj liczbe: ");
     scanf("%d", &n);
     
-    int result = is_prime(n);
+    int result = primes_up_to_n(n);
     if (result == -1)
         printf("Podano błędną liczbę \n");
-    else if (result == 1)
-        printf("Liczba %d jest pierwsza \n", n);
     else 
-        printf("%d nie jest pierwsza \n", n);
+        printf("Istnieje %d liczb pierwszych od 0 do %d\n", result, n);
 
     return 0;
 }

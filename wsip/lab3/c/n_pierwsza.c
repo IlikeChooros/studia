@@ -10,7 +10,7 @@ typedef unsigned long num_t;
  * @brief Podaj n-ta liczbe pierwsza
  * @brief n - numer liczby pierwszej (n >= 1)
  */
-num_t n_prime(num_t n)
+num_t nth_prime(num_t n)
 {
     if (n < 1)
         return 0;
@@ -56,5 +56,5 @@ int main(int argc, char* argv[])
     int n = 0;
     printf("Podaj liczbe: ");
     scanf("%d", &n);
-    printf("%d-ta liczba pierwsza: %lu\n", n, n_prime(n));
+    printf("%d-ta liczba pierwsza: %lu\n", n, nth_prime(n));
 }

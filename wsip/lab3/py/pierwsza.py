@@ -1,37 +1,37 @@
 import math
 
+def count_primes(primes: list[bool]) -> int:
+    """
+    Zlicza ilość liczb pierwszych w podanej liście.
+    """
+    return sum(primes)
 
-def is_prime(n: int) -> bool:
+
+def primes_up_to_n(n: int) -> bool:
     """
     Sprawdza, czy podadana liczba jest pierwsza, z optymalizacją wielkrotności 6.
     """
 
-    if n <= 0:
+    if n < 0:
         raise ValueError('Liczba musi być większa od 0')
 
-    if n == 2 or n == 3:
-        return True
+    root: int = int(math.sqrt(n)) + 1
+    sieve: list = [1 for _ in range(n + 1)]
+    sieve[0] = sieve[1] = 0
 
-    if n % 2 == 0 or n % 3 == 0 or n == 1:
-        return False
-
-    root: int = int(math.sqrt(n))
-
-    for i in range(5, root + 1, 6):
-        if n % i == 0 or n % (i + 3) == 0 or n % (i + 2) == 0:
-            return False
-
-    return True
+    for i in range(2, root):
+        if sieve[i]:
+            for j in range(i * i, n + 1, i):
+                sieve[j] = 0
+    
+    return count_primes(sieve)
 
 
 def main():
     n: int = int(input("Podaj liczbę: "))
 
     try:
-        if is_prime(n):
-            print(f'Liczba {n} jest pierwsza')
-        else:
-            print(f'{n} nie jest pierwsza')
+        print(f'Liczba liczb pierwszych do {n}: {primes_up_to_n(n)}')
     except ValueError as e:
         print(e)
 

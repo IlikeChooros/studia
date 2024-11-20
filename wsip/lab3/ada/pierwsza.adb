@@ -6,9 +6,28 @@ procedure Main is
     
     n: Integer;
 
-    function is_prime(n: Integer) return Integer is
+    type dist_array is array(Integer range <>) of Boolean;
+    type dist_array_access is access dist_array; -- To jest pointer na `dist_array`
+
+    -- Zlicza liczby pierwsze w tablicy sita
+    function count_primes(arr: dist_array_access) return Integer is
+        count: Integer := 0;
+    begin
+
+        for i in arr'range loop
+            if arr(i) = True then
+                count := count + 1;
+            end if;
+        end loop;
+    
+        return count;
+    end count_primes;
+
+
+    function primes_up_to_n(n: Integer) return Integer is
         root: Integer;
-        i: Integer := 5;
+        j: Integer := 0;
+        sieve: dist_array_access := null;
     begin
 
         -- Jeżeli n jest niepoprawne zwróć `False`
@@ -16,31 +35,29 @@ procedure Main is
             return -1;
         end if;
 
-        root := Integer(Sqrt(Float(n)));
+        root  := Integer(Sqrt(Float(n))) + 1;
+        sieve := new dist_array(0 .. n + 1);
+        sieve(0) := False;
+        sieve(1) := False;
 
-        -- Szczególne przypadki
-        if n = 2 or n = 3 then
-            return 1;
-        end if;
+        for i in 2 .. n loop
+            sieve(i) := True;
+        end loop;
 
-        -- Sparwdzanie podzielności przez 3 i 2 (6)
-        if n mod 2 = 0 or n mod 3 = 0 or n = 1 then
-            return 0;
-        end if;
+        for i in 2 .. root loop
+            if sieve(i) = True then
+                j := i * i;
 
-        -- Sprawdzanie podzielności przez pozostałe liczby
-        while i <= root loop
-
-            if n mod i = 0 or n mod (i + 3) = 0 or n mod(i + 2) = 0 then
-                return 0;
+                while j <= n loop
+                    sieve(j) := False;
+                    j        := j + i;
+                end loop;
             end if;
-
-            i := i + 6;
         end loop;
         
         -- Jest liczbą pierwszą
-        return 1;
-    end is_prime;
+        return count_primes(sieve);
+    end primes_up_to_n;
 
 begin
     
@@ -48,14 +65,12 @@ begin
     Get(n);
 
     declare
-        result: Integer := is_prime(n);
+        result: Integer := primes_up_to_n(n);
     begin
         if result = -1 then
             Put_Line("Liczba " & n'Image & " jest niepoprawna");
-        elsif result = 1 then
-            Put_Line("Liczba" & n'Image & " jest pierwsza");
-        else 
-            Put_Line(n'Image & " nie jest pierwsza");
+        else
+            Put_Line("Jest " & result'Image & " liczb pierwszych mniejszych lub równych " & n'Image);
         end if;
     end;
 
