@@ -4,6 +4,7 @@ import numpy as np
 def binomial_coefficient(n: int, k: int) -> np.int64:
     """
     Oblicza wartość dwumianu Newtona (n k) = n! / (k! * (n - k)!)
+    Przy użyciu trójkąta Pascala, zwraca wartość dwumianu dla pary (n, k).
     """
 
     if n < k:
@@ -19,7 +20,7 @@ def binomial_coefficient(n: int, k: int) -> np.int64:
         
         # min(i, k) + 1, ucinamy wartości, które nie mają sensu
         # zatem dla danego poziomu n, obliczamy wartości dla k od 1 do min(i, k)
-        # a nie cały zakres tego poziomu
+        # a nie cały zakres tego poziomu ( = i + 1)
         for j in range(1, min(i, k) + 1):
             coeffs[i, j] = coeffs[i - 1, j - 1] + coeffs[i - 1, j]
         

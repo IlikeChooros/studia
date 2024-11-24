@@ -4,7 +4,7 @@
 #include <string.h>
 
 
-typedef unsigned long num_t;
+typedef long int num_t;
 
 /**
  * @brief Podaj n-ta liczbe pierwsza

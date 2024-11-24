@@ -3,7 +3,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-typedef unsigned long num_t;
+typedef unsigned long long num_t;
 
 // Oblicza symbola newtona = n ! / (k ! * (n - k) !)
 // Przy uzyciu tablicy i trojkata pascala

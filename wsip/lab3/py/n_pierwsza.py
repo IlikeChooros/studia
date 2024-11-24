@@ -8,10 +8,10 @@ def nth_prime(n: int) -> np.int64:
     if n < 1:
         raise ValueError(f'Niepoprawne dane, {n} < 1')
 
-    primes = np.zeros(n, dtype=np.int64)
-    primes[0] = 2
+    primes      = np.zeros(n, dtype=np.int64)
+    primes[0]   = 2
     prime_count = 1
-    candidate = 3
+    candidate   = 3
 
     while prime_count < n:
         is_prime = True

@@ -1,14 +1,15 @@
 with Ada.Text_IO; use Ada.Text_IO;
 with Ada.Integer_Text_IO; use Ada.Integer_Text_IO;
 with Ada.Numerics.Elementary_Functions; use Ada.Numerics.Elementary_Functions;
+with Ada.Numerics.Big_Numbers.Big_Integers; use Ada.Numerics.Big_Numbers.Big_Integers;
 
 procedure Main is
     
-    function binomial_coefficient(n: Integer; k: Integer) return Integer is
-        coeffs: array(0 .. k) of Integer;
-        temp: Integer;
-        prev_copy: Integer;
-        min: Integer;
+    function binomial_coefficient(n: Integer; k: Integer) return Long_Long_Integer is
+        coeffs    : array(0 .. k) of Long_Long_Integer;
+        temp      : Long_Long_Integer;
+        prev_copy : Long_Long_Integer;
+        min       : Integer;
     begin
         
         --  Wadliwe dane
@@ -54,9 +55,9 @@ procedure Main is
     end binomial_coefficient;
 
 
-    n: Integer;
-    k: Integer;
-    result: Integer;
+    n      : Integer;
+    k      : Integer;
+    result : Long_Long_Integer;
 
 begin
     

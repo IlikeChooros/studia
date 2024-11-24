@@ -9,13 +9,13 @@ def count_primes(primes: list[bool]) -> int:
 
 def primes_up_to_n(n: int) -> bool:
     """
-    Sprawdza, czy podadana liczba jest pierwsza, z optymalizacją wielkrotności 6.
+    Zwraca ilość liczb pierwszych do n włącznie.
     """
 
     if n < 0:
         raise ValueError('Liczba musi być większa od 0')
 
-    root: int = int(math.sqrt(n)) + 1
+    root: int   = int(math.sqrt(n)) + 1
     sieve: list = [1 for _ in range(n + 1)]
     sieve[0] = sieve[1] = 0
 

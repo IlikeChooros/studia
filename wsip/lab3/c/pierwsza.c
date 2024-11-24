@@ -19,20 +19,25 @@ int primes_up_to_n(int n)
         return -1;
 
     int root = (int)sqrt(n) + 1;
-    int sieve[n + 1];
+
+    // Malloc, bo dla dużych liczb (np. 2 * 10^7) 
+    // tworzenie tablicy powoduje stack overflow
+    // (segmentation fault)
+    int* sieve = (int*)malloc(sizeof(int)*(n + 1));
     
     for (int i = 0; i < n + 1; i++)
         sieve[i] = 1;
 
-    sieve[0] =  0;
-    sieve[1] =  0;
+    sieve[0] = sieve[1] = 0;
 
     for (int i = 2; i < root; i++)
         if (sieve[i])
             for (int j = i*i; j < n + 1; j += i)
                 sieve[j] = 0;
 
-    return count_primes(sieve, n + 1);
+    int result = count_primes(sieve, n + 1);
+    free(sieve);
+    return result;
 }
 
 
