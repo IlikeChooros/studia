@@ -1,0 +1,60 @@
+V "GNAT Lib v10"
+P ZX
+
+RN
+RV NO_DIRECT_BOOLEAN_OPERATORS
+RV NO_FLOATING_POINT
+RV SPARK_05
+
+U primes%b		primes.adb		c8e4fcb2 NE OO PK
+W ada%s			ada.ads			ada.ali
+W ada.numerics%s	a-numeri.ads		a-numeri.ali
+W ada.numerics.elementary_functions%s  a-nuelfu.ads  a-nuelfu.ali
+
+U primes%s		primes.ads		c6d994a5 EE NE OO PK
+
+D ada.ads		20230707070819 76789da1 ada%s
+D a-numeri.ads		20230707070819 bb51c45a ada.numerics%s
+D a-nuelfu.ads		20230707070819 03e83d1c ada.numerics.elementary_functions%s
+D a-ngelfu.ads		20230707070819 55716239 ada.numerics.generic_elementary_functions%s
+D a-unccon.ads		20230707070819 0e9b276f ada.unchecked_conversion%s
+D primes.ads		20241203192102 c6d994a5 primes%s
+D primes.adb		20241203193402 0dd5550b primes%b
+D system.ads		20230707070819 4635ec04 system%s
+D s-exctab.ads		20230707070819 54135002 system.exception_table%s
+D s-stalib.ads		20230707070819 09bd3940 system.standard_library%s
+G a e
+G c Z s b [is_prime primes 4 13 none]
+G c Z s b [primes_up_to_n primes 5 13 none]
+G c Z s b [nth_prime primes 6 13 none]
+X 1 ada.ads
+16K9*Ada 20e8 7|1r6 1r45
+X 2 a-numeri.ads
+16K13*Numerics 32e17 7|1r10 1r49
+X 3 a-nuelfu.ads
+18K22*Elementary_Functions[4|39] 7|1w19 1r58
+X 4 a-ngelfu.ads
+52V13*Sqrt{float} 7|23s24[3|18] 48s29[3|18] 87s26[3|18]
+X 6 primes.ads
+2K9*Primes 8l5 8e11 7|3b14 119l5 119t11
+4V13*Is_Prime{boolean} 4>23 7|6b13 34l8 34t16
+4i23 N{integer} 7|6b23 11r10 15r10 15r19 19r10 19r25 23r37 26r14 26r31 26r54
+5V13*Primes_Up_To_N{integer} 5>29 7|37b13 66l8 66t22
+5i29 N{integer} 7|37b29 38r26 43r10 48r40 51r24
+6V13*Nth_Prime{integer} 6>24 7|69b13 117l8 117t17
+6i24 N{integer} 7|69b24 72r28 76r10 85r21
+X 7 primes.adb
+7i7 Root{integer} 23m7 25r18
+8i7 I{integer} 25r13 26r20 26r38 26r61 29m10 29r15
+38a7 Sieve(boolean) 49r13 52m16 59r16 60r13
+39i7 Count{integer} 61m13 61r22 65r14
+40i7 J{integer} 50m13 51r19 52r22 53m16 53r21
+48i11 I{integer} 49r19 50r18 50r22 53r25
+59i11 I{integer} 60r19
+70i9 Count{integer} 82m7 85r13 89r24 108r23 109m16 109r25 116r21
+70i16 Num{integer} 83m7 87r37 99r19 108r33 112m10 112r17
+70i21 Root{integer} 87m10 93r31
+71b9 Is_prime{boolean} 86m10 100m19 107r13
+72a9 Primes(integer) 81m7 93r19 99r27 108m16 116r14
+89i14 i{integer} 93r26 99r34
+

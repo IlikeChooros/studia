@@ -1,3 +1,6 @@
 {
-    "ada.projectFile": "hello_world.gpr"
+    "ada.projectFile": "hello_world.gpr",
+    "files.associations": {
+        "totient_lib.h": "c"
+    }
 }

@@ -1,4 +1,3 @@
-import sys
 import math
 import numpy as np
 
@@ -86,7 +85,3 @@ def nth_prime(n: int) -> np.int64:
         candidate += 2
 
     return primes[n - 1]
-
-def main():
-    if len(sys.argv) == 3:
-        return -1
