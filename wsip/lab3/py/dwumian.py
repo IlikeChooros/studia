@@ -12,19 +12,23 @@ def binomial_coefficient(n: int, k: int) -> np.int64:
     
     # Inicjalizacja tablicy dwuwymiarowej z 0, n + 1 wierszy, k + 1 kolumn,
     # Ponieważ chcemy obliczyć wartość dwumianu dla pary (n, k)
-    coeffs = np.zeros((n + 1, k + 1), dtype=np.int64)
-    coeffs[0, 0] = 1
+    coeffs = np.zeros((k + 1), dtype=np.int64)
+    coeffs[0] = 1
 
-    for i in range(1, n + 1):
-        coeffs[i, 0] = 1
-        
+    for i in range(1, n + 1):        
         # min(i, k) + 1, ucinamy wartości, które nie mają sensu
         # zatem dla danego poziomu n, obliczamy wartości dla k od 1 do min(i, k)
         # a nie cały zakres tego poziomu ( = i + 1)
+        prev_copy = 1
         for j in range(1, min(i, k) + 1):
-            coeffs[i, j] = coeffs[i - 1, j - 1] + coeffs[i - 1, j]
+            temp = coeffs[j]
+            coeffs[j] += prev_copy
+            prev_copy = temp
         
-    return coeffs[n, k]
+        if i <= k:
+            coeffs[i] = 1
+
+    return coeffs[k]
 
 
 
