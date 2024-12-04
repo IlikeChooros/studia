@@ -1,5 +1,18 @@
 #include "list_lib.h"
 
+// Create new list
+list create()
+{
+    list l    = (list)malloc(sizeof(list_t));
+    l->head   = NULL;
+    l->tail   = NULL;
+    l->lenght = 0;
+    return l;
+}
+
+/**
+ * @brief Check if list is empty
+ */
 bool is_empty(list l)
 {
     return l->lenght == 0;
@@ -9,8 +22,8 @@ bool is_empty(list l)
 node_ptr_t create_node(elem_t value)
 {
     node_ptr_t node = (node_ptr_t)malloc(sizeof(node_t));
-    node->next = NULL;
-    node->value = value;
+    node->next      = NULL;
+    node->value     = value;
 }
 
 /**
@@ -22,6 +35,7 @@ node_ptr_t find_index(list l, size_t index)
     index--;
     if (index >= l->lenght)
         return NULL;
+    
     node_ptr_t node = l->head;
     for (size_t i = 0; i < index && node != NULL; i++)
     {
@@ -34,6 +48,7 @@ node_ptr_t find_index(list l, size_t index)
 /**
  * @brief Insert list element at the given index 
  * 1 <= index <= lenght + 1 (1 = at the beginning, lenght + 1 = at the end)
+ * May fail if index is out of bounds
  */
 void insert(list l, size_t index, elem_t value)
 {
@@ -114,7 +129,8 @@ void put(list l, size_t index, elem_t value)
 }
 
 /**
- * @brief Delete list element at the given index
+ * @brief Delete list element at the given index, 
+ * may fail quietly if index is out of bounds
  */
 void delete(list l, size_t index)
 {
@@ -154,11 +170,17 @@ void delete(list l, size_t index)
 }
 
 /**
- * @brief Pop last element from the list
+ * @brief Pop first element from the list, may fail (quietly) if list is empty
  */
 elem_t pop(list l)
 {
-    delete(l, lenght(l));
+    elem_t value;
+    if (is_empty(l))
+        return value;
+
+    value = l->head->value;
+    delete(l, 1);
+    return value;
 }
 
 /**
@@ -172,7 +194,8 @@ void print(list l)
         printf("%d ", node->value);
         node = node->next;
     }
-    printf("\n");
+
+    printf(" (size: %lu)\n", l->lenght);
 }
 
 /**
