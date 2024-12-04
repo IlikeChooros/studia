@@ -151,21 +151,20 @@ void delete(list l, size_t index)
     if (node == l->head)
     {
         l->head = node->next;
-        free(node);
     }
     // at the end
     else if (node == l->tail)
     {
         prev->next = NULL;
         l->tail    = prev;
-        free(node);
     }
     // in the middle deletion
     else
     {
         prev->next = node->next;
-        free(node);
     }
+
+    free(node);
     l->lenght--;
 }
 
@@ -174,11 +173,7 @@ void delete(list l, size_t index)
  */
 elem_t pop(list l)
 {
-    elem_t value;
-    if (is_empty(l))
-        return value;
-
-    value = l->head->value;
+    elem_t value = get(l, 1);
     delete(l, 1);
     return value;
 }
