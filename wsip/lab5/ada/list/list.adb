@@ -1,7 +1,7 @@
-
+with Ada.Text_IO; use Ada.Text_IO;
+with Ada.Integer_Text_IO; use Ada.Integer_Text_IO;
 
 package body list is 
-
    
    -- Create a new node
    function Create_Node(X: Integer) return NodePtr is
@@ -12,14 +12,14 @@ package body list is
       return New_Node;
    end Create_Node;
 
-   -- Find a node by index, 1 <= I <= Lenght, may return null
+   -- Find a node by index, 1 <= I <= Length, may return null
    function Find_Node(L: ListT; I: Integer) return NodePtr is
       Node: NodePtr;
       J: Integer := I;
    begin
       
       J := J - 1;
-      if J >= L.Lenght then
+      if J >= L.Length then
          return null;
       end if;
 
@@ -40,7 +40,7 @@ package body list is
    begin
 
       J := J - 1;
-      if J > L.Lenght then
+      if J > L.Length then
          return;
       end if;
 
@@ -69,14 +69,14 @@ package body list is
       end if;
 
       -- Increase the length
-      L.Lenght := L.Lenght + 1;
+      L.Length := L.Length + 1;
 
    end Insert;
 
    -- Add an element to the end of the list
    procedure Append(L: in out ListT; X: Integer) is
    begin
-      Insert(L, L.Lenght + 1, X);
+      Insert(L, L.Length + 1, X);
    end Append;
 
    -- Push an element to the top of the list
@@ -86,7 +86,7 @@ package body list is
    end Push;
 
 
-   -- Get an element by index, 1 <= I <= Lenght
+   -- Get an element by index, 1 <= I <= Length
    function Get(L: ListT; I: Integer) return Integer is
       Node: NodePtr;
    begin
@@ -98,7 +98,7 @@ package body list is
       return Node.Elem;
    end Get;
 
-   -- Put an element by index, 1 <= I <= Lenght
+   -- Put an element by index, 1 <= I <= Length
    procedure Put(L: in out ListT; I: Integer; X: Integer) is
       Node: NodePtr;
    begin
@@ -110,7 +110,7 @@ package body list is
       Node.Elem := X;
    end Put;
 
-   -- Delete an element by index, 1 <= I <= Lenght
+   -- Delete an element by index, 1 <= I <= Length
    procedure Delete(L: in out ListT; I: Integer) is
       Node: NodePtr := L.First;
       Prev: NodePtr := L.First;
@@ -118,7 +118,7 @@ package body list is
    begin
 
       J := J - 1;
-      if J > L.Lenght then
+      if J > L.Length then
          return;
       end if;
 
@@ -143,7 +143,7 @@ package body list is
       end if;
 
       -- Decrease the length
-      L.Lenght := L.Lenght - 1;
+      L.Length := L.Length - 1;
 
       -- Free the memory
       Free(Node);
@@ -162,7 +162,7 @@ package body list is
    -- Check if the list is empty
    function Is_Empty(L: ListT) return Boolean is
    begin
-      return L.Lenght = 0;
+      return L.Length = 0;
    end Is_Empty;
 
    -- Print the list
@@ -174,7 +174,7 @@ package body list is
          Node := Node.Next;
       end loop;
 
-      Put_Line("(size:" & Integer'Image(L.Lenght) & ")");
+      Put_Line("(size:" & Integer'Image(L.Length) & ")");
    end Print;
 
    -- Clean the list
@@ -189,7 +189,7 @@ package body list is
       end loop;
       L.First  := null;
       L.Last   := null;
-      L.Lenght := 0;
+      L.Length := 0;
    end Clean;
 
    -- Get the length of the list (by counting the elements)

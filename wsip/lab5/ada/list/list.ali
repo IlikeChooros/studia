@@ -13,29 +13,33 @@ RV NO_DEFAULT_INITIALIZATION
 RV NO_DYNAMIC_SIZED_OBJECTS
 RV SPARK_05
 
-U list%b		list.adb		90bcdb4b NE OO PK IL
+U list%b		list.adb		2a2dff85 NE OO PK IL
+W ada%s			ada.ads			ada.ali
+W ada.integer_text_io%s	a-inteio.ads		a-inteio.ali
 Z ada.tags%s		a-tags.adb		a-tags.ali
+W ada.text_io%s		a-textio.adb		a-textio.ali
 Z system.concat_2%s	s-conca2.adb		s-conca2.ali
 Z system.concat_3%s	s-conca3.adb		s-conca3.ali
 Z system.img_int%s	s-imgint.adb		s-imgint.ali
 
-U list%s		list.ads		50a6d238 EE NE OO PK IL
+U list%s		list.ads		a56f4498 EE NE OO PK IL
 W ada%s			ada.ads			ada.ali
-W ada.text_io%s		a-textio.adb		a-textio.ali
 W ada.unchecked_deallocation%s
 
 D ada.ads		20230707070819 76789da1 ada%s
 D a-except.ads		20230707070819 a7106115 ada.exceptions%s
+D a-inteio.ads		20230707070819 f64b89a4 ada.integer_text_io%s
 D a-ioexce.ads		20230707070819 e4a01f64 ada.io_exceptions%s
 D a-stream.ads		20230707070819 119b8fb3 ada.streams%s
 D a-tags.ads		20230707070819 491b781d ada.tags%s
 D a-textio.ads		20230707070819 aef4d56d ada.text_io%s
+D a-tiinio.ads		20230707070819 390edddb ada.text_io.integer_io%s
 D a-unccon.ads		20230707070819 0e9b276f ada.unchecked_conversion%s
 D a-uncdea.ads		20230707070819 eff36322 ada.unchecked_deallocation%s
 D interfac.ads		20230707070819 5ab55268 interfaces%s
 D i-cstrea.ads		20230707070819 e53d8b8e interfaces.c_streams%s
-D list.ads		20241204180757 11a16477 list%s
-D list.adb		20241204180921 811dbf3c list%b
+D list.ads		20241215200636 4a9c27ba list%s
+D list.adb		20241215200651 380e84f6 list%b
 D system.ads		20230707070819 4635ec04 system%s
 D s-conca2.ads		20230707070819 02a0d7d0 system.concat_2%s
 D s-conca3.ads		20230707070819 0b705ca5 system.concat_3%s
@@ -53,102 +57,104 @@ D s-traent.ads		20230707070819 005bf670 system.traceback_entries%s
 D s-unstyp.ads		20230707070819 34867c83 system.unsigned_types%s
 D s-wchcon.ads		20230707070819 1b7d22d2 system.wch_con%s
 G a e
-G c Z s b [is_empty list 8 13 none]
-G c Z s b [pop list 10 13 none]
-G c Z s b [push list 11 14 none]
-G c Z s b [append list 12 14 none]
-G c Z s b [get list 14 13 none]
-G c Z s b [put list 15 14 none]
-G c Z s b [insert list 16 14 none]
-G c Z s b [delete list 17 14 none]
-G c Z s b [print list 19 14 none]
-G c Z s b [clean list 20 14 none]
-G c Z s b [length list 21 13 none]
-G c Z s b [create_node list 28 13 none]
-G c Z s b [find_node list 29 13 none]
-G c Z s s [nodeIP list 31 9 none]
-G c Z s s [free list 42 14 none]
-G c Z s s [listtIP list 36 9 none]
+G c Z s b [is_empty list 7 13 none]
+G c Z s b [pop list 9 13 none]
+G c Z s b [push list 10 14 none]
+G c Z s b [append list 11 14 none]
+G c Z s b [get list 13 13 none]
+G c Z s b [put list 14 14 none]
+G c Z s b [insert list 15 14 none]
+G c Z s b [delete list 16 14 none]
+G c Z s b [print list 18 14 none]
+G c Z s b [clean list 19 14 none]
+G c Z s b [length list 20 13 none]
+G c Z s b [create_node list 27 13 none]
+G c Z s b [find_node list 28 13 none]
+G c Z s s [nodeIP list 30 9 none]
+G c Z s s [free list 41 14 none]
+G c Z s s [listtIP list 35 9 none]
 X 1 ada.ads
-16K9*Ada 20e8 11|1r6 2r6 2r23 43r20
-X 6 a-textio.ads
-57K13*Text_IO 727e16 11|2w10 2r27
-465U14*Put 12|173s10
-508U14*Put_Line 12|177s7
-X 8 a-uncdea.ads
-20u15*Unchecked_Deallocation 11|1w10 43r24
-X 11 list.ads
-4K9*list 25E9 45l5 45e9 12|3b14 209l5 209t9
-6R9*ListT 8r25 10r27 11r29 12r31 14r20 15r28 16r31 17r31 19r23 20r30 21r23
-. 29r26 36c9 40e14 12|16r26 35r31 77r31 83r29 90r20 102r28 114r31 154r27
+16K9*Ada 20e8 13|1r6 42r20 14|1r6 1r23 2r6 2r31
+X 3 a-inteio.ads
+18K13*Integer_Text_IO[8|46] 14|2w10 2r35
+X 7 a-textio.ads
+57K13*Text_IO 727e16 14|1w10 1r27
+465U14*Put 14|173s10
+508U14*Put_Line 14|177s7
+X 10 a-uncdea.ads
+20u15*Unchecked_Deallocation 13|1w10 42r24
+X 13 list.ads
+3K9*list 24E9 44l5 44e9 14|4b14 209l5 209t9
+5R9*ListT 7r25 9r27 10r29 11r31 13r20 14r28 15r31 16r31 18r23 19r30 20r23
+. 28r26 35c9 39e14 14|16r26 35r31 77r31 83r29 90r20 102r28 114r31 154r27
 . 163r25 169r23 181r30 196r23
-8V13*Is_Empty{boolean} 8>22 12|163b13 166l8 166t16
-8r22 L{6R9} 12|163b22 165r14
-10V13*Pop{integer} 10=17 12|154b13 160l8 160t11
-10r17 L{6R9} 12|154b17 157r21 158m14
-11U14*Push 11=19 11>36 12|83b14 86l8 86t12
-11r19 L{6R9} 12|83b19 85m14
-11i36 X{integer} 12|83b36 85r20
-12U14*Append 12=21 12>38 12|77b14 80l8 80t14
-12r21 L{6R9} 12|77b21 79m14 79r17
-12i38 X{integer} 12|77b38 79r31
-14V13*Get{integer} 14>17 14>27 12|90b13 99l8 99t11 157s17
-14r17 L{6R9} 12|90b17 93r25
-14i27 I{integer} 12|90b27 93r28
-15U14*Put 15=18 15>35 15>47 12|102b14 111l8 111t11
-15r18 L{6R9} 12|102b18 105r25
-15i35 I{integer} 12|102b35 105r28
-15i47 X{integer} 12|102b47 110r20
-16U14*Insert 16=21 16>38 16>50 12|35b14 74l8 74t14 79s7 85s7
-16r21 L{6R9} 12|35b21 36r28 37r28 43r14 56r17 57r27 58m10 72m7 72r19
-16i38 I{integer} 12|35b38 39r28
-16i50 X{integer} 12|35b50 47r31
-17U14*Delete 17=21 17>38 12|114b14 151l8 151t14 158s7
-17r21 L{6R9} 12|114b21 115r24 116r24 121r14 132r17 133m10 136r20 138m10 146m7
+7V13*Is_Empty{boolean} 7>22 14|163b13 166l8 166t16
+7r22 L{5R9} 14|163b22 165r14
+9V13*Pop{integer} 9=17 14|154b13 160l8 160t11
+9r17 L{5R9} 14|154b17 157r21 158m14
+10U14*Push 10=19 10>36 14|83b14 86l8 86t12
+10r19 L{5R9} 14|83b19 85m14
+10i36 X{integer} 14|83b36 85r20
+11U14*Append 11=21 11>38 14|77b14 80l8 80t14
+11r21 L{5R9} 14|77b21 79m14 79r17
+11i38 X{integer} 14|77b38 79r31
+13V13*Get{integer} 13>17 13>27 14|90b13 99l8 99t11 157s17
+13r17 L{5R9} 14|90b17 93r25
+13i27 I{integer} 14|90b27 93r28
+14U14*Put 14=18 14>35 14>47 14|102b14 111l8 111t11
+14r18 L{5R9} 14|102b18 105r25
+14i35 I{integer} 14|102b35 105r28
+14i47 X{integer} 14|102b47 110r20
+15U14*Insert 15=21 15>38 15>50 14|35b14 74l8 74t14 79s7 85s7
+15r21 L{5R9} 14|35b21 36r28 37r28 43r14 56r17 57r27 58m10 72m7 72r19
+15i38 I{integer} 14|35b38 39r28
+15i50 X{integer} 14|35b50 47r31
+16U14*Delete 16=21 16>38 14|114b14 151l8 151t14 158s7
+16r21 L{5R9} 14|114b21 115r24 116r24 121r14 132r17 133m10 136r20 138m10 146m7
 . 146r19
-17i38 I{integer} 12|114b38 117r24
-19U14*Print 19>20 12|169b14 178l8 178t13
-19r20 L{6R9} 12|169b20 170r24 177r41
-20U14*Clean 20=20 12|181b14 193l8 193t13
-20r20 L{6R9} 12|181b20 182r24 190m7 191m7 192m7
-21V13*Length{integer} 21>20 12|196b13 207l8 207t14
-21r20 L{6R9} 12|196b20 197r24
-25R9 Node 26r27 31c9 34e14 43r47 12|10r23
-26P9 NodePtr(25R9) 28r44 29r52 33r13 37r15 38r15 43r53 12|7r44 8r17 16r52
+16i38 I{integer} 14|114b38 117r24
+18U14*Print 18>20 14|169b14 178l8 178t13
+18r20 L{5R9} 14|169b20 170r24 177r41
+19U14*Clean 19=20 14|181b14 193l8 193t13
+19r20 L{5R9} 14|181b20 182r24 190m7 191m7 192m7
+20V13*Length{integer} 20>20 14|196b13 207l8 207t14
+20r20 L{5R9} 14|196b20 197r24
+24R9 Node 25r27 30c9 33e14 42r47 14|10r23
+25P9 NodePtr(24R9) 27r44 28r52 32r13 36r15 37r15 42r53 14|7r44 8r17 16r52
 . 17r13 36r17 37r17 38r17 91r13 103r13 115r13 116r13 170r13 182r13 183r13
 . 197r13
-28V13 Create_Node{26P9} 28>25 12|7b13 13l8 13t19 47s19
-28i25 X{integer} 12|7b25 11r24
-29V13 Find_Node{26P9} 29>23 29>33 12|16b13 33l8 33t17 93s15 105s15
-29r23 L{6R9} 12|16b23 22r15 26r15
-29i33 I{integer} 12|16b33 18r21
-32i7*Elem{integer} 12|11m16 98r19 110m12 173r33
-33p7*Next{26P9} 12|28r23 51r23 57m19 62m15 63m19 67m15 68m19 127r23 133r26
+27V13 Create_Node{25P9} 27>25 14|7b13 13l8 13t19 47s19
+27i25 X{integer} 14|7b25 11r24
+28V13 Find_Node{25P9} 28>23 28>33 14|16b13 33l8 33t17 93s15 105s15
+28r23 L{5R9} 14|16b23 22r15 26r15
+28i33 I{integer} 14|16b33 18r21
+31i7*Elem{integer} 14|11m16 98r19 110m12 173r33
+32p7*Next{25P9} 14|28r23 51r23 57m19 62m15 63m19 67m15 68m19 127r23 133r26
 . 137m15 142m15 142r28 174r23 186r23 203r24
-37p7*First{26P9} 12|26r17 36r30 37r30 56r19 57r29 58m12 115r26 116r26 132r19
+36p7*First{25P9} 14|26r17 36r30 37r30 56r19 57r29 58m12 115r26 116r26 132r19
 . 133m12 170r26 182r26 190m9 197r26
-38p7*Last{26P9} 12|136r22 138m12 191m9
-39i7*Lenght{integer} 12|22r17 43r16 72m9 72r21 79r19 121r16 146m9 146r21
+37p7*Last{25P9} 14|136r22 138m12 191m9
+38i7*Length{integer} 14|22r17 43r16 72m9 72r21 79r19 121r16 146m9 146r21
 . 165r16 177r43 192m9
-42U14 Free[8|20] 12|149s7 187s10
-X 12 list.adb
-8p7 New_Node{11|26P9} 10m7 11r7 12r14
-17p7 Node{11|26P9} 26m7 28m10 28r18 32r14
+41U14 Free[10|20] 14|149s7 187s10
+X 14 list.adb
+8p7 New_Node{13|25P9} 10m7 11r7 12r14
+17p7 Node{13|25P9} 26m7 28m10 28r18 32r14
 18i7 J{integer} 21m7 21r12 22r10 27r13 29m10 29r15
-36p7 Node{11|26P9} 49r24 50r18 51m10 51r18 56r10 61r13 63r27 68r27
-37p7 Prev{11|26P9} 50m10 62r10 67r10
-38p7 New_Node{11|26P9} 47m7 57r10 58r27 62r27 63r10 67r27 68r10
+36p7 Node{13|25P9} 49r24 50r18 51m10 51r18 56r10 61r13 63r27 68r27
+37p7 Prev{13|25P9} 50m10 62r10 67r10
+38p7 New_Node{13|25P9} 47m7 57r10 58r27 62r27 63r10 67r27 68r10
 39i7 J{integer} 42m7 42r12 43r10 49r14 52m10 52r18
-91p7 Node{11|26P9} 93m7 94r10 98r14
-103p7 Node{11|26P9} 105m7 106r10 110r7
-115p7 Node{11|26P9} 125r24 126r18 127m10 127r18 132r10 133r21 136r13 142r23
+91p7 Node{13|25P9} 93m7 94r10 98r14
+103p7 Node{13|25P9} 105m7 106r10 110r7
+115p7 Node{13|25P9} 125r24 126r18 127m10 127r18 132r10 133r21 136r13 142r23
 . 149m12 149r12
-116p7 Prev{11|26P9} 126m10 137r10 138r23 142r10
+116p7 Prev{13|25P9} 126m10 137r10 138r23 142r10
 117i7 J{integer} 120m7 120r12 121r10 125r14 128m10 128r18
 155i7 Result{integer} 157m7 159r14
-170p7 Node{11|26P9} 172r13 173r28 174m10 174r18
-182p7 Node{11|26P9} 185r13 186r18 187m15 187r15 188m10
-183p7 Next{11|26P9} 186m10 188r18
-197p7 Node{11|26P9} 201r13 203m10 203r19
+170p7 Node{13|25P9} 172r13 173r28 174m10 174r18
+182p7 Node{13|25P9} 185r13 186r18 187m15 187r15 188m10
+183p7 Next{13|25P9} 186m10 188r18
+197p7 Node{13|25P9} 201r13 203m10 203r19
 198i7 Count{integer} 202m10 202r19 206r14
 

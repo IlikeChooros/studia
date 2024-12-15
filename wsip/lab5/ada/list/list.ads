@@ -1,5 +1,4 @@
 with Ada.Unchecked_Deallocation;
-with Ada.Text_IO; use Ada.Text_IO;
 
 package list is 
 
@@ -36,7 +35,7 @@ private
    type ListT is record
       First : NodePtr := null;
       Last  : NodePtr := null;
-      Lenght: Integer := 0;
+      Length: Integer := 0;
    end record;
 
    procedure Free is 
