@@ -12,6 +12,7 @@ bool is_valid(int *perm, int n)
     {
         for (int j = i + 1; j < n; j++)
         {
+            // Check if the queens are on the same row or diagonal
             if (abs(perm[i] - perm[j]) == j - i)
                 return false;
         }
@@ -21,6 +22,7 @@ bool is_valid(int *perm, int n)
 
 /**
  * @brief Generate all permutations of the numbers 1 to n
+ * O(n!) time complexity
  *
  * @param n The number of elements
  * @param k The current position
@@ -45,11 +47,11 @@ int permutation(int n, int k, int *a, int *used)
     }
     else
     {
-        for (i = 1; i <= n; i++)
+        for (i = 0; i < n; i++)
         {
             if (!used[i])
             {
-                a[k] = i;
+                a[k] = i + 1;
                 used[i] = 1;
                 n_solutions += permutation(n, k + 1, a, used);
                 used[i] = 0;
@@ -88,11 +90,14 @@ int put_queen(int sq, int *position, bool *att_row, bool *att_d1, bool *att_d2, 
     int n_solutions = 0;
     for (int i = 0; i < n; i++)
     {
+        // See if the queen can be placed on the current square
         if (!att_row[i] && !att_d1[sq + i] && !att_d2[n + sq - i])
         {
+            // Place the queen
             position[sq] = i;
             att_row[i] = att_d1[sq + i] = att_d2[n + sq - i] = true;
 
+            // If all queens are placed, print the solution
             if (sq == n - 1)
             {
                 for (int j = 0; j < n; j++)
@@ -102,9 +107,11 @@ int put_queen(int sq, int *position, bool *att_row, bool *att_d1, bool *att_d2, 
             }
             else
             {
+                // Recursively place the next queen
                 n_solutions += put_queen(sq + 1, position, att_row, att_d1, att_d2, n);
             }
 
+            // Remove the queen
             att_row[i] = att_d1[sq + i] = att_d2[n + sq - i] = false;
         }
     }
@@ -113,7 +120,7 @@ int put_queen(int sq, int *position, bool *att_row, bool *att_d1, bool *att_d2, 
 }
 
 /**
- * @brief Generate all solutions for n-queen problem using backtracking
+ * @brief Generate all solutions for n-queen problem using backtracking, O(n^n) time complexity
  */
 void n_queen(int n)
 {
@@ -121,6 +128,15 @@ void n_queen(int n)
     bool *att_row = (bool *)malloc(n * sizeof(bool));
     bool *att_d1 = (bool *)malloc(2 * n * sizeof(bool));
     bool *att_d2 = (bool *)malloc(2 * n * sizeof(bool));
+
+    for (int i = 0; i < n; i++)
+    {
+        position[i] = 0;
+        att_row[i] = false;
+    }
+
+    for (int i = 0; i < 2 * n; i++)
+        att_d1[i] = att_d2[i] = false;
 
     int n_solutions = put_queen(0, position, att_row, att_d1, att_d2, n);
     printf("Number of solutions: %d\n", n_solutions);
