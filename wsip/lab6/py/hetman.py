@@ -9,7 +9,7 @@ def is_valid_solution(perm: list[int]) -> bool:
     """
     for i in range(len(perm)):
         for j in range(i + 1, len(perm)):
-            # Sprawdzamy, czy hetmany nie stoją na tych samych wierszach lub przekątnych
+            # Sprawdzamy, czy hetmany nie stoją na tych samych przekątnych
             if abs(perm[i] - perm[j]) == abs(i - j):
                 return False
 
@@ -34,7 +34,7 @@ def count_perm_queen(n: int, k: int, perm: list[int], used: list[bool]) -> int:
         for i in range(n):
             if not used[i]:
                 used[i] = True
-                perm[k] = i
+                perm[k] = i + 1
                 n_solutions += count_perm_queen(n, k + 1, perm, used)
                 used[i] = False
 
@@ -48,8 +48,8 @@ def perm_queen(n: int) -> int:
     :param n: liczba hetmanów
     :return: liczba rozwiazań problemu
     """
-    perm: list[int] = [0 for _ in range(n)]
-    used: list[bool] = [False for _ in range(n)]
+    perm: list[int]  = [1] * n
+    used: list[bool] = [False] * (n + 1)
 
     return count_perm_queen(n, 0, perm, used)
 

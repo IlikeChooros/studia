@@ -1,0 +1,106 @@
+V "GNAT Lib v10"
+M P W=b
+P ZX
+
+RN
+RV NO_DIRECT_BOOLEAN_OPERATORS
+RV NO_IO
+RV NO_DYNAMIC_SIZED_OBJECTS
+RV NO_IMPLICIT_LOOPS
+RV SPARK_05
+
+U mastermind%b		mastermind.adb		c4bd0c49 NE OO SU
+W ada%s			ada.ads			ada.ali
+W ada.integer_text_io%s	a-inteio.ads		a-inteio.ali
+W ada.numerics%s	a-numeri.ads		a-numeri.ali
+W ada.numerics.elementary_functions%s  a-nuelfu.ads  a-nuelfu.ali
+Z ada.tags%s		a-tags.adb		a-tags.ali
+W ada.text_io%s		a-textio.adb		a-textio.ali
+Z system.concat_2%s	s-conca2.adb		s-conca2.ali
+Z system.concat_3%s	s-conca3.adb		s-conca3.ali
+Z system.exp_int%s	s-expint.adb		s-expint.ali
+Z system.img_int%s	s-imgint.adb		s-imgint.ali
+
+D ada.ads		20230707070819 76789da1 ada%s
+D a-except.ads		20230707070819 a7106115 ada.exceptions%s
+D a-inteio.ads		20230707070819 f64b89a4 ada.integer_text_io%s
+D a-ioexce.ads		20230707070819 e4a01f64 ada.io_exceptions%s
+D a-numeri.ads		20230707070819 bb51c45a ada.numerics%s
+D a-nuelfu.ads		20230707070819 03e83d1c ada.numerics.elementary_functions%s
+D a-ngelfu.ads		20230707070819 55716239 ada.numerics.generic_elementary_functions%s
+D a-stream.ads		20230707070819 119b8fb3 ada.streams%s
+D a-tags.ads		20230707070819 491b781d ada.tags%s
+D a-textio.ads		20230707070819 aef4d56d ada.text_io%s
+D a-tiinio.ads		20230707070819 390edddb ada.text_io.integer_io%s
+D a-unccon.ads		20230707070819 0e9b276f ada.unchecked_conversion%s
+D interfac.ads		20230707070819 5ab55268 interfaces%s
+D i-cstrea.ads		20230707070819 e53d8b8e interfaces.c_streams%s
+D mastermind.adb	20250114174639 9fea6d9c mastermind%b
+D system.ads		20230707070819 4635ec04 system%s
+D s-conca2.ads		20230707070819 02a0d7d0 system.concat_2%s
+D s-conca3.ads		20230707070819 0b705ca5 system.concat_3%s
+D s-crtl.ads		20230707070819 0ebbdb71 system.crtl%s
+D s-exctab.ads		20230707070819 54135002 system.exception_table%s
+D s-expint.ads		20230707070819 192336fc system.exp_int%s
+D s-ficobl.ads		20230707070819 078245e4 system.file_control_block%s
+D s-imgint.ads		20230707070819 02dbe0c2 system.img_int%s
+D s-parame.ads		20230707070819 48ec542b system.parameters%s
+D s-secsta.ads		20230707070819 20bbe636 system.secondary_stack%s
+D s-soflin.ads		20230707070819 a7318a92 system.soft_links%s
+D s-stache.ads		20230707070819 a37c21ec system.stack_checking%s
+D s-stalib.ads		20230707070819 09bd3940 system.standard_library%s
+D s-stoele.ads		20230707070819 2dc34a04 system.storage_elements%s
+D s-traent.ads		20230707070819 005bf670 system.traceback_entries%s
+D s-unstyp.ads		20230707070819 34867c83 system.unsigned_types%s
+D s-wchcon.ads		20230707070819 1b7d22d2 system.wch_con%s
+G a e
+G c Z b b [mastermind standard 5 11 none]
+X 1 ada.ads
+16K9*Ada 20e8 15|1r6 1r23 2r6 2r31 3r6 3r45
+X 3 a-inteio.ads
+18K13*Integer_Text_IO[11|46] 15|2w10 2r35
+X 5 a-numeri.ads
+16K13*Numerics 32e17 15|3r10 3r49
+X 6 a-nuelfu.ads
+18K22*Elementary_Functions[7|39] 15|3w19 3r58
+X 10 a-textio.ads
+57K13*Text_IO 727e16 15|1w10 1r27
+465U14*Put 15|14s7 17s10 98s7 100s7
+508U14*Put_Line 15|19s7 31s10 108s7 110s7
+X 11 a-tiinio.ads
+59U14*Get 15|99s7[3|18] 101s7[3|18]
+X 15 mastermind.adb
+5U11*Mastermind 5b11 113l5 113t15
+7A9 Array_T(integer)<integer> 10r37 24r54 37r69 85r14
+10U14 Print_Guess 10b14 10>27 10>46 20l8 20t19 96s7
+10a27 Numbers{7A9} 11r26 11r34
+10i46 N_Guess{integer} 14r11
+11i7 Guess{integer} 16r20
+12i7 Digit{integer} 16m10 17r14
+15i11 I{integer} 16r40
+24U14 Generate_Permutations 24b14 24=37 33l8 33t29 93s4
+24a37 Numbers{7A9} 26r16 29m13 29r27 31r37 93r27
+26i11 I{integer} 29r21 29r35 29r42 31r20 31r45
+27i14 K{integer} 29r57 29r82
+36U14 Solve 36b14 37>8 37>30 37=53 37=78 82l8 82t13 103s7
+37i8 Feedback_In{integer} 75r24
+37i30 Feedback_Out{integer} 75r55
+37a53 Numbers{7A9} 39r26 50r18 76m13 76r37
+37i78 N_Size{integer} 49r21 81m7
+38i7 N_Filtered{integer} 76r22 77m13 77r27 81r17
+39i7 Guess{integer} 56r29 64r38
+41i7 Code{integer} 50m10 55r30
+42i7 In_Place{integer} 51m10 60m16 60r28 75r13
+43i7 Out_Of_Place{integer} 52m10 67m22 67r38 75r40
+44i7 Digit_Guess{integer} 56m13 59r29
+45i7 Digit_Code{integer} 55m13 59r16 66r38
+46i7 Digit_Guess_K{integer} 64m19 66r22
+49i11 I{integer} 50r27 76r46
+54i14 J{integer} 55r49 56r49
+63i20 K{integer} 64r58
+85a4 Numbers{7A9} 93m38 93r38 96r19 103m40 103r40
+86i4 N_Size{integer} 95r34 103m49 103r49 107r7
+88i4 N_Guess{integer} 96r28 104m7 104r18
+89i4 Feedback_In{integer} 95r15 99m12 103r13
+90i4 Feedback_Out{integer} 101m12 103r26
+
