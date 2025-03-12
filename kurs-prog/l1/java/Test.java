@@ -17,7 +17,7 @@ public class Test {
             return;
         }
 
-        if (n <= 0) {
+        if (n < 0) {
             System.out.println(n + " - Nieprawidłowy numer wiersza");
             return;
         }
@@ -28,14 +28,10 @@ public class Test {
         {
             try {
                 n = Integer.parseInt(args[i]);
+                System.out.println(args[i] + " - " + w.get(n));
             }
             catch (NumberFormatException e) {
                 System.out.println(args[i] + " - nieprawidłowa dana");
-                continue;
-            }
-
-            try {
-                System.out.println(args[i] + " - " + w.get(n));
             }
             catch (OutOfRangeException e) {
                 System.out.println(e.getMessage());

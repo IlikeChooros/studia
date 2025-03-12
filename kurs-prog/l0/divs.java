@@ -2,7 +2,7 @@
 
 public class divs {
 
-    // Get the biggest divisor of n
+    // Get the biggest divisor of n, that is < n
     public static int div(int n) {
         int i = 2, d = 1;
 

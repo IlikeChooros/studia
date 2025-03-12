@@ -15,14 +15,14 @@ class WierszTrojkataPascala
 {
     std::vector<int> m_pascal;
 public:
-    WierszTrojkataPascala(int n) : m_pascal(n + 1, 0) 
+    WierszTrojkataPascala(unsigned int n) : m_pascal(n + 1, 0) 
     {
         M_init();
     }
 
     /**
      * @brief Get the ith number of pascal's triangle
-     * @throws `OutOfRangeException` if i is invalid
+     * @throws `OutOfRangeException` if i is invali
      */
     inline int operator[](int i) {
         if (i < 0 || i >= m_pascal.size())

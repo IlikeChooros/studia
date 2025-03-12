@@ -39,7 +39,7 @@ int main(int argc, char** argv)
         return EXIT_FAILURE;
     }
 
-    if (n <= 0) {
+    if (n < 0) {
         std::cout << argv[1] << " - Nieprawidłowy numer wiersza\n";
         return EXIT_FAILURE;
     }
@@ -50,17 +50,10 @@ int main(int argc, char** argv)
     {
         try{
             n = convert_to_int(argv[i]);
-        }
-        catch(const IntegerConversionError& e) {
-            std::cout << e.what() << '\n';
-            continue;
-        }
-
-        try{
             n = w[n];
             std::cout << argv[i] << " - " << n << '\n';
         }
-        catch (OutOfRangeException e) {
+        catch(const std::runtime_error& e) {
             std::cout << e.what() << '\n';
         }
     }
