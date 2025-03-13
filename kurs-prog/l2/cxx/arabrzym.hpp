@@ -3,8 +3,7 @@
 #include <string>
 
 class ArabRzym {
-    static std::string M_toRzym(int n);
-    static int M_toArab(char c);
+    static int M_get_arab_value(char c);
 public:
     static int toArab(std::string rzym);
     static std::string toRzym(int n);

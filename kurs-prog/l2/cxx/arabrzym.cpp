@@ -1,6 +1,8 @@
 #include "arabrzym.hpp"
 
-int ArabRzym::M_toArab(char c)
+#include <iostream>
+
+int ArabRzym::M_get_arab_value(char c)
 {
     switch (c)
     {
@@ -38,7 +40,7 @@ int ArabRzym::toArab(std::string rzym)
     {
 
         // Get currrent number
-        int now  = M_toArab(rzym[i]);
+        int now  = M_get_arab_value(rzym[i]);
 
         // Check if no 'next' exists
         if (i == rzym.size() - 1)
@@ -48,7 +50,7 @@ int ArabRzym::toArab(std::string rzym)
         }
 
         // Get the next number
-        int next = M_toArab(rzym[i + 1]);
+        int next = M_get_arab_value(rzym[i + 1]);
 
         // If next is bigger than current number, then substract next from
         if (now < next) 
@@ -84,6 +86,7 @@ std::string ArabRzym::toRzym(int n)
     // Convert a part of a number to roman
     auto toRzymPart = [](int n, char* roman){
         std::string ret = "";
+        ret.reserve(3);
 
         if (n == 0)
             return ret;
@@ -91,24 +94,27 @@ std::string ArabRzym::toRzym(int n)
         if (n <= 3)
             for (int i = 0; i < n; i++)
                 ret += roman[0];
-
-        else if (n == 4)
-            ret += roman[0] + roman[1];
-
-
+        if (n == 4)
+        {
+            ret += roman[0];
+            ret += roman[1];
+        }
         if (n >= 5 && n != 9)
             ret += roman[1];
-
         if (n <= 8)
             for (int i = 6; i < n; i++)
                 ret += roman[0];
         else 
-            ret += roman[2] + roman[1];
+        {
+            ret += roman[0];
+            ret += roman[2];
+        }
         
         return ret;
     };
 
     std::string arab;
+    arab.reserve(9);
 
     int part = (n / 1000);
     for (int i = 0; i < part; i++)
