@@ -23,6 +23,7 @@ inline constexpr const char* figure_type_to_string(FigureType type)
     switch (type)
     {
     case CircleType: return "Koło";
+    case FourSidedType: return "Czworokąt";
     case RectangleType: return "Prostokąt";
     case SquareType: return "Kwadrat";
     case RhombusType: return "Romb";
@@ -54,8 +55,8 @@ public:
     }
 
     Circle(double radius) : M_radius(radius) {}
-    double area() const override { return 3.14159 * M_radius * M_radius; }
-    double perimeter() const override { return 2 * 3.14159 * M_radius; }
+    double area() const override { return PI * M_radius * M_radius; }
+    double perimeter() const override { return 2 * PI * M_radius; }
     const char* name() const override { return "Koło"; }
 };
 

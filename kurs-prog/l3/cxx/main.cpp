@@ -3,6 +3,7 @@
 #include <vector>
 #include <sstream>
 #include <iomanip>
+#include <cstring>
 
 #include "figures.hpp"
 
@@ -54,19 +55,16 @@ Figure* get_figure(char type, std::vector<double>& params)
     auto figtype = FourSided::check(params[0], params[1], params[2], params[3], params[4]);
     if (figtype == None)
         throw InvalidParametersError(FourSidedType);
-    
-    switch(figtype)
-    {
-        case SquareType:
-            return new Square(params[0]);
-        case RhombusType:
-            return new Rhombus(params[0], params[1]);
-        default:
-            return new Rectangle(params[0], params[1]);
-    }
+
+    if (figtype == RectangleType)
+        return new Rectangle(params[0], params[1]);
+    if (figtype == RhombusType)
+        return new Rhombus(params[0], params[4]);
+
+    return new Square(params[0]);
 }
 
-void find_type_token(std::stringstream& ss)
+bool find_type_token(std::stringstream& ss)
 {
     std::string token;
     while (ss >> token)
@@ -74,9 +72,11 @@ void find_type_token(std::stringstream& ss)
         if (token.size() == 1 && is_figure_type(token[0]))
         {
             ss.seekg(-1, std::ios_base::cur);
-            return;
+            return true;
         }
     }
+
+    return false;
 }
 
 // Parse the arguments and return a figure
@@ -84,25 +84,28 @@ void find_type_token(std::stringstream& ss)
 [[nodiscard]] 
 Figure* parse_args(std::stringstream& ss)
 {
-    std::vector<double> params{5, 0};
+    std::vector<double> params(5, 0.0);
 
-    char type;
-    if (!(ss >> type))
-        throw std::invalid_argument("Błędny typ figury");
+    std::string token;
+    if (!(ss >> token) || token.size() != 1 || !is_figure_type(token[0]))
+        throw std::invalid_argument("Nieprawidłowy typ figury: " + token);
     
-    if (!is_figure_type(type))
-        throw std::invalid_argument("Nieznany typ figury: " + std::string(1, type));
-
-
+    char type = token[0];
     auto n_params = n_params_by_type(type);
     for (int i = 0; i < n_params; i++)
     {
         double param;
-        if (!(ss >> param)) // assert that's a number
+        std::string param_str;
+        
+        if (!(ss >> param_str))
+            throw std::invalid_argument("Brakujący parametr dla figury: " + std::string(1, type));
+        
+        try{
+            param = std::stod(param_str);
+        }
+        catch (const std::invalid_argument& e)
         {
-            if (ss.eof())
-                throw std::invalid_argument("Brakujący parametr dla figury: " + std::string(1, type));
-            throw std::invalid_argument("Błędny parametr figury: " + std::string(1, type));
+            throw std::invalid_argument("Błędny parametr dla figury: " + std::string(1, type) + ": " + param_str);
         }
         
         params[i] = param;
@@ -113,14 +116,16 @@ Figure* parse_args(std::stringstream& ss)
 
 int main(int argc, char** argv)
 {
-    if (argc < 2) {
+    if (argc < 3) {
         std::cerr << "Usage: " << argv[0] << " <figure_type> [<params>...]" << '\n';
         return 1;
     }
 
     std::vector<std::shared_ptr<Figure>> figures;
     std::stringstream ss;
-    
+
+    // ss << "s sss s 6 c 5 5 5 5 90";
+
     // Create a string stream to read the parameters
     for (int i = 1; i < argc; i++) {
         ss << argv[i];
@@ -131,27 +136,27 @@ int main(int argc, char** argv)
     std::cout << std::fixed << std::setprecision(2);
 
     // Read the parameters from the string stream
-    while(!ss.eof())
+    while(!ss.eof() && find_type_token(ss))
     {
         try {
             figures.emplace_back(parse_args(ss));
-            auto& figure = figures.back();
-
-            if (!figure)
-                break;
-
-            std::cout 
-                << std::setw(16) << figure->name()
-                << " --> obwód: " << figure->perimeter() 
-                << ", pole: " << figure->area() << '\n';
         }
         catch (const std::invalid_argument& e) {
             // Failed
             std::cerr << e.what() << '\n';
-
-            // Find another figure type
-            find_type_token(ss);
         }
+    }
+
+
+    for (auto& figure : figures)
+    {
+        if (!figure)
+            break;
+
+        std::cout 
+            << std::setw(16) << figure->name()
+            << " --> obwód: " << figure->perimeter() 
+            << ", pole: " << figure->area() << '\n';
     }
 
     return 0;

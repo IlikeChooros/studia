@@ -14,7 +14,7 @@ FigureType FourSided::check(double a, double b, double c, double d, double angle
         return None;
 
     // Four sided figure must have opposite sides equal
-    if (!equal(a, c) && !equal(b, d))
+    if (!equal(a, c) || !equal(b, d))
         return None;
     
 
