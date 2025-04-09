@@ -1,3 +1,4 @@
+package z2;
 
 interface Figure1Param {
     double getArea(double lenght);
