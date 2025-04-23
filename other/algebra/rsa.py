@@ -47,6 +47,9 @@ def decode_rsa(encoded_message: str, public_key: tuple) -> str:
     hex_values = encoded_message.split(':')
     decoded_chars = []
 
+    # Iterate over each hex value
+    # decoded_chars = [chr(pow(int(hex_value, 16), b, n)) for hex_value in hex_values]
+
     for hex_value in hex_values:
         # Convert hex to int
         S_i = int(hex_value, 16)
