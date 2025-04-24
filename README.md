@@ -26,6 +26,23 @@ gnatmake [file].adb && ./[file]
 
 ```
 
+### Java
+
+```bash
+javac [file].java
+java [file]
+```
+
+#### JavaFX
+
+[Install JavaFX SDK](https://gluonhq.com/products/javafx/)
+
+```bash
+javac --module-path /opt/javafx-sdk-17.0.15/lib --add-modules javafx.controls [file].java
+java --module-path /opt/javafx-sdk-17.0.15/lib --add-modules javafx.controls [file]
+```
+
+
 ### C
 
 #### Instalation

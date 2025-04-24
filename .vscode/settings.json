@@ -93,5 +93,16 @@
         "__tree": "cpp",
         "locale": "cpp",
         "__nullptr": "cpp"
-    }
+    },
+
+    "java.project.referencedLibraries": [
+        "lib/**/*.jar",
+        "/opt/javafx-sdk-17.0.15/lib/javafx.base.jar",
+        "/opt/javafx-sdk-17.0.15/lib/javafx.controls.jar",
+        "/opt/javafx-sdk-17.0.15/lib/javafx.fxml.jar",
+        "/opt/javafx-sdk-17.0.15/lib/javafx.graphics.jar",
+        "/opt/javafx-sdk-17.0.15/lib/javafx.media.jar",
+        "/opt/javafx-sdk-17.0.15/lib/javafx.swing.jar",
+        "/opt/javafx-sdk-17.0.15/lib/javafx.web.jar"
+    ]
 }

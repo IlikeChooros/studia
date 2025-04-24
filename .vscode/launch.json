@@ -9,6 +9,19 @@
             "projectName": "studia_1e58731c"
         },
         {
+            "type": "java",
+            "name": "Launch JavaFX App",
+            "request": "launch",
+            "mainClass": "Main",
+            "projectName": "MainFXApp",
+            "vmArgs" : [
+                "--module-path",
+                "\"/opt/javafx-sdk-17.0.15/lib\"",
+                "--add-modules",
+                "javafx.controls"
+            ]
+        },
+        {
             "name": "Debug Active File",
             "type": "cppdbg",
             "request": "launch",

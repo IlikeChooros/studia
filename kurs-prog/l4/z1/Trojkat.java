@@ -39,7 +39,7 @@ public class Trojkat extends Frame implements ActionListener {
                 // Parse the input to an integer
                 int n = Integer.parseInt(input);
                 if (n < 0) {
-                    showErrorDialog("Liczba musi być nieujemna");
+                    showDialog("Liczba musi być nieujemna");
                     return;
                 }
 
@@ -56,7 +56,7 @@ public class Trojkat extends Frame implements ActionListener {
                         if (arr[i][j] != 0) {
                             napis += arr[i][j];
                             if (j < i) {
-                                napis += " "; // Add space between numbers
+                                napis += "  ";
                             }
                         }
                     }
@@ -72,16 +72,16 @@ public class Trojkat extends Frame implements ActionListener {
                 rowPanel.revalidate();
                 rowPanel.repaint();
             } catch (NumberFormatException ex) {
-                showErrorDialog("Błędny format liczby: " + input);
+                showDialog("Błędny format liczby: " + input);
             } catch (Exception genEx) { // Catch other potential errors
-                showErrorDialog("Wystąpił błąd: " + genEx.getMessage());
+                showDialog("Wystąpił błąd: " + genEx.getMessage());
             }
         }
     }
 
     // Helper method to show error messages in a dialog
-    private void showErrorDialog(String message) {
-        Dialog errorDialog = new Dialog(this, "Błąd", true); // Modal dialog
+    private void showDialog(String message) {
+        Dialog errorDialog = new Dialog(this, "Błąd", true);
         errorDialog.setLayout(new FlowLayout());
         errorDialog.add(new Label(message));
         Button okButton = new Button("OK");
