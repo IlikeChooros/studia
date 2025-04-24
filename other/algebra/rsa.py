@@ -5,6 +5,10 @@ litery (najpierw przekształcono je na kody UTF-8, potem otrzymane liczby podnie
 tęgi modulo 101080891 i otrzymane liczby zapisano w układzie szesnastkowym i połączono je w jeden
 łańcuch, oddzielając poszczególne podłańcuchy dwukropkiem. Twoim kluczem prywatnym jest para
 (2062465, 101080891).
+
+1. Odkoduj ten tekst.
+2. Znajdź faktoryzację liczby 101080891.
+3. Jaki jest Twój klucz publiczny?
 """
 
 """
@@ -60,6 +64,51 @@ def decode_rsa(encoded_message: str, public_key: tuple) -> str:
 
     return ''.join(decoded_chars)
 
+
+def factorization(n: int) -> tuple:
+    """
+    Factorize the given number n into its prime factors.
+
+    :param n: The number to be factorized.
+    :return: A tuple containing the prime factors of n.
+    """
+    factors = []
+    d = 2
+    while d * d <= n:
+        if n % d == 0:
+            factors.append(d)
+            n //= d
+        else:
+            d += 1
+    if n > 1:
+        factors.append(n)
+    return tuple(factors)
+
+def inverse_mod(a: int, m: int) -> int:
+    """
+    Compute the modular inverse of a modulo m using the Extended Euclidean Algorithm.
+    a * x ≡ 1 (mod m)
+
+    :param a: The number to find the modular inverse of.
+    :param m: The modulus.
+    :return: The modular inverse of a modulo m.
+    """
+    
+    m0, x0, x1 = m, 0, 1
+    if m == 1:
+        return 0
+    
+    # Apply extended Euclidean algorithm
+    while a > 1:
+        # q is quotient
+        q = a // m
+        m, a = a % m, m
+        x0, x1 = x1 - q * x0, x0
+    if x1 < 0:
+        x1 += m0
+    return x1
+
+
 def main():
     import os, sys
     ABS_PATH = os.path.abspath(sys.argv[0])
@@ -78,6 +127,19 @@ def main():
     # Decode the message using the public key
     decoded_message = decode_rsa(encoded_message, PUBLIC_KEY)
     print("Decoded: \n", decoded_message, sep=None)
+
+
+    # Factorize the number n
+    n = PUBLIC_KEY[1]
+    factors = factorization(n)
+    print("Factors of n:", factors)
+
+    # Calculate the private key
+    p, q = factors
+    phi_n = (p - 1) * (q - 1)
+    b = PUBLIC_KEY[0]
+    a = inverse_mod(b, phi_n)
+    print("Private key (a, n):", (a, n))
 
 if __name__ == "__main__":
     main()
