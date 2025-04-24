@@ -2,6 +2,13 @@
     "version": "0.2.0",
     "configurations": [
         {
+            "type": "java",
+            "name": "SimpleFrame",
+            "request": "launch",
+            "mainClass": "SimpleFrame",
+            "projectName": "studia_1e58731c"
+        },
+        {
             "name": "Debug Active File",
             "type": "cppdbg",
             "request": "launch",

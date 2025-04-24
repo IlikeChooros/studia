@@ -139,7 +139,7 @@ def main():
     phi_n = (p - 1) * (q - 1)
     b = PUBLIC_KEY[0]
     a = inverse_mod(b, phi_n)
-    print("Private key (a, n):", (a, n))
+    print("Public key (a, n):", (a, n))
 
 if __name__ == "__main__":
     main()
