@@ -1,23 +1,5 @@
-package z1;
 
 public class Main {
-
-    enum FigureTypes {
-        OKRAG,
-        PIECIOKAT,
-        SZESCIOKAT,
-        CZWOROKAT
-    }
-
-    enum AllFigureTypes {
-        OKRAG,
-        PIECIOKAT,
-        SZESCIOKAT,
-        KWADRAT,
-        PROSTOKAT,
-        ROMB,
-        NONE
-    }
 
     public static int getArgCountForType(FigureTypes type) {
         if (type == FigureTypes.CZWOROKAT){
@@ -83,6 +65,24 @@ public class Main {
         }
     }
 
+    public static Figure getFigure(AllFigureTypes type, int[] params) {
+        switch (type) {
+            case KWADRAT:
+                return new Square(params[0]);
+            case OKRAG:
+                return new Circle(params[0]);
+            case PIECIOKAT:
+                return new Pentagon(params[0]);
+            case SZESCIOKAT:
+                return new Hexagon(params[0]);
+            case ROMB:
+                return new Rhombus(params[0], params[4]);
+            case PROSTOKAT:
+            default:
+                return new Rectangle(params[0], params[1]);
+        }
+    }
+
     public static int findNextTypeToken(String[] args, int start) {
         for (int i = start; i < args.length; i++) {
             if (args[i].length() == 1 && isValidFigureType(args[i].charAt(0))) {
@@ -92,44 +92,15 @@ public class Main {
         return args.length;
     }
 
-    public static int parseArgs(String[] args, int start) {
-        String token = args[start];
-        int end = start + 1;
-
-        if (token.length() != 1 || !isValidFigureType(token.charAt(0)) ) {
-            throw new IllegalArgumentException("Niepoprawny typ figury: " + token);
-        }
-
-        FigureTypes type = getFigureType(token.charAt(0));
-        int argCount = getArgCountForType(type);
-        int[] params = new int[5];
-
-        for(int i = 0; i < argCount; i++, end++) {
-            int parsedValue;
-            try {
-                parsedValue = Integer.parseInt(args[end]);
+    public static int getNumberOfFigures(String[] args) {
+        int count = 0;
+        for(String s : args) {
+            if (s.length() == 1 && isValidFigureType(s.charAt(0))) {
+                count++;
             }
-            catch (NumberFormatException e) {
-                throw new IllegalArgumentException("Niepoprawna wartość argumentu: " + args[end]);
-            }
-
-            if (parsedValue <= 0) {
-                throw new IllegalArgumentException("Ujemna wartość argumentu: " + args[end]);
-            }
-
-            params[i] = parsedValue;
         }
-
-        AllFigureTypes alltype = getAllFigureType(type, params);
-
-        if (alltype == AllFigureTypes.NONE) {
-            throw new IllegalArgumentException("Niepoprawny typ figury");
-        }
-        
-
-        return end;
+        return count;
     }
-
 
     public static void main(String[] args) {
         if (args.length <= 1) {
@@ -137,18 +108,71 @@ public class Main {
             return;
         }
 
-        int i = 0;
+        int figure_count = getNumberOfFigures(args);
 
-        while (i < args.length) {
+        if (figure_count == 0) {
+            System.out.println("Podaj typ figury i parametry.");
+            return;
+        }
+
+        Figure[] figures = new Figure[figure_count];
+
+        int start = 0;
+        int figure_index = 0;
+        while (start < args.length) {
             try {
-                i = parseArgs(args, i);
+                String token = args[start];
+                int end = start + 1;
+        
+                if (token.length() != 1 || !isValidFigureType(token.charAt(0)) ) {
+                    throw new IllegalArgumentException("Niepoprawny typ figury: " + token);
+                }
+        
+                FigureTypes type = getFigureType(token.charAt(0));
+                int argCount = getArgCountForType(type);
+                int[] params = new int[5];
+        
+                for(int i = 0; i < argCount; i++, end++) {
+                    int parsedValue;
+                    try {
+                        parsedValue = Integer.parseInt(args[end]);
+                    }
+                    catch (NumberFormatException e) {
+                        throw new IllegalArgumentException("Niepoprawna wartość argumentu: " + args[end]);
+                    }
+        
+                    if (parsedValue <= 0) {
+                        throw new IllegalArgumentException("Ujemna wartość argumentu: " + args[end]);
+                    }
+        
+                    params[i] = parsedValue;
+                }
+        
+                AllFigureTypes alltype = getAllFigureType(type, params);
+        
+                if (alltype == AllFigureTypes.NONE) {
+                    throw new IllegalArgumentException("Niepoprawny typ figury");
+                }
+                
+                figures[figure_index] = getFigure(alltype, params);
+                start = end;
+                figure_index++;
+
             } catch (IllegalArgumentException e) {
                 System.out.println(e.getMessage());
-                i++;
+                start++;
                 
                 // Find next type token
-                i = findNextTypeToken(args, i);
+                start = findNextTypeToken(args, start);
             }
+        }
+
+        for(int j = 0; j < figure_index; j++) {
+            System.out.println(
+                figures[j].getName() + " --> pole: " +
+                figures[j].getArea() + ", obwód: " + 
+                figures[j].getPerimeter()
+            );
         }
     }
 }

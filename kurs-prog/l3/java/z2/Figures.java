@@ -1,4 +1,20 @@
-package z2;
+
+enum FigureTypes {
+    OKRAG,
+    PIECIOKAT,
+    SZESCIOKAT,
+    CZWOROKAT
+}
+
+enum AllFigureTypes {
+    OKRAG,
+    PIECIOKAT,
+    SZESCIOKAT,
+    KWADRAT,
+    PROSTOKAT,
+    ROMB,
+    NONE
+}
 
 interface Figure1Param {
     double getArea(double lenght);

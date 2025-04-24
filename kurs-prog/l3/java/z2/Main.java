@@ -1,22 +1,5 @@
 public class Main {
 
-    enum FigureTypes {
-        OKRAG,
-        PIECIOKAT,
-        SZESCIOKAT,
-        CZWOROKAT
-    }
-
-    enum AllFigureTypes {
-        OKRAG,
-        PIECIOKAT,
-        SZESCIOKAT,
-        KWADRAT,
-        PROSTOKAT,
-        ROMB,
-        NONE
-    }
-
     public static int getArgCountForType(FigureTypes type) {
         if (type == FigureTypes.CZWOROKAT){
             return 5;

@@ -2,6 +2,13 @@
     "version": "0.2.0",
     "configurations": [
         {
+            "type": "java",
+            "name": "Main",
+            "request": "launch",
+            "mainClass": "z1.Main",
+            "projectName": "studia_ddb7564f"
+        },
+        {
             "name": "Debug Active File",
             "type": "cppdbg",
             "request": "launch",
