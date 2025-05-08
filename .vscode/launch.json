@@ -3,6 +3,20 @@
     "configurations": [
         {
             "type": "java",
+            "name": "Main",
+            "request": "launch",
+            "mainClass": "Main",
+            "projectName": "studia_1e58731c"
+        },
+        {
+            "type": "java",
+            "name": "App",
+            "request": "launch",
+            "mainClass": "paintfx/paintfx.App",
+            "projectName": "paint"
+        },
+        {
+            "type": "java",
             "name": "SimpleFrame",
             "request": "launch",
             "mainClass": "SimpleFrame",
@@ -14,7 +28,7 @@
             "request": "launch",
             "mainClass": "Main",
             "projectName": "MainFXApp",
-            "vmArgs" : [
+            "vmArgs": [
                 "--module-path",
                 "\"/opt/javafx-sdk-17.0.15/lib\"",
                 "--add-modules",
