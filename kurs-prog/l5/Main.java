@@ -1,13 +1,13 @@
+
 import javafx.application.Application;
 import javafx.scene.*;
-import javafx.scene.paint.Color;
-import javafx.scene.text.Font;
-import javafx.scene.text.Text;
+import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
-
 
 public class Main extends Application {
     
+    private DrawingBoard drawingBoard;
+
     public static void main(String[] args) {
         launch(args);
     }
@@ -15,17 +15,23 @@ public class Main extends Application {
     @Override
     public void start(Stage primaryStage) {
         // Create a simple scene with a button
-        Group root = new Group();
-        Text text = new Text("Hello, JavaFX!");
-        text.setFont(Font.font("Arial", 32));
-        text.setStyle("-fx-fill: white; -fx-center-text: true;");
-        text.setX(50);
-        text.setY(100);
+        final double DEFAULT_WIDTH = 800, DEFAULT_HEIGHT = 600;
 
+        drawingBoard = new DrawingBoard(DEFAULT_WIDTH, DEFAULT_HEIGHT);
+        BorderPane root = new BorderPane();
+        PaintToolBar toolBar = new PaintToolBar(drawingBoard);
+        StatusBar statusBar = new StatusBar(drawingBoard);
 
-        root.getChildren().add(text);
+        toolBar.setPrefHeight(StatusBar.DEFAULT_HEIGHT);
 
-        Scene scene = new Scene(root, 400, 400, Color.web("#242424"));
+        root.setTop(toolBar);
+        root.setCenter(drawingBoard);
+        root.setBottom(statusBar);
+
+        Scene scene = new Scene(
+            root, DEFAULT_WIDTH, 
+            drawingBoard.getHeight() + 2*StatusBar.DEFAULT_HEIGHT
+        );
         primaryStage.setScene(scene);
         primaryStage.show();
     }

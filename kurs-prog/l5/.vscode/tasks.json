@@ -1,0 +1,22 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "type": "shell",
+            "label": "Build PaintFX java project",
+            "command": "javac",
+            "args" : [
+                "--module-path", 
+                "/opt/javafx-sdk-17.0.15/lib",
+                "--add-modules",
+                "javafx.controls",
+                "Main.java",
+                "DrawingBoard.java",
+                "PaintToolBar.java",
+                "StatusBar.java",
+                "-d",
+                "${workspaceFolder}/classes",
+            ]
+        }
+    ]
+}
