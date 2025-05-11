@@ -13,7 +13,8 @@ public class PaintToolBar extends ToolBar {
     public PaintToolBar(DrawingBoard db) {
         this.drawingBoard = db;
 
-        // Create buttons for different shapes
+        // Add buttons to the toolbar
+        
         ComboBox<String> shapeComboBox = new ComboBox<>();
         shapeComboBox.getItems().addAll("Line", "Rectangle", "Circle", "Fill Rectangle", "Fill Circle");
         shapeComboBox.setValue("Line"); // Default selection
@@ -29,12 +30,6 @@ public class PaintToolBar extends ToolBar {
                     break;
                 case "Circle":
                     drawingBoard.setShapeType(DrawingBoard.ShapeType.CIRCLE);
-                    break;
-                case "Fill Rectangle":
-                    drawingBoard.setShapeType(DrawingBoard.ShapeType.FILL_RECTANGLE);
-                    break;
-                case "Fill Circle":
-                    drawingBoard.setShapeType(DrawingBoard.ShapeType.FILL_CIRCLE);
                     break;
                 default:
                     drawingBoard.setShapeType(DrawingBoard.ShapeType.LINE);

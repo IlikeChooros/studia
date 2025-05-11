@@ -1,10 +1,13 @@
+import java.util.ArrayList;
+import java.util.List;
+
 import javafx.scene.canvas.*;
 import javafx.scene.paint.Color;
 
-interface IShape {
-    void draw(
-        GraphicsContext gc, double startX, 
-        double startY, double endX, double endY
+interface IShapeType {
+    SerializableShape getShape(
+        double startX, double startY, double endX, double endY,
+        Color fillColor, Color strokeColor, double strokeWidth
     );
 }
 
@@ -13,88 +16,36 @@ public class DrawingBoard extends Canvas {
     /**
      * Enum for different shapes to draw.
      */
-    public enum ShapeType implements IShape {
+    public enum ShapeType implements IShapeType {
         LINE {
-            @Override
-            public void draw(
-                GraphicsContext gc, double startX, 
-                double startY, double endX, double endY
+            public SerializableShape getShape(
+                double startX, double startY, double endX, double endY,
+                Color fillColor, Color strokeColor, double strokeWidth
             ) {
-                gc.strokeLine(startX, startY, endX, endY);
+                return new Line(startX, startY, endX, endY,
+                    strokeColor, strokeWidth);
             }
         },
 
         RECTANGLE {
-            @Override
-            public void draw(
-                GraphicsContext gc, double startX, 
-                double startY, double endX, double endY
+            public SerializableShape getShape(
+                double startX, double startY, double endX, double endY,
+                Color fillColor, Color strokeColor, double strokeWidth
             ) {
-                // Ensure the rectangle is drawn from the top-left corner
-                // to the bottom-right corner
-                double x0 = Math.min(startX, endX);
-                double y0 = Math.min(startY, endY);
-                double x1 = Math.max(startX, endX);
-                double y1 = Math.max(startY, endY);
-
-                // Draw the rectangle                
-                gc.strokeRect(x0, y0, x1 - x0, y1 - y0);
+                return new Rectangle(startX, startY, endX, endY, 
+                    fillColor, strokeColor, strokeWidth, 0);
             }
         },
 
         CIRCLE {
-            @Override
-            public void draw(
-                GraphicsContext gc, double startX, 
-                double startY, double endX, double endY
+            public SerializableShape getShape(
+                double startX, double startY, double endX, double endY,
+                Color fillColor, Color strokeColor, double strokeWidth
             ) {
-                double radius = Math.sqrt(
-                    Math.pow(endX - startX, 2) + 
-                    Math.pow(endY - startY, 2)
-                );                
-
-                gc.strokeOval(startX - radius, startY - radius, 
-                    radius * 2, radius * 2);
+                return new Circle(startX, startY, endX, endY,
+                    fillColor, strokeColor, strokeWidth);
             }
         },
-
-        FILL_RECTANGLE {
-            @Override
-            public void draw(
-                GraphicsContext gc, double startX, 
-                double startY, double endX, double endY
-            ) {
-                // Ensure the rectangle is drawn from the top-left corner
-                // to the bottom-right corner
-                double x0 = Math.min(startX, endX);
-                double y0 = Math.min(startY, endY);
-                double x1 = Math.max(startX, endX);
-                double y1 = Math.max(startY, endY);
-
-                // Draw the filled rectangle
-                gc.fillRect(x0, y0, x1 - x0, y1 - y0);
-                gc.strokeRect(x0, y0, x1 - x0, y1 - y0);
-            }
-        },
-
-        FILL_CIRCLE {
-            @Override
-            public void draw(
-                GraphicsContext gc, double startX, 
-                double startY, double endX, double endY
-            ) {
-                double radius = Math.sqrt(
-                    Math.pow(endX - startX, 2) + 
-                    Math.pow(endY - startY, 2)
-                );
-
-                // Draw the filled circle
-                gc.fillOval(startX - radius, startY - radius, 
-                    radius * 2, radius * 2);
-                gc.strokeOval(startX - radius, startY - radius, 
-                    radius * 2, radius * 2);
-            }
-        };
     }
 
     public static final Color DEFAULT_BG_COLOR = Color.WHITESMOKE;
@@ -113,6 +64,7 @@ public class DrawingBoard extends Canvas {
     private Color fillColor = Color.WHITE;
     private Color strokeColor = Color.BLACK;
     private double strokeWidth = 2;
+    private List<SerializableShape> shapes = new ArrayList<>();
 
     /**
      * Create a new drawing plane with the 
@@ -148,7 +100,14 @@ public class DrawingBoard extends Canvas {
         this.shapeType = shapeType;
 
         setOnMouseReleased(e -> {
-            this.shapeType.draw(context, startX, startY, endX, endY);
+            endX = e.getX();
+            endY = e.getY();
+
+            SerializableShape shape = shapeType.getShape(
+                startX, startY, endX, endY, fillColor, strokeColor, strokeWidth
+            );
+            shape.draw(context);
+            shapes.add(shape);
         });
     }
 
