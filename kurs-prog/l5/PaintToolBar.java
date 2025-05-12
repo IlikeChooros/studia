@@ -16,7 +16,10 @@ public class PaintToolBar extends ToolBar {
         // Add buttons to the toolbar
         
         ComboBox<String> shapeComboBox = new ComboBox<>();
-        shapeComboBox.getItems().addAll("Line", "Rectangle", "Circle", "Fill Rectangle", "Fill Circle");
+        shapeComboBox.getItems().addAll(
+            "Line", "Triangle", "Rectangle", 
+            "Pentagon", "Hexagon", "Circle"
+        );
         shapeComboBox.setValue("Line"); // Default selection
 
         shapeComboBox.setOnAction(e -> {
@@ -30,6 +33,15 @@ public class PaintToolBar extends ToolBar {
                     break;
                 case "Circle":
                     drawingBoard.setShapeType(DrawingBoard.ShapeType.CIRCLE);
+                    break;
+                case "Pentagon":
+                    drawingBoard.setShapeType(DrawingBoard.ShapeType.PENTAGON);
+                    break;
+                case "Hexagon":
+                    drawingBoard.setShapeType(DrawingBoard.ShapeType.HEXAGON);
+                    break;
+                case "Triangle":
+                    drawingBoard.setShapeType(DrawingBoard.ShapeType.TRIANGLE);
                     break;
                 default:
                     drawingBoard.setShapeType(DrawingBoard.ShapeType.LINE);
@@ -51,6 +63,16 @@ public class PaintToolBar extends ToolBar {
             drawingBoard.setFillColor(fillColorButton.getValue());
         });
 
+        Button clearButton = new Button("Clear");
+        clearButton.setOnAction(e -> {
+            drawingBoard.clear();
+        });
+
+        Button undoButton = new Button("Undo");
+        undoButton.setOnAction(e -> {
+            drawingBoard.undo();
+        });
+
 
         // Add buttons to the toolbar
         getItems().addAll(
@@ -61,7 +83,10 @@ public class PaintToolBar extends ToolBar {
             strokeColorButton,
             new Separator(), // Add a separator for better UI
             new Label("Fill Color:"),
-            fillColorButton
+            fillColorButton,
+            new Separator(), // Add a separator for better UI
+            clearButton,
+            undoButton
         );
     }
 }

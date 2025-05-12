@@ -4,48 +4,13 @@ import java.util.List;
 import javafx.scene.canvas.*;
 import javafx.scene.paint.Color;
 
-interface IShapeType {
-    SerializableShape getShape(
-        double startX, double startY, double endX, double endY,
-        Color fillColor, Color strokeColor, double strokeWidth
-    );
-}
-
 public class DrawingBoard extends Canvas {
 
     /**
      * Enum for different shapes to draw.
      */
-    public enum ShapeType implements IShapeType {
-        LINE {
-            public SerializableShape getShape(
-                double startX, double startY, double endX, double endY,
-                Color fillColor, Color strokeColor, double strokeWidth
-            ) {
-                return new Line(startX, startY, endX, endY,
-                    strokeColor, strokeWidth);
-            }
-        },
-
-        RECTANGLE {
-            public SerializableShape getShape(
-                double startX, double startY, double endX, double endY,
-                Color fillColor, Color strokeColor, double strokeWidth
-            ) {
-                return new Rectangle(startX, startY, endX, endY, 
-                    fillColor, strokeColor, strokeWidth, 0);
-            }
-        },
-
-        CIRCLE {
-            public SerializableShape getShape(
-                double startX, double startY, double endX, double endY,
-                Color fillColor, Color strokeColor, double strokeWidth
-            ) {
-                return new Circle(startX, startY, endX, endY,
-                    fillColor, strokeColor, strokeWidth);
-            }
-        },
+    public enum ShapeType {
+        LINE, RECTANGLE, CIRCLE, PENTAGON, HEXAGON, TRIANGLE
     }
 
     public static final Color DEFAULT_BG_COLOR = Color.WHITESMOKE;
@@ -65,6 +30,30 @@ public class DrawingBoard extends Canvas {
     private Color strokeColor = Color.BLACK;
     private double strokeWidth = 2;
     private List<SerializableShape> shapes = new ArrayList<>();
+
+    /**
+     * Get the shape to draw based on the current shape type.
+     */
+    private SerializableShape getShape()
+    {
+        switch (shapeType) {
+            case LINE:
+                return new Line(startX, startY, endX, endY, strokeColor, strokeWidth);
+            case RECTANGLE:
+                return new Rectangle(startX, startY, endX, endY, fillColor, strokeColor, strokeWidth, 0);
+            case CIRCLE:
+                return new Circle(startX, startY, endX, endY, fillColor, strokeColor, strokeWidth);
+            case PENTAGON:
+                return new Pentagon(startX, startY, endX, endY, fillColor, strokeColor, strokeWidth);
+            case HEXAGON:
+                return new Hexagon(startX, startY, endX, endY, fillColor, strokeColor, strokeWidth);
+            case TRIANGLE:
+                return new Triangle(startX, startY, endX, endY, fillColor, strokeColor, strokeWidth);
+            
+            default:
+                return null;
+        }
+    }
 
     /**
      * Create a new drawing plane with the 
@@ -103,9 +92,7 @@ public class DrawingBoard extends Canvas {
             endX = e.getX();
             endY = e.getY();
 
-            SerializableShape shape = shapeType.getShape(
-                startX, startY, endX, endY, fillColor, strokeColor, strokeWidth
-            );
+            SerializableShape shape = getShape();
             shape.draw(context);
             shapes.add(shape);
         });
@@ -136,12 +123,40 @@ public class DrawingBoard extends Canvas {
     }
 
     /**
-     * Clear the drawing board.
+     * Get the current shape type.
+     */
+    public void undo() {
+        if (!shapes.isEmpty()) {
+            shapes.remove(shapes.size() - 1);
+            clear();
+            drawShapes();
+        }
+    }
+
+    /**
+     * Clear the canvas and reset the background color.
      */
     public void clear() {
         context.clearRect(0, 0, getWidth(), getHeight());
-        context.setFill(Color.WHITE);
+        context.setFill(DEFAULT_BG_COLOR);
         context.fillRect(0, 0, getWidth(), getHeight());
+    }
+
+    /**
+     * Earase all shapes from the canvas, and redraw the background.
+     */
+    public void clearShapes() {
+        shapes.clear();
+        clear();
+    }
+
+    /**
+     * Draw all shapes on the canvas.
+     */
+    public void drawShapes() {
+        for (SerializableShape shape : shapes) {
+            shape.draw(context);
+        }
     }
 }
 

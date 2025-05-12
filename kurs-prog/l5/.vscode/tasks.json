@@ -15,6 +15,13 @@
                 "PaintToolBar.java",
                 "StatusBar.java",
                 "Shapes.java",
+                "Circle.java",
+                "Rectangle.java",
+                "Line.java",
+                "NPolygon.java",
+                "Triangle.java",
+                "Pentagon.java",
+                "Hexagon.java",
                 "-d",
                 "${workspaceFolder}/classes",
             ]
