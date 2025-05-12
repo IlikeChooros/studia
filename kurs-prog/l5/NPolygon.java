@@ -1,14 +1,10 @@
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
 
-public class NPolygon implements SerializableShape {
+abstract public class NPolygon extends BaseShape {
     private double[] xPoints;
     private double[] yPoints;
     private int numPoints;
-    private Color fillColor;
-    private Color strokeColor;
-    private double strokeWidth;
-    private double rotation;
     private double centerX, centerY;
     private double radius;
 
@@ -18,8 +14,10 @@ public class NPolygon implements SerializableShape {
     private void prepareCoordinates() {
         double angleIncrement = 2 * Math.PI / numPoints;
         for (int i = 0; i < numPoints; i++) {
-            xPoints[i] = centerX + radius * Math.cos(i * angleIncrement + rotation);
-            yPoints[i] = centerY + radius * Math.sin(i * angleIncrement + rotation);
+            // Make the polygon rotate clockwise
+            // by subtracting the angle from 2 * PI
+            xPoints[i] = centerX + radius * Math.cos(2 * Math.PI - i * angleIncrement + rotation);
+            yPoints[i] = centerY + radius * Math.sin(2 * Math.PI - i * angleIncrement + rotation);
         }
     }
 
@@ -39,13 +37,10 @@ public class NPolygon implements SerializableShape {
         double startX, double startY, double endX, double endY, int numPoints,
         Color fillColor, Color strokeColor, double strokeWidth, double rotation
     ) {
+        super(startX, startY, endX, endY, fillColor, strokeColor, strokeWidth, rotation);
         this.numPoints = numPoints;
         this.xPoints = new double[numPoints];
         this.yPoints = new double[numPoints];
-        this.fillColor = fillColor;
-        this.strokeColor = strokeColor;
-        this.strokeWidth = strokeWidth;
-        this.rotation = rotation;
 
         // Calculate the center and radius of the polygon
         setStart(startX, startY);
@@ -88,6 +83,36 @@ public class NPolygon implements SerializableShape {
         gc.setStroke(strokeColor);
         gc.setLineWidth(strokeWidth);
         gc.strokePolygon(xPoints, yPoints, numPoints);
+    }
+
+    /**
+     * Check if a point is inside the polygon.
+     * @param x X coordinate of the point
+     * @param y Y coordinate of the point
+     * @return true if the point is inside the polygon, false otherwise
+     */
+    @Override
+    public boolean contains(double x, double y) {
+        // Author: W. Randolph Franklin (although that was written in C)
+        // https://wrfranklin.org/Research/Short_Notes/pnpoly.html
+
+        /*
+         int i, j, c = 0;
+            for (i = 0, j = nvert-1; i < nvert; j = i++) {
+                if ( ((verty[i]>testy) != (verty[j]>testy)) &&
+                (testx < (vertx[j]-vertx[i]) * (testy-verty[i]) / (verty[j]-verty[i]) + vertx[i]) )
+                c = !c;
+            }
+            return c;
+         */
+        boolean inside = false;
+        for (int i = 0, j = numPoints - 1; i < numPoints; j = i++) {
+            if ((yPoints[i] > y) != (yPoints[j] > y) &&
+                (x < (xPoints[j] - xPoints[i]) * (y - yPoints[i]) / (yPoints[j] - yPoints[i]) + xPoints[i])) {
+                inside = !inside;
+            }
+        }
+        return inside;
     }
     
 }

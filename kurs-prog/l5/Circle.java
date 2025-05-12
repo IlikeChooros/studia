@@ -2,22 +2,20 @@ import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
 
 // Circle shape, can be either filled or just an outline
-public class Circle implements SerializableShape {
+public class Circle extends BaseShape {
     private double centerX, centerY, radius;
-    private Color fillColor;
-    private Color strokeColor;
-    private double strokeWidth;
 
     public Circle(
         double x0, double y0, double x1, double y1,
         Color fillColor, Color strokeColor, double strokeWidth
-    ) {
+    ) 
+    {
+        super(
+            x0, y0, x1, y1, fillColor, strokeColor, strokeWidth, 0
+        );
         // Calculate the center and radius of the circle
         setStart(x0, y0);
         setEnd(x1, y1);
-        this.fillColor = fillColor;
-        this.strokeColor = strokeColor;
-        this.strokeWidth = strokeWidth;
     }
 
     /**
@@ -52,5 +50,26 @@ public class Circle implements SerializableShape {
         gc.setStroke(strokeColor);
         gc.setLineWidth(strokeWidth);
         gc.strokeOval(centerX - radius, centerY - radius, radius * 2, radius * 2);
+    }
+
+    /**
+     * Check if a point is inside the circle.
+     * @param x X coordinate of the point
+     * @param y Y coordinate of the point
+     * @return true if the point is inside the circle, false otherwise
+     */
+    @Override
+    public boolean contains(double x, double y) {
+        // r = sqrt((x0 - x1)^2 + (y0 - y1)^2), simple euclidean distance
+        double distance = Math.sqrt(
+            Math.pow(x - centerX, 2) + Math.pow(y - centerY, 2)
+        );
+        
+        return distance <= radius;
+    }
+
+    @Override
+    public String getType() {
+        return "Circle";
     }
 }

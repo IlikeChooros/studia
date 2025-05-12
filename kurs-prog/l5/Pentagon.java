@@ -12,4 +12,9 @@ public class Pentagon extends NPolygon {
             fillColor, strokeColor, strokeWidth, -Math.PI / 10
         );
     }
+
+    @Override
+    public String getType() {
+        return "Pentagon";
+    }
 }

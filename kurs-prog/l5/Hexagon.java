@@ -12,5 +12,10 @@ public class Hexagon extends NPolygon {
             fillColor, strokeColor, strokeWidth, 0
         );
     }
+
+    @Override
+    public String getType() {
+        return "Hexagon";
+    }
 }
 

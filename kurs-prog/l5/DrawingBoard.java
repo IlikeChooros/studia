@@ -1,7 +1,8 @@
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Iterator;
+import java.util.LinkedList;
 
 import javafx.scene.canvas.*;
+import javafx.scene.image.WritableImage;
 import javafx.scene.paint.Color;
 
 public class DrawingBoard extends Canvas {
@@ -29,12 +30,13 @@ public class DrawingBoard extends Canvas {
     private Color fillColor = Color.WHITE;
     private Color strokeColor = Color.BLACK;
     private double strokeWidth = 2;
-    private List<SerializableShape> shapes = new ArrayList<>();
+    private LinkedList<BaseShape> shapes = new LinkedList<>();
+    private WritableImage canvasSnapshot = null;
 
     /**
      * Get the shape to draw based on the current shape type.
      */
-    private SerializableShape getShape()
+    private BaseShape getShape()
     {
         switch (shapeType) {
             case LINE:
@@ -72,11 +74,27 @@ public class DrawingBoard extends Canvas {
         setOnMousePressed(e -> {
             startX = e.getX();
             startY = e.getY();
+
+            // Creat a snapshot of the current canvas
+            canvasSnapshot = this.snapshot(null, null);
+
+            // Initialize end coordinates
+            endX = startX;
+            endY = startY;
         });
 
         setOnMouseDragged(e -> {
             endX = e.getX();
             endY = e.getY();
+
+            // Draw the snapshot of the canvas
+            if (this.canvasSnapshot != null) {
+                context.drawImage(canvasSnapshot, 0, 0);
+
+                // Draw the shape we are currently creating
+                BaseShape shape = getShape();
+                shape.draw(context);
+            } 
         });
 
         setShapeType(ShapeType.LINE);
@@ -92,10 +110,32 @@ public class DrawingBoard extends Canvas {
             endX = e.getX();
             endY = e.getY();
 
-            SerializableShape shape = getShape();
+            BaseShape shape = getShape();
             shape.draw(context);
-            shapes.add(shape);
+            shapes.addFirst(shape);
+
+            canvasSnapshot = null; // Clear the snapshot and redraw the canvas
+            clear();
+            drawShapes();
         });
+    }
+
+    /**
+     * Since the `onMouseMoved` event is already handled by the
+     * StatusBar, we need to add a public method to handle the
+     * `onMouseMoved` event for the drawing board.
+     * @param e the mouse event
+     */
+    public void onMouseMovedCallback(javafx.scene.input.MouseEvent e) {
+        // Check if the mouse hovers over a shape
+        for (BaseShape shape : shapes) {
+            if (shape.contains(e.getX(), e.getY())) {
+                setCursor(javafx.scene.Cursor.HAND);
+                System.out.println("Mouse is over a shape: " + shape.getType());
+                return;
+            }
+        }
+        setCursor(javafx.scene.Cursor.DEFAULT);
     }
 
     /**
@@ -127,7 +167,7 @@ public class DrawingBoard extends Canvas {
      */
     public void undo() {
         if (!shapes.isEmpty()) {
-            shapes.remove(shapes.size() - 1);
+            shapes.removeFirst();
             clear();
             drawShapes();
         }
@@ -154,7 +194,9 @@ public class DrawingBoard extends Canvas {
      * Draw all shapes on the canvas.
      */
     public void drawShapes() {
-        for (SerializableShape shape : shapes) {
+        // Draw all shapes on the canvas starting from the bottom
+        for (Iterator<BaseShape> it = shapes.descendingIterator(); it.hasNext();) {
+            BaseShape shape = it.next();
             shape.draw(context);
         }
     }

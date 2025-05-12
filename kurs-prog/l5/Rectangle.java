@@ -2,12 +2,7 @@ import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
 
 // Rectangle shape, can be either filled or just an outline
-public class Rectangle implements SerializableShape {
-    private double x0, y0, x1, y1;
-    private Color fillColor;
-    private Color strokeColor;
-    private double strokeWidth;
-    private double rotation;
+public class Rectangle extends BaseShape {
 
     /**
      * Ensure the rectangle is drawn from the top-left corner
@@ -16,56 +11,42 @@ public class Rectangle implements SerializableShape {
     private void prepareCoordinates() {
         
         double temp;
-        if (x0 > x1) {
-            temp = x0;
-            x0 = x1;
-            x1 = temp;
+        if (startX > endX) {
+            temp = startX;
+            startX = endX;
+            endX = temp;
         }
-        if (y0 > y1) {
-            temp = y0;
-            y0 = y1;
-            y1 = temp;
+        if (startY > endY) {
+            temp = startY;
+            startY = endY;
+            endY = temp;
         }
-    }
-
-    private void initialize(
-        double startX, double startY, double endX, double endY,
-        Color fillColor, Color strokeColor, double strokeWidth, double rotation
-    ) {
-        this.x0 = startX;
-        this.y0 = startY;
-        this.x1 = endX;
-        this.y1 = endY;
-
-        // Ensure the rectangle is drawn from the top-left corner
-        // to the bottom-right corner
-        prepareCoordinates();
-
-        this.fillColor = fillColor;
-        this.strokeColor = strokeColor;
-        this.strokeWidth = strokeWidth;
-        this.rotation = rotation;
     }
 
     /**
      * Create a rectangle with the given parameters, 
      * the coordinates do not have to be in any specific order.
      * 
-     * @param x0 the starting x-coordinate
-     * @param y0 the starting y-coordinate 
-     * @param x1 ending x-coordinate
-     * @param y1 ending y-coordinate
+     * @param startX the starting x-coordinate
+     * @param startY the starting y-coordinate 
+     * @param endX ending x-coordinate
+     * @param endY ending y-coordinate
      * @param fillColor null if no fill is needed
      * @param strokeColor the color of the outline
      * @param strokeWidth the width of the outline
      * @param rotation the rotation of the rectangle
      */
     public Rectangle(
-        double x0, double y0, double x1, double y1,
+        double startX, double startY, double endX, double endY,
         Color fillColor, Color strokeColor, double strokeWidth,
         double rotation
     ) {
-        initialize(x0, y0, x1, y1, fillColor, strokeColor, strokeWidth, rotation);
+        super(
+            startX, startY, endX, endY, fillColor, strokeColor, strokeWidth, rotation
+        );
+        // Ensure the rectangle is drawn from the top-left corner
+        // to the bottom-right corner
+        prepareCoordinates();
     }
 
     /**
@@ -73,8 +54,8 @@ public class Rectangle implements SerializableShape {
      */
     @Override
     public void setStart(double x, double y) {
-        this.x0 = x;
-        this.y0 = y;
+        this.startX = x;
+        this.startY = y;
     }
 
     /**
@@ -82,8 +63,8 @@ public class Rectangle implements SerializableShape {
      */
     @Override
     public void setEnd(double x, double y) {
-        this.x1 = x;
-        this.y1 = y;
+        this.endX = x;
+        this.endY = y;
 
         // Ensure the rectangle is drawn from the top-left corner
         // to the bottom-right corner
@@ -101,12 +82,32 @@ public class Rectangle implements SerializableShape {
         if (fillColor != null) {
             // Draw the filled rectangle
             gc.setFill(fillColor);
-            gc.fillRect(x0, y0, x1 - x0, y1 - y0);
+            gc.fillRect(startX, startY, endX - startX, endY - startY);
         }
 
         // Draw the outline of the rectangle
         gc.setStroke(strokeColor);
         gc.setLineWidth(strokeWidth);
-        gc.strokeRect(x0, y0, x1 - x0, y1 - y0);
+        gc.strokeRect(startX, startY, endX - startX, endY - startY);
+    }
+
+    /**
+     * Check if the given point is inside the rectangle.
+     * @param x the x-coordinate of the point
+     * @param y the y-coordinate of the point
+     * @return true if the point is inside the rectangle, false otherwise
+     */
+    @Override
+    public boolean contains(double x, double y) {
+        return (x >= startX && x <= endX && y >= startY && y <= endY);
+    }
+
+    /**
+     * Get the type of the shape.
+     * @return the type of the shape
+     */
+    @Override
+    public String getType() {
+        return "Rectangle";
     }
 }

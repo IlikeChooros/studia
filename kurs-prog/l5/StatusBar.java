@@ -20,6 +20,7 @@ public class StatusBar extends HBox {
             double x = event.getX();
             double y = event.getY();
             this.updateStatus(String.format("Mouse Position: (%.2f, %.2f)", x, y));
+            drawingBoard.onMouseMovedCallback(event);
         });
     }
 

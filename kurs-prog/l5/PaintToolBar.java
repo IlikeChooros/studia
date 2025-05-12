@@ -65,7 +65,7 @@ public class PaintToolBar extends ToolBar {
 
         Button clearButton = new Button("Clear");
         clearButton.setOnAction(e -> {
-            drawingBoard.clear();
+            drawingBoard.clearShapes();
         });
 
         Button undoButton = new Button("Undo");
