@@ -1,0 +1,55 @@
+\hypertarget{classFileManager}{}\doxysection{File\+Manager Class Reference}
+\label{classFileManager}\index{FileManager@{FileManager}}
+\doxysubsection*{Classes}
+\begin{DoxyCompactItemize}
+\item 
+class {\bfseries Drawing\+Data}
+\end{DoxyCompactItemize}
+\doxysubsection*{Static Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+static String \mbox{\hyperlink{classFileManager_abb6f406ccf59b9fffb7f96c0bd3f497e}{save}} (\mbox{\hyperlink{classDrawingBoard}{Drawing\+Board}} drawing\+Board, Stage stage)
+\item 
+static Drawing\+Data \mbox{\hyperlink{classFileManager_aa142424cfb84ced945ef45394df225ec}{load}} (Stage stage)
+\end{DoxyCompactItemize}
+\doxysubsection*{Static Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classFileManager_a54cca37fc9168eb2a8cc720d063438a0}\label{classFileManager_a54cca37fc9168eb2a8cc720d063438a0}} 
+static final String {\bfseries FILE\+\_\+\+EXTENSION} = \char`\"{}.pfx\char`\"{}
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Member Function Documentation}
+\mbox{\Hypertarget{classFileManager_aa142424cfb84ced945ef45394df225ec}\label{classFileManager_aa142424cfb84ced945ef45394df225ec}} 
+\index{FileManager@{FileManager}!load@{load}}
+\index{load@{load}!FileManager@{FileManager}}
+\doxysubsubsection{\texorpdfstring{load()}{load()}}
+{\footnotesize\ttfamily static Drawing\+Data File\+Manager.\+load (\begin{DoxyParamCaption}\item[{Stage}]{stage }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [static]}}
+
+Loads a drawing from a file. 
+\begin{DoxyParams}{Parameters}
+{\em stage} & The primary stage, used to show the File\+Chooser dialog. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+Drawing\+Data object if successful, null otherwise. 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classFileManager_abb6f406ccf59b9fffb7f96c0bd3f497e}\label{classFileManager_abb6f406ccf59b9fffb7f96c0bd3f497e}} 
+\index{FileManager@{FileManager}!save@{save}}
+\index{save@{save}!FileManager@{FileManager}}
+\doxysubsubsection{\texorpdfstring{save()}{save()}}
+{\footnotesize\ttfamily static String File\+Manager.\+save (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classDrawingBoard}{Drawing\+Board}}}]{drawing\+Board,  }\item[{Stage}]{stage }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [static]}}
+
+Saves the current state of the drawing board to a file. 
+\begin{DoxyParams}{Parameters}
+{\em drawing\+Board} & The \mbox{\hyperlink{classDrawingBoard}{Drawing\+Board}} instance containing the data to save. \\
+\hline
+{\em stage} & The primary stage, used to show the File\+Chooser dialog. \\
+\hline
+\end{DoxyParams}
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+File\+Manager.\+java\end{DoxyCompactItemize}

@@ -1,0 +1,161 @@
+\hypertarget{classDrawingBoard}{}\doxysection{Drawing\+Board Class Reference}
+\label{classDrawingBoard}\index{DrawingBoard@{DrawingBoard}}
+
+
+Inheritance diagram for Drawing\+Board\+:
+% FIG 0
+
+
+Collaboration diagram for Drawing\+Board\+:
+% FIG 1
+\doxysubsection*{Classes}
+\begin{DoxyCompactItemize}
+\item 
+enum \mbox{\hyperlink{enumDrawingBoard_1_1ShapeType}{Shape\+Type}}
+\end{DoxyCompactItemize}
+\doxysubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{classDrawingBoard_aa1ad33b280c24b93370edd3d515e37ee}{Drawing\+Board}} (double width, double height)
+\item 
+void \mbox{\hyperlink{classDrawingBoard_a27036cff78e6d1078c08b81c3543b91d}{set\+Shape\+Type}} (\mbox{\hyperlink{enumDrawingBoard_1_1ShapeType}{Shape\+Type}} shape\+Type)
+\item 
+void \mbox{\hyperlink{classDrawingBoard_ac9764332e0b30b8edfdad7fafb5ea082}{on\+Mouse\+Moved\+Callback}} (javafx.\+scene.\+input.\+Mouse\+Event e)
+\item 
+void \mbox{\hyperlink{classDrawingBoard_ada479957b74f7a701839fbb98b774254}{set\+Fill\+Color}} (Color color)
+\item 
+void \mbox{\hyperlink{classDrawingBoard_a0e8c4cfe3ac58022cff0c8a9e7f9991c}{set\+Stroke\+Color}} (Color color)
+\item 
+void \mbox{\hyperlink{classDrawingBoard_a12eac3f38f479241c2538607aff160f8}{set\+Stroke\+Width}} (double width)
+\item 
+void \mbox{\hyperlink{classDrawingBoard_a6072a38a35e2c5f3f79135058ed20c00}{undo}} ()
+\item 
+void \mbox{\hyperlink{classDrawingBoard_ad110b4c4177da085723d70f6aa80269f}{clear}} ()
+\item 
+void \mbox{\hyperlink{classDrawingBoard_a435b81014ee6434d2d1f7f2eafdf3be8}{clear\+Shapes}} ()
+\item 
+void \mbox{\hyperlink{classDrawingBoard_a9b06912371571201bce0f522435dcada}{draw\+Shapes}} ()
+\item 
+Linked\+List$<$ BShape $>$ \mbox{\hyperlink{classDrawingBoard_a964b63e1103d946952f8dddf8b46c869}{get\+Shapes}} ()
+\item 
+List$<$ Integer $>$ \mbox{\hyperlink{classDrawingBoard_a721d066485ecabe8eb6c7c8ebec23b2a}{get\+History}} ()
+\item 
+int \mbox{\hyperlink{classDrawingBoard_a81145a6d870df87e3ce4409adc61abc2}{get\+History\+Id\+Counter}} ()
+\item 
+void \mbox{\hyperlink{classDrawingBoard_aa7c4c7316c47625609149f37264b0d3b}{load\+Drawing\+Data}} (Linked\+List$<$ BShape $>$ loaded\+Shapes, List$<$ Integer $>$ loaded\+History, int loaded\+History\+Id\+Counter)
+\end{DoxyCompactItemize}
+\doxysubsection*{Static Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classDrawingBoard_a771a42e8ddc7e7549c8f65acd836db09}\label{classDrawingBoard_a771a42e8ddc7e7549c8f65acd836db09}} 
+static final Color {\bfseries DEFAULT\+\_\+\+BG\+\_\+\+COLOR} = Color.\+WHITESMOKE
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Constructor \& Destructor Documentation}
+\mbox{\Hypertarget{classDrawingBoard_aa1ad33b280c24b93370edd3d515e37ee}\label{classDrawingBoard_aa1ad33b280c24b93370edd3d515e37ee}} 
+\index{DrawingBoard@{DrawingBoard}!DrawingBoard@{DrawingBoard}}
+\index{DrawingBoard@{DrawingBoard}!DrawingBoard@{DrawingBoard}}
+\doxysubsubsection{\texorpdfstring{DrawingBoard()}{DrawingBoard()}}
+{\footnotesize\ttfamily Drawing\+Board.\+Drawing\+Board (\begin{DoxyParamCaption}\item[{double}]{width,  }\item[{double}]{height }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+Create a new drawing plane with the specified width and height. 
+
+\doxysubsection{Member Function Documentation}
+\mbox{\Hypertarget{classDrawingBoard_ad110b4c4177da085723d70f6aa80269f}\label{classDrawingBoard_ad110b4c4177da085723d70f6aa80269f}} 
+\index{DrawingBoard@{DrawingBoard}!clear@{clear}}
+\index{clear@{clear}!DrawingBoard@{DrawingBoard}}
+\doxysubsubsection{\texorpdfstring{clear()}{clear()}}
+{\footnotesize\ttfamily void Drawing\+Board.\+clear (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+Clear the canvas and reset the background color. \mbox{\Hypertarget{classDrawingBoard_a435b81014ee6434d2d1f7f2eafdf3be8}\label{classDrawingBoard_a435b81014ee6434d2d1f7f2eafdf3be8}} 
+\index{DrawingBoard@{DrawingBoard}!clearShapes@{clearShapes}}
+\index{clearShapes@{clearShapes}!DrawingBoard@{DrawingBoard}}
+\doxysubsubsection{\texorpdfstring{clearShapes()}{clearShapes()}}
+{\footnotesize\ttfamily void Drawing\+Board.\+clear\+Shapes (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+Earase all shapes from the canvas, and redraw the background. \mbox{\Hypertarget{classDrawingBoard_a9b06912371571201bce0f522435dcada}\label{classDrawingBoard_a9b06912371571201bce0f522435dcada}} 
+\index{DrawingBoard@{DrawingBoard}!drawShapes@{drawShapes}}
+\index{drawShapes@{drawShapes}!DrawingBoard@{DrawingBoard}}
+\doxysubsubsection{\texorpdfstring{drawShapes()}{drawShapes()}}
+{\footnotesize\ttfamily void Drawing\+Board.\+draw\+Shapes (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+Draw all shapes on the canvas. \mbox{\Hypertarget{classDrawingBoard_a721d066485ecabe8eb6c7c8ebec23b2a}\label{classDrawingBoard_a721d066485ecabe8eb6c7c8ebec23b2a}} 
+\index{DrawingBoard@{DrawingBoard}!getHistory@{getHistory}}
+\index{getHistory@{getHistory}!DrawingBoard@{DrawingBoard}}
+\doxysubsubsection{\texorpdfstring{getHistory()}{getHistory()}}
+{\footnotesize\ttfamily List$<$Integer$>$ Drawing\+Board.\+get\+History (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+Gets the current history list. \mbox{\Hypertarget{classDrawingBoard_a81145a6d870df87e3ce4409adc61abc2}\label{classDrawingBoard_a81145a6d870df87e3ce4409adc61abc2}} 
+\index{DrawingBoard@{DrawingBoard}!getHistoryIdCounter@{getHistoryIdCounter}}
+\index{getHistoryIdCounter@{getHistoryIdCounter}!DrawingBoard@{DrawingBoard}}
+\doxysubsubsection{\texorpdfstring{getHistoryIdCounter()}{getHistoryIdCounter()}}
+{\footnotesize\ttfamily int Drawing\+Board.\+get\+History\+Id\+Counter (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+Gets the current history ID counter. \mbox{\Hypertarget{classDrawingBoard_a964b63e1103d946952f8dddf8b46c869}\label{classDrawingBoard_a964b63e1103d946952f8dddf8b46c869}} 
+\index{DrawingBoard@{DrawingBoard}!getShapes@{getShapes}}
+\index{getShapes@{getShapes}!DrawingBoard@{DrawingBoard}}
+\doxysubsubsection{\texorpdfstring{getShapes()}{getShapes()}}
+{\footnotesize\ttfamily Linked\+List$<$BShape$>$ Drawing\+Board.\+get\+Shapes (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+Gets the current list of shapes on the drawing board. \mbox{\Hypertarget{classDrawingBoard_aa7c4c7316c47625609149f37264b0d3b}\label{classDrawingBoard_aa7c4c7316c47625609149f37264b0d3b}} 
+\index{DrawingBoard@{DrawingBoard}!loadDrawingData@{loadDrawingData}}
+\index{loadDrawingData@{loadDrawingData}!DrawingBoard@{DrawingBoard}}
+\doxysubsubsection{\texorpdfstring{loadDrawingData()}{loadDrawingData()}}
+{\footnotesize\ttfamily void Drawing\+Board.\+load\+Drawing\+Data (\begin{DoxyParamCaption}\item[{Linked\+List$<$ BShape $>$}]{loaded\+Shapes,  }\item[{List$<$ Integer $>$}]{loaded\+History,  }\item[{int}]{loaded\+History\+Id\+Counter }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+Loads drawing data (shapes, history, history\+Id\+Counter) onto the drawing board, replacing existing content. 
+\begin{DoxyParams}{Parameters}
+{\em loaded\+Shapes} & The list of shapes to load. \\
+\hline
+{\em loaded\+History} & The history list to load. \\
+\hline
+{\em loaded\+History\+Id\+Counter} & The history ID counter to load. \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classDrawingBoard_ac9764332e0b30b8edfdad7fafb5ea082}\label{classDrawingBoard_ac9764332e0b30b8edfdad7fafb5ea082}} 
+\index{DrawingBoard@{DrawingBoard}!onMouseMovedCallback@{onMouseMovedCallback}}
+\index{onMouseMovedCallback@{onMouseMovedCallback}!DrawingBoard@{DrawingBoard}}
+\doxysubsubsection{\texorpdfstring{onMouseMovedCallback()}{onMouseMovedCallback()}}
+{\footnotesize\ttfamily void Drawing\+Board.\+on\+Mouse\+Moved\+Callback (\begin{DoxyParamCaption}\item[{javafx.\+scene.\+input.\+Mouse\+Event}]{e }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+Since the {\ttfamily on\+Mouse\+Moved} event is already handled by the \mbox{\hyperlink{classStatusBar}{Status\+Bar}}, we need to add a public method to handle the {\ttfamily on\+Mouse\+Moved} event for the drawing board. 
+\begin{DoxyParams}{Parameters}
+{\em e} & the mouse event \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classDrawingBoard_ada479957b74f7a701839fbb98b774254}\label{classDrawingBoard_ada479957b74f7a701839fbb98b774254}} 
+\index{DrawingBoard@{DrawingBoard}!setFillColor@{setFillColor}}
+\index{setFillColor@{setFillColor}!DrawingBoard@{DrawingBoard}}
+\doxysubsubsection{\texorpdfstring{setFillColor()}{setFillColor()}}
+{\footnotesize\ttfamily void Drawing\+Board.\+set\+Fill\+Color (\begin{DoxyParamCaption}\item[{Color}]{color }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+Set the fill color for the shape. \mbox{\Hypertarget{classDrawingBoard_a27036cff78e6d1078c08b81c3543b91d}\label{classDrawingBoard_a27036cff78e6d1078c08b81c3543b91d}} 
+\index{DrawingBoard@{DrawingBoard}!setShapeType@{setShapeType}}
+\index{setShapeType@{setShapeType}!DrawingBoard@{DrawingBoard}}
+\doxysubsubsection{\texorpdfstring{setShapeType()}{setShapeType()}}
+{\footnotesize\ttfamily void Drawing\+Board.\+set\+Shape\+Type (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{enumDrawingBoard_1_1ShapeType}{Shape\+Type}}}]{shape\+Type }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+Set the shape type to draw. \mbox{\Hypertarget{classDrawingBoard_a0e8c4cfe3ac58022cff0c8a9e7f9991c}\label{classDrawingBoard_a0e8c4cfe3ac58022cff0c8a9e7f9991c}} 
+\index{DrawingBoard@{DrawingBoard}!setStrokeColor@{setStrokeColor}}
+\index{setStrokeColor@{setStrokeColor}!DrawingBoard@{DrawingBoard}}
+\doxysubsubsection{\texorpdfstring{setStrokeColor()}{setStrokeColor()}}
+{\footnotesize\ttfamily void Drawing\+Board.\+set\+Stroke\+Color (\begin{DoxyParamCaption}\item[{Color}]{color }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+Set the stroke color for the shape. \mbox{\Hypertarget{classDrawingBoard_a12eac3f38f479241c2538607aff160f8}\label{classDrawingBoard_a12eac3f38f479241c2538607aff160f8}} 
+\index{DrawingBoard@{DrawingBoard}!setStrokeWidth@{setStrokeWidth}}
+\index{setStrokeWidth@{setStrokeWidth}!DrawingBoard@{DrawingBoard}}
+\doxysubsubsection{\texorpdfstring{setStrokeWidth()}{setStrokeWidth()}}
+{\footnotesize\ttfamily void Drawing\+Board.\+set\+Stroke\+Width (\begin{DoxyParamCaption}\item[{double}]{width }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+Set the stroke width for the shape. \mbox{\Hypertarget{classDrawingBoard_a6072a38a35e2c5f3f79135058ed20c00}\label{classDrawingBoard_a6072a38a35e2c5f3f79135058ed20c00}} 
+\index{DrawingBoard@{DrawingBoard}!undo@{undo}}
+\index{undo@{undo}!DrawingBoard@{DrawingBoard}}
+\doxysubsubsection{\texorpdfstring{undo()}{undo()}}
+{\footnotesize\ttfamily void Drawing\+Board.\+undo (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+Get the current shape type. 
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+Drawing\+Board.\+java\end{DoxyCompactItemize}

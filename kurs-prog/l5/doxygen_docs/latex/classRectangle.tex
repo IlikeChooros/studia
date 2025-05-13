@@ -1,0 +1,103 @@
+\hypertarget{classRectangle}{}\doxysection{Rectangle Class Reference}
+\label{classRectangle}\index{Rectangle@{Rectangle}}
+
+
+Inheritance diagram for Rectangle\+:
+% FIG 0
+
+
+Collaboration diagram for Rectangle\+:
+% FIG 1
+\doxysubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{classRectangle_af787e01fa8293258c66a57df5afdcc90}{Rectangle}} (double startX, double startY, double endX, double endY, Color fill\+Color, Color stroke\+Color, double stroke\+Width, double rotation)
+\item 
+void \mbox{\hyperlink{classRectangle_a1b9dc3f0ee5ddd306ca88bfc36cab0ec}{set\+End}} (double x, double y)
+\item 
+void \mbox{\hyperlink{classRectangle_aafaeb39abb6cec367782b6608784b2a6}{draw}} (Graphics\+Context gc)
+\item 
+boolean \mbox{\hyperlink{classRectangle_a52198d86fe0693ba1de1238ed8b69028}{contains}} (double x, double y)
+\item 
+String \mbox{\hyperlink{classRectangle_a5815920c02800e43ade0f7c3fc8f85cd}{get\+Type}} ()
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Constructor \& Destructor Documentation}
+\mbox{\Hypertarget{classRectangle_af787e01fa8293258c66a57df5afdcc90}\label{classRectangle_af787e01fa8293258c66a57df5afdcc90}} 
+\index{Rectangle@{Rectangle}!Rectangle@{Rectangle}}
+\index{Rectangle@{Rectangle}!Rectangle@{Rectangle}}
+\doxysubsubsection{\texorpdfstring{Rectangle()}{Rectangle()}}
+{\footnotesize\ttfamily Rectangle.\+Rectangle (\begin{DoxyParamCaption}\item[{double}]{startX,  }\item[{double}]{startY,  }\item[{double}]{endX,  }\item[{double}]{endY,  }\item[{Color}]{fill\+Color,  }\item[{Color}]{stroke\+Color,  }\item[{double}]{stroke\+Width,  }\item[{double}]{rotation }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+Create a rectangle with the given parameters, the coordinates do not have to be in any specific order.
+
+
+\begin{DoxyParams}{Parameters}
+{\em startX} & the starting x-\/coordinate \\
+\hline
+{\em startY} & the starting y-\/coordinate \\
+\hline
+{\em endX} & ending x-\/coordinate \\
+\hline
+{\em endY} & ending y-\/coordinate \\
+\hline
+{\em fill\+Color} & null if no fill is needed \\
+\hline
+{\em stroke\+Color} & the color of the outline \\
+\hline
+{\em stroke\+Width} & the width of the outline \\
+\hline
+{\em rotation} & the rotation of the rectangle \\
+\hline
+\end{DoxyParams}
+
+
+\doxysubsection{Member Function Documentation}
+\mbox{\Hypertarget{classRectangle_a52198d86fe0693ba1de1238ed8b69028}\label{classRectangle_a52198d86fe0693ba1de1238ed8b69028}} 
+\index{Rectangle@{Rectangle}!contains@{contains}}
+\index{contains@{contains}!Rectangle@{Rectangle}}
+\doxysubsubsection{\texorpdfstring{contains()}{contains()}}
+{\footnotesize\ttfamily boolean Rectangle.\+contains (\begin{DoxyParamCaption}\item[{double}]{x,  }\item[{double}]{y }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+Check if the given point is inside the rectangle. 
+\begin{DoxyParams}{Parameters}
+{\em x} & the x-\/coordinate of the point \\
+\hline
+{\em y} & the y-\/coordinate of the point \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+true if the point is inside the rectangle, false otherwise 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classRectangle_aafaeb39abb6cec367782b6608784b2a6}\label{classRectangle_aafaeb39abb6cec367782b6608784b2a6}} 
+\index{Rectangle@{Rectangle}!draw@{draw}}
+\index{draw@{draw}!Rectangle@{Rectangle}}
+\doxysubsubsection{\texorpdfstring{draw()}{draw()}}
+{\footnotesize\ttfamily void Rectangle.\+draw (\begin{DoxyParamCaption}\item[{Graphics\+Context}]{gc }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+Draw the rectangle on the given Graphics\+Context. 
+\begin{DoxyParams}{Parameters}
+{\em gc} & the Graphics\+Context to draw on \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classRectangle_a5815920c02800e43ade0f7c3fc8f85cd}\label{classRectangle_a5815920c02800e43ade0f7c3fc8f85cd}} 
+\index{Rectangle@{Rectangle}!getType@{getType}}
+\index{getType@{getType}!Rectangle@{Rectangle}}
+\doxysubsubsection{\texorpdfstring{getType()}{getType()}}
+{\footnotesize\ttfamily String Rectangle.\+get\+Type (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+Get the type of the shape. \begin{DoxyReturn}{Returns}
+the type of the shape 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classRectangle_a1b9dc3f0ee5ddd306ca88bfc36cab0ec}\label{classRectangle_a1b9dc3f0ee5ddd306ca88bfc36cab0ec}} 
+\index{Rectangle@{Rectangle}!setEnd@{setEnd}}
+\index{setEnd@{setEnd}!Rectangle@{Rectangle}}
+\doxysubsubsection{\texorpdfstring{setEnd()}{setEnd()}}
+{\footnotesize\ttfamily void Rectangle.\+set\+End (\begin{DoxyParamCaption}\item[{double}]{x,  }\item[{double}]{y }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+Set the ending point of the rectangle. 
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+Rectangle.\+java\end{DoxyCompactItemize}

@@ -1,0 +1,47 @@
+\hypertarget{classLine}{}\doxysection{Line Class Reference}
+\label{classLine}\index{Line@{Line}}
+
+
+Inheritance diagram for Line\+:
+% FIG 0
+
+
+Collaboration diagram for Line\+:
+% FIG 1
+\doxysubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classLine_a60451a2d7ea9c0e44043318490b27818}\label{classLine_a60451a2d7ea9c0e44043318490b27818}} 
+{\bfseries Line} (double startX, double startY, double endX, double endY, Color stroke\+Color, double stroke\+Width)
+\item 
+\mbox{\Hypertarget{classLine_aa10e3af3e6310d6423247389bea85f29}\label{classLine_aa10e3af3e6310d6423247389bea85f29}} 
+void {\bfseries draw} (Graphics\+Context gc)
+\item 
+\mbox{\Hypertarget{classLine_a4f5866f79577fe2cba75eb7eba0288fb}\label{classLine_a4f5866f79577fe2cba75eb7eba0288fb}} 
+void {\bfseries resize} (double dv)
+\item 
+boolean \mbox{\hyperlink{classLine_a0a81707ca8c50358d848e8a38dbbc6d6}{contains}} (double x, double y)
+\item 
+\mbox{\Hypertarget{classLine_adbbb737ecb4b5c051c779da31adc8279}\label{classLine_adbbb737ecb4b5c051c779da31adc8279}} 
+String {\bfseries get\+Type} ()
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+Represents a line (well duh) 
+
+\doxysubsection{Member Function Documentation}
+\mbox{\Hypertarget{classLine_a0a81707ca8c50358d848e8a38dbbc6d6}\label{classLine_a0a81707ca8c50358d848e8a38dbbc6d6}} 
+\index{Line@{Line}!contains@{contains}}
+\index{contains@{contains}!Line@{Line}}
+\doxysubsubsection{\texorpdfstring{contains()}{contains()}}
+{\footnotesize\ttfamily boolean Line.\+contains (\begin{DoxyParamCaption}\item[{double}]{x,  }\item[{double}]{y }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+Check if given point stands on the line i.\+e. given dist = abs(Ax + Bx + C) / sqrt(A$^\wedge$2 + B$^\wedge$2) \begin{DoxyReturn}{Returns}
+dist $<$= stroke\+Width / 2 
+\end{DoxyReturn}
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+Line.\+java\end{DoxyCompactItemize}

@@ -1,0 +1,88 @@
+\hypertarget{classCircle}{}\doxysection{Circle Class Reference}
+\label{classCircle}\index{Circle@{Circle}}
+
+
+Inheritance diagram for Circle\+:
+% FIG 0
+
+
+Collaboration diagram for Circle\+:
+% FIG 1
+\doxysubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classCircle_abb2553273d0973b2ad21dc085eeef705}\label{classCircle_abb2553273d0973b2ad21dc085eeef705}} 
+{\bfseries Circle} (double x0, double y0, double x1, double y1, Color fill\+Color, Color stroke\+Color, double stroke\+Width)
+\item 
+void \mbox{\hyperlink{classCircle_a977b7e1a58a351a99c0e21f6f63a7c19}{set\+Start}} (double x, double y)
+\item 
+void \mbox{\hyperlink{classCircle_ae61820e0a5640857208d3b7916d20a24}{set\+End}} (double x, double y)
+\item 
+void \mbox{\hyperlink{classCircle_a6703c5b69febecb1d1a87325039f01f9}{move}} (double dx, double dy)
+\item 
+void \mbox{\hyperlink{classCircle_aa2f8451eee275b3213109796f61094c5}{resize}} (double dv)
+\item 
+void \mbox{\hyperlink{classCircle_ae214a0d77a62e565ac2e6aa111974604}{copy\+State}} ()
+\item 
+\mbox{\Hypertarget{classCircle_a4cbf297b5eaffa7b43287331348f2f59}\label{classCircle_a4cbf297b5eaffa7b43287331348f2f59}} 
+void {\bfseries draw} (Graphics\+Context gc)
+\item 
+boolean \mbox{\hyperlink{classCircle_ae50ddcbf9f1378dacce10083ab10c228}{contains}} (double x, double y)
+\item 
+\mbox{\Hypertarget{classCircle_a44cc3b58b1f429fc5456dc89f8d3f3dd}\label{classCircle_a44cc3b58b1f429fc5456dc89f8d3f3dd}} 
+String {\bfseries get\+Type} ()
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Member Function Documentation}
+\mbox{\Hypertarget{classCircle_ae50ddcbf9f1378dacce10083ab10c228}\label{classCircle_ae50ddcbf9f1378dacce10083ab10c228}} 
+\index{Circle@{Circle}!contains@{contains}}
+\index{contains@{contains}!Circle@{Circle}}
+\doxysubsubsection{\texorpdfstring{contains()}{contains()}}
+{\footnotesize\ttfamily boolean Circle.\+contains (\begin{DoxyParamCaption}\item[{double}]{x,  }\item[{double}]{y }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+Check if a point is inside the circle. 
+\begin{DoxyParams}{Parameters}
+{\em x} & X coordinate of the point \\
+\hline
+{\em y} & Y coordinate of the point \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+true if the point is inside the circle, false otherwise 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classCircle_ae214a0d77a62e565ac2e6aa111974604}\label{classCircle_ae214a0d77a62e565ac2e6aa111974604}} 
+\index{Circle@{Circle}!copyState@{copyState}}
+\index{copyState@{copyState}!Circle@{Circle}}
+\doxysubsubsection{\texorpdfstring{copyState()}{copyState()}}
+{\footnotesize\ttfamily void Circle.\+copy\+State (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+Create a copy of current state and push it to the state list (as new current state) \mbox{\Hypertarget{classCircle_a6703c5b69febecb1d1a87325039f01f9}\label{classCircle_a6703c5b69febecb1d1a87325039f01f9}} 
+\index{Circle@{Circle}!move@{move}}
+\index{move@{move}!Circle@{Circle}}
+\doxysubsubsection{\texorpdfstring{move()}{move()}}
+{\footnotesize\ttfamily void Circle.\+move (\begin{DoxyParamCaption}\item[{double}]{dx,  }\item[{double}]{dy }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+Move the center of the circle by (dx, dy) vector \mbox{\Hypertarget{classCircle_aa2f8451eee275b3213109796f61094c5}\label{classCircle_aa2f8451eee275b3213109796f61094c5}} 
+\index{Circle@{Circle}!resize@{resize}}
+\index{resize@{resize}!Circle@{Circle}}
+\doxysubsubsection{\texorpdfstring{resize()}{resize()}}
+{\footnotesize\ttfamily void Circle.\+resize (\begin{DoxyParamCaption}\item[{double}]{dv }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+Resize the circle (change the radius by given delta v) \mbox{\Hypertarget{classCircle_ae61820e0a5640857208d3b7916d20a24}\label{classCircle_ae61820e0a5640857208d3b7916d20a24}} 
+\index{Circle@{Circle}!setEnd@{setEnd}}
+\index{setEnd@{setEnd}!Circle@{Circle}}
+\doxysubsubsection{\texorpdfstring{setEnd()}{setEnd()}}
+{\footnotesize\ttfamily void Circle.\+set\+End (\begin{DoxyParamCaption}\item[{double}]{x,  }\item[{double}]{y }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+Set the radius of the circle based on the end point. \mbox{\Hypertarget{classCircle_a977b7e1a58a351a99c0e21f6f63a7c19}\label{classCircle_a977b7e1a58a351a99c0e21f6f63a7c19}} 
+\index{Circle@{Circle}!setStart@{setStart}}
+\index{setStart@{setStart}!Circle@{Circle}}
+\doxysubsubsection{\texorpdfstring{setStart()}{setStart()}}
+{\footnotesize\ttfamily void Circle.\+set\+Start (\begin{DoxyParamCaption}\item[{double}]{x,  }\item[{double}]{y }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+Set the center of the circle. 
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+Circle.\+java\end{DoxyCompactItemize}

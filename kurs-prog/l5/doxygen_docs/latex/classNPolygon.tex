@@ -1,0 +1,119 @@
+\hypertarget{classNPolygon}{}\doxysection{NPolygon Class Reference}
+\label{classNPolygon}\index{NPolygon@{NPolygon}}
+
+
+Inheritance diagram for NPolygon\+:
+% FIG 0
+
+
+Collaboration diagram for NPolygon\+:
+% FIG 1
+\doxysubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{classNPolygon_a494a7c171a8d7cffdfd440b49bca1dca}{NPolygon}} (double startX, double startY, double endX, double endY, int num\+Points, Color fill\+Color, Color stroke\+Color, double stroke\+Width, double rotation)
+\item 
+void \mbox{\hyperlink{classNPolygon_aec3cddd1069208762754e5720b378a7d}{set\+Start}} (double x, double y)
+\item 
+void \mbox{\hyperlink{classNPolygon_a364a840c807e8c221dfb8faa61a2e1d8}{set\+End}} (double x, double y)
+\item 
+void \mbox{\hyperlink{classNPolygon_a1ed82ec86eb29aecf1991d6edf3bdeab}{copy\+State}} ()
+\item 
+void \mbox{\hyperlink{classNPolygon_ae1106106c343a117cc4211192b8baee6}{move}} (double dx, double dy)
+\item 
+void \mbox{\hyperlink{classNPolygon_a67f581dd76458b2744f66bd4730e989b}{resize}} (double dv)
+\item 
+void \mbox{\hyperlink{classNPolygon_a8046e69a60cc6a3417959c3ebac3015a}{draw}} (Graphics\+Context gc)
+\item 
+boolean \mbox{\hyperlink{classNPolygon_ab552214cb706142ca887f5eea8475ede}{contains}} (double x, double y)
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Constructor \& Destructor Documentation}
+\mbox{\Hypertarget{classNPolygon_a494a7c171a8d7cffdfd440b49bca1dca}\label{classNPolygon_a494a7c171a8d7cffdfd440b49bca1dca}} 
+\index{NPolygon@{NPolygon}!NPolygon@{NPolygon}}
+\index{NPolygon@{NPolygon}!NPolygon@{NPolygon}}
+\doxysubsubsection{\texorpdfstring{NPolygon()}{NPolygon()}}
+{\footnotesize\ttfamily NPolygon.\+NPolygon (\begin{DoxyParamCaption}\item[{double}]{startX,  }\item[{double}]{startY,  }\item[{double}]{endX,  }\item[{double}]{endY,  }\item[{int}]{num\+Points,  }\item[{Color}]{fill\+Color,  }\item[{Color}]{stroke\+Color,  }\item[{double}]{stroke\+Width,  }\item[{double}]{rotation }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+Create a polygon with specified number of vertices. 
+\begin{DoxyParams}{Parameters}
+{\em startX} & Center X coordinate \\
+\hline
+{\em startY} & Center Y coordinate \\
+\hline
+{\em endX} & End X coordinate (used to calculate radius) \\
+\hline
+{\em endY} & End Y coordinate (used to calculate radius) \\
+\hline
+{\em num\+Points} & Number of vertices (3 for triangle, 4 for square, etc.) \\
+\hline
+{\em fill\+Color} & Fill color (null if no fill is needed) \\
+\hline
+{\em stroke\+Color} & Outline color \\
+\hline
+{\em stroke\+Width} & Width of the outline \\
+\hline
+{\em rotation} & Rotation angle in radians \\
+\hline
+\end{DoxyParams}
+
+
+\doxysubsection{Member Function Documentation}
+\mbox{\Hypertarget{classNPolygon_ab552214cb706142ca887f5eea8475ede}\label{classNPolygon_ab552214cb706142ca887f5eea8475ede}} 
+\index{NPolygon@{NPolygon}!contains@{contains}}
+\index{contains@{contains}!NPolygon@{NPolygon}}
+\doxysubsubsection{\texorpdfstring{contains()}{contains()}}
+{\footnotesize\ttfamily boolean NPolygon.\+contains (\begin{DoxyParamCaption}\item[{double}]{x,  }\item[{double}]{y }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+Check if a point is inside the polygon. 
+\begin{DoxyParams}{Parameters}
+{\em x} & X coordinate of the point \\
+\hline
+{\em y} & Y coordinate of the point \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+true if the point is inside the polygon, false otherwise 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classNPolygon_a1ed82ec86eb29aecf1991d6edf3bdeab}\label{classNPolygon_a1ed82ec86eb29aecf1991d6edf3bdeab}} 
+\index{NPolygon@{NPolygon}!copyState@{copyState}}
+\index{copyState@{copyState}!NPolygon@{NPolygon}}
+\doxysubsubsection{\texorpdfstring{copyState()}{copyState()}}
+{\footnotesize\ttfamily void NPolygon.\+copy\+State (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+Copy current state and push it as new one to the list of states \mbox{\Hypertarget{classNPolygon_a8046e69a60cc6a3417959c3ebac3015a}\label{classNPolygon_a8046e69a60cc6a3417959c3ebac3015a}} 
+\index{NPolygon@{NPolygon}!draw@{draw}}
+\index{draw@{draw}!NPolygon@{NPolygon}}
+\doxysubsubsection{\texorpdfstring{draw()}{draw()}}
+{\footnotesize\ttfamily void NPolygon.\+draw (\begin{DoxyParamCaption}\item[{Graphics\+Context}]{gc }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+Set the number of points for the polygon. \mbox{\Hypertarget{classNPolygon_ae1106106c343a117cc4211192b8baee6}\label{classNPolygon_ae1106106c343a117cc4211192b8baee6}} 
+\index{NPolygon@{NPolygon}!move@{move}}
+\index{move@{move}!NPolygon@{NPolygon}}
+\doxysubsubsection{\texorpdfstring{move()}{move()}}
+{\footnotesize\ttfamily void NPolygon.\+move (\begin{DoxyParamCaption}\item[{double}]{dx,  }\item[{double}]{dy }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+Adds to current state\textquotesingle{}s posistion (dx, dy) \mbox{\Hypertarget{classNPolygon_a67f581dd76458b2744f66bd4730e989b}\label{classNPolygon_a67f581dd76458b2744f66bd4730e989b}} 
+\index{NPolygon@{NPolygon}!resize@{resize}}
+\index{resize@{resize}!NPolygon@{NPolygon}}
+\doxysubsubsection{\texorpdfstring{resize()}{resize()}}
+{\footnotesize\ttfamily void NPolygon.\+resize (\begin{DoxyParamCaption}\item[{double}]{dv }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+Resize the polygon by given delta v \mbox{\Hypertarget{classNPolygon_a364a840c807e8c221dfb8faa61a2e1d8}\label{classNPolygon_a364a840c807e8c221dfb8faa61a2e1d8}} 
+\index{NPolygon@{NPolygon}!setEnd@{setEnd}}
+\index{setEnd@{setEnd}!NPolygon@{NPolygon}}
+\doxysubsubsection{\texorpdfstring{setEnd()}{setEnd()}}
+{\footnotesize\ttfamily void NPolygon.\+set\+End (\begin{DoxyParamCaption}\item[{double}]{x,  }\item[{double}]{y }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+Set the radius of the polygon based on the end point. \mbox{\Hypertarget{classNPolygon_aec3cddd1069208762754e5720b378a7d}\label{classNPolygon_aec3cddd1069208762754e5720b378a7d}} 
+\index{NPolygon@{NPolygon}!setStart@{setStart}}
+\index{setStart@{setStart}!NPolygon@{NPolygon}}
+\doxysubsubsection{\texorpdfstring{setStart()}{setStart()}}
+{\footnotesize\ttfamily void NPolygon.\+set\+Start (\begin{DoxyParamCaption}\item[{double}]{x,  }\item[{double}]{y }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+Set the center of the polygon. 
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+NPolygon.\+java\end{DoxyCompactItemize}
