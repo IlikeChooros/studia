@@ -1,23 +1,54 @@
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
 
-abstract public class NPolygon extends BaseShape {
-    private double[] xPoints;
-    private double[] yPoints;
-    private int numPoints;
-    private double centerX, centerY;
-    private double radius;
+// State object for abstract polygons, keeping information
+// about the point's position, center coordinates etc.
+class PolygonState extends BaseShapeState {
+    private static final long serialVersionUID = 400L;
+    public double[] xPoints;
+    public double[] yPoints;
+    public int numPoints;
+    public double centerX, centerY;
+    public double radius;
 
+    public PolygonState(
+        double centerX, double centerY, double radius, 
+        int npoints, double rotation, Color fill, Color stroke,
+        double strokeWidth
+    ) {
+        super(fill, stroke, strokeWidth, rotation);
+        this.xPoints    = new double[npoints];
+        this.yPoints    = new double[npoints];
+        this.centerX    = centerX;
+        this.centerY    = centerY;
+        this.radius     = radius;
+        this.numPoints  = npoints;
+    }
+
+    public PolygonState(PolygonState other) {
+        super(other);
+        this.numPoints = other.numPoints;
+        this.centerX    = other.centerX;
+        this.centerY    = other.centerY;
+        this.radius     = other.radius;
+        this.xPoints    = (double[])other.xPoints.clone();
+        this.yPoints    = (double[])other.yPoints.clone();
+    }
+}
+
+abstract public class NPolygon extends TBaseShape<PolygonState> {
+    private static final long serialVersionUID = 40L;
     /**
      * Create a polygon points based on the # of points and the center coordinates
      */
     private void prepareCoordinates() {
-        double angleIncrement = 2 * Math.PI / numPoints;
-        for (int i = 0; i < numPoints; i++) {
+        PolygonState state = getLastState();
+        double angleIncrement = 2 * Math.PI / state.numPoints;
+        for (int i = 0; i < state.numPoints; i++) {
             // Make the polygon rotate clockwise
             // by subtracting the angle from 2 * PI
-            xPoints[i] = centerX + radius * Math.cos(2 * Math.PI - i * angleIncrement + rotation);
-            yPoints[i] = centerY + radius * Math.sin(2 * Math.PI - i * angleIncrement + rotation);
+            state.xPoints[i] = state.centerX + state.radius * Math.cos(2 * Math.PI - i * angleIncrement + state.rotation);
+            state.yPoints[i] = state.centerY + state.radius * Math.sin(2 * Math.PI - i * angleIncrement + state.rotation);
         }
     }
 
@@ -37,10 +68,15 @@ abstract public class NPolygon extends BaseShape {
         double startX, double startY, double endX, double endY, int numPoints,
         Color fillColor, Color strokeColor, double strokeWidth, double rotation
     ) {
-        super(startX, startY, endX, endY, fillColor, strokeColor, strokeWidth, rotation);
-        this.numPoints = numPoints;
-        this.xPoints = new double[numPoints];
-        this.yPoints = new double[numPoints];
+        PolygonState state = new PolygonState(
+            startX, startY, endY, numPoints, rotation, 
+            fillColor, strokeColor, strokeWidth
+        );
+        pushState(state);
+
+        state.numPoints = numPoints;
+        state.xPoints = new double[numPoints];
+        state.yPoints = new double[numPoints];
 
         // Calculate the center and radius of the polygon
         setStart(startX, startY);
@@ -52,8 +88,9 @@ abstract public class NPolygon extends BaseShape {
      */
     @Override
     public void setStart(double x, double y) {
-        this.centerX = x;
-        this.centerY = y;
+        PolygonState state = getLastState();
+        state.centerX = x;
+        state.centerY = y;
     }
 
     /**
@@ -62,9 +99,44 @@ abstract public class NPolygon extends BaseShape {
     @Override
     public void setEnd(double x, double y) {
         // r = sqrt((x0 - x1)^2 + (y0 - y1)^2), simple euclidean distance
-        this.radius = Math.sqrt(
-            Math.pow(x - centerX, 2) + Math.pow(y - centerY, 2)
+        PolygonState state = getLastState();
+        state.radius = Math.sqrt(
+            Math.pow(x - state.centerX, 2) + Math.pow(y - state.centerY, 2)
         );
+        prepareCoordinates();
+    }
+
+    /**
+     * Copy current state and push it as new one to the list of states
+     */
+    @Override
+    public void copyState() {
+        stateList.add(new PolygonState(getLastState()));
+    }
+
+    /**
+     * Adds to current state's posistion (dx, dy)
+     */
+    @Override
+    public void move(double dx, double dy) {
+        PolygonState state =  getLastState();
+        // Just add to every point dx and dy vectors
+        for (int i = 0; i < state.numPoints; i++) {
+            state.xPoints[i] += dx;
+            state.yPoints[i] += dy;
+        }
+        state.centerX += dx;
+        state.centerY += dy;
+    }
+
+    /**
+     * Resize the polygon by given delta v
+     */
+    @Override
+    public void resize(double dv) {
+        PolygonState state =  getLastState();
+        state.radius += dv / 2;
+        state.radius = Math.max(state.radius, 1);
         prepareCoordinates();
     }
 
@@ -73,16 +145,18 @@ abstract public class NPolygon extends BaseShape {
      */
     @Override
     public void draw(GraphicsContext gc) {
-        if (fillColor != null) {
+        PolygonState state = getLastState();
+
+        if (state.fillColor != null) {
             // Draw the filled polygon
-            gc.setFill(fillColor);
-            gc.fillPolygon(xPoints, yPoints, numPoints);
+            gc.setFill(state.fillColor);
+            gc.fillPolygon(state.xPoints, state.yPoints, state.numPoints);
         }
         
         // Draw the outline of the polygon
-        gc.setStroke(strokeColor);
-        gc.setLineWidth(strokeWidth);
-        gc.strokePolygon(xPoints, yPoints, numPoints);
+        gc.setStroke(state.strokeColor);
+        gc.setLineWidth(state.strokeWidth);
+        gc.strokePolygon(state.xPoints, state.yPoints, state.numPoints);
     }
 
     /**
@@ -105,10 +179,12 @@ abstract public class NPolygon extends BaseShape {
             }
             return c;
          */
+        PolygonState state = getLastState();
         boolean inside = false;
-        for (int i = 0, j = numPoints - 1; i < numPoints; j = i++) {
-            if ((yPoints[i] > y) != (yPoints[j] > y) &&
-                (x < (xPoints[j] - xPoints[i]) * (y - yPoints[i]) / (yPoints[j] - yPoints[i]) + xPoints[i])) {
+        for (int i = 0, j = state.numPoints - 1; i < state.numPoints; j = i++) {
+            if ((state.yPoints[i] > y) != (state.yPoints[j] > y) 
+                && (x < (state.xPoints[j] - state.xPoints[i]) * (y - state.yPoints[i]) 
+                        / (state.yPoints[j] - state.yPoints[i]) + state.xPoints[i])) {
                 inside = !inside;
             }
         }

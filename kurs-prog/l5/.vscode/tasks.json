@@ -14,7 +14,8 @@
                 "DrawingBoard.java",
                 "PaintToolBar.java",
                 "StatusBar.java",
-                "Shapes.java",
+                "BaseShape.java",
+                "ShapeState.java",
                 "Circle.java",
                 "Rectangle.java",
                 "Line.java",
@@ -22,6 +23,7 @@
                 "Triangle.java",
                 "Pentagon.java",
                 "Hexagon.java",
+                "FileManager.java",
                 "-d",
                 "${workspaceFolder}/classes",
             ]

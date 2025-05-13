@@ -1,9 +1,11 @@
-
 import javafx.scene.control.*;
 import javafx.scene.paint.Color;
+import javafx.stage.Stage;
 
 public class PaintToolBar extends ToolBar {
     private final DrawingBoard drawingBoard;
+
+    static final String WINDOW_BASE_NAME = "PaintFX";
 
 
     /**
@@ -14,9 +16,31 @@ public class PaintToolBar extends ToolBar {
         this.drawingBoard = db;
 
         // Add buttons to the toolbar
+        MenuButton shapeMenu = new MenuButton("Select shape");
+
+        DrawingBoard.ShapeType types[] = {
+            DrawingBoard.ShapeType.NONE,
+            DrawingBoard.ShapeType.LINE,
+            DrawingBoard.ShapeType.TRIANGLE,
+            DrawingBoard.ShapeType.RECTANGLE,
+            DrawingBoard.ShapeType.PENTAGON,
+            DrawingBoard.ShapeType.HEXAGON,
+            DrawingBoard.ShapeType.CIRCLE
+        };
+
+        for (DrawingBoard.ShapeType type : types) {
+            MenuItem m = new MenuItem(type.name().toLowerCase());
+            m.setOnAction(e -> {
+                shapeMenu.setText(m.getText());
+                drawingBoard.setShapeType(type);
+            });
+            shapeMenu.getItems().add(m);
+        }
+
         
         ComboBox<String> shapeComboBox = new ComboBox<>();
         shapeComboBox.getItems().addAll(
+            "none",
             "Line", "Triangle", "Rectangle", 
             "Pentagon", "Hexagon", "Circle"
         );
@@ -44,7 +68,7 @@ public class PaintToolBar extends ToolBar {
                     drawingBoard.setShapeType(DrawingBoard.ShapeType.TRIANGLE);
                     break;
                 default:
-                    drawingBoard.setShapeType(DrawingBoard.ShapeType.LINE);
+                    drawingBoard.setShapeType(DrawingBoard.ShapeType.NONE);
                     break;
             }
         });
@@ -73,11 +97,33 @@ public class PaintToolBar extends ToolBar {
             drawingBoard.undo();
         });
 
+        // File operations using a MenuButton
+        MenuButton fileMenuButton = new MenuButton("File");
 
-        // Add buttons to the toolbar
+        MenuItem saveMenuItem = new MenuItem("Save");
+        saveMenuItem.setOnAction(e -> {
+            Stage stage = (Stage) getScene().getWindow();
+            String filename = FileManager.save(drawingBoard, stage);
+            stage.setTitle(WINDOW_BASE_NAME + " " + filename);
+        });
+
+        MenuItem loadMenuItem = new MenuItem("Load");
+        loadMenuItem.setOnAction(e -> {
+            Stage stage = (Stage) getScene().getWindow();
+            FileManager.DrawingData data = FileManager.load(stage);
+            if (data != null) {
+                stage.setTitle(WINDOW_BASE_NAME + " " + data.getFilename());
+                drawingBoard.loadDrawingData(data.getShapes(), data.getHistory(), data.getHistoryIdCounter());
+            }
+        });
+
+        fileMenuButton.getItems().addAll(saveMenuItem, loadMenuItem);
+
+
+        // Add controls to the toolbar
         getItems().addAll(
-            new Label("Shape:"),
-            shapeComboBox,
+            fileMenuButton, // Add the MenuButton for file operations
+            shapeMenu,
             new Separator(), // Add a separator for better UI
             new Label("Stroke Color:"),
             strokeColorButton,

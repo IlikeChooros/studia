@@ -3,23 +3,24 @@ import javafx.scene.paint.Color;
 
 // Rectangle shape, can be either filled or just an outline
 public class Rectangle extends BaseShape {
+    private static final long serialVersionUID = 60L;
 
     /**
      * Ensure the rectangle is drawn from the top-left corner
      *  to the bottom-right corner
      */
     private void prepareCoordinates() {
-        
+        ShapeState state = getLastState();
         double temp;
-        if (startX > endX) {
-            temp = startX;
-            startX = endX;
-            endX = temp;
+        if (state.startX > state.endX) {
+            temp = state.startX;
+            state.startX = state.endX;
+            state.endX = temp;
         }
-        if (startY > endY) {
-            temp = startY;
-            startY = endY;
-            endY = temp;
+        if (state.startY > state.endY) {
+            temp = state.startY;
+            state.startY = state.endY;
+            state.endY = temp;
         }
     }
 
@@ -49,22 +50,13 @@ public class Rectangle extends BaseShape {
         prepareCoordinates();
     }
 
-    /**
-     * Set the starting point of the rectangle.
-     */
-    @Override
-    public void setStart(double x, double y) {
-        this.startX = x;
-        this.startY = y;
-    }
 
     /**
      * Set the ending point of the rectangle.
      */
     @Override
     public void setEnd(double x, double y) {
-        this.endX = x;
-        this.endY = y;
+        super.setEnd(x, y);
 
         // Ensure the rectangle is drawn from the top-left corner
         // to the bottom-right corner
@@ -78,17 +70,17 @@ public class Rectangle extends BaseShape {
      */
     @Override
     public void draw(GraphicsContext gc) {
-        
-        if (fillColor != null) {
+        ShapeState state = getLastState();
+        if (state.fillColor != null) {
             // Draw the filled rectangle
-            gc.setFill(fillColor);
-            gc.fillRect(startX, startY, endX - startX, endY - startY);
+            gc.setFill(state.fillColor);
+            gc.fillRect(state.startX, state.startY, state.endX - state.startX, state.endY - state.startY);
         }
 
         // Draw the outline of the rectangle
-        gc.setStroke(strokeColor);
-        gc.setLineWidth(strokeWidth);
-        gc.strokeRect(startX, startY, endX - startX, endY - startY);
+        gc.setStroke(state.strokeColor);
+        gc.setLineWidth(state.strokeWidth);
+        gc.strokeRect(state.startX, state.startY, state.endX - state.startX, state.endY - state.startY);
     }
 
     /**
@@ -99,7 +91,8 @@ public class Rectangle extends BaseShape {
      */
     @Override
     public boolean contains(double x, double y) {
-        return (x >= startX && x <= endX && y >= startY && y <= endY);
+        ShapeState state = getLastState();
+        return (x >= state.startX && x <= state.endX && y >= state.startY && y <= state.endY);
     }
 
     /**

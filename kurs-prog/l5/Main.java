@@ -33,6 +33,7 @@ public class Main extends Application {
             drawingBoard.getHeight() + 2*StatusBar.DEFAULT_HEIGHT
         );
         primaryStage.setScene(scene);
+        primaryStage.setTitle(PaintToolBar.WINDOW_BASE_NAME);
         primaryStage.show();
     }
 
