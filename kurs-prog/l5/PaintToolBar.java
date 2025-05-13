@@ -37,42 +37,6 @@ public class PaintToolBar extends ToolBar {
             shapeMenu.getItems().add(m);
         }
 
-        
-        ComboBox<String> shapeComboBox = new ComboBox<>();
-        shapeComboBox.getItems().addAll(
-            "none",
-            "Line", "Triangle", "Rectangle", 
-            "Pentagon", "Hexagon", "Circle"
-        );
-        shapeComboBox.setValue("Line"); // Default selection
-
-        shapeComboBox.setOnAction(e -> {
-            String selectedShape = shapeComboBox.getValue();
-            switch (selectedShape) {
-                case "Line":
-                    drawingBoard.setShapeType(DrawingBoard.ShapeType.LINE);
-                    break;
-                case "Rectangle":
-                    drawingBoard.setShapeType(DrawingBoard.ShapeType.RECTANGLE);
-                    break;
-                case "Circle":
-                    drawingBoard.setShapeType(DrawingBoard.ShapeType.CIRCLE);
-                    break;
-                case "Pentagon":
-                    drawingBoard.setShapeType(DrawingBoard.ShapeType.PENTAGON);
-                    break;
-                case "Hexagon":
-                    drawingBoard.setShapeType(DrawingBoard.ShapeType.HEXAGON);
-                    break;
-                case "Triangle":
-                    drawingBoard.setShapeType(DrawingBoard.ShapeType.TRIANGLE);
-                    break;
-                default:
-                    drawingBoard.setShapeType(DrawingBoard.ShapeType.NONE);
-                    break;
-            }
-        });
-
         // Create a color picker for stroke color
         ColorPicker strokeColorButton = new ColorPicker();
         strokeColorButton.setValue(Color.BLACK); // Default color
