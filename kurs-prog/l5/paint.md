@@ -30,3 +30,7 @@ javac --module-path /opt/javafx-sdk-17.0.15/lib --add-modules javafx.controls Ma
 cd classes && java --module-path /opt/javafx-sdk-17.0.15/lib --add-modules javafx.controls,javafx.fxml,javafx.graphics,javafx.media,javafx.swing,javafx.web Main && cd ..
 ```
 
+TODO:
+- [ ] Rotate
+- [ ] Custom polygon
+- [ ] Fill on right click

@@ -95,6 +95,13 @@ public class Rectangle extends BaseShape {
         return (x >= state.startX && x <= state.endX && y >= state.startY && y <= state.endY);
     }
 
+    @Override
+    public void rotate(double da) {
+        ShapeState state = getLastState();
+
+        
+    }
+
     /**
      * Get the type of the shape.
      * @return the type of the shape

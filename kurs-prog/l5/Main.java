@@ -24,14 +24,13 @@ public class Main extends Application {
 
         toolBar.setPrefHeight(StatusBar.DEFAULT_HEIGHT);
 
+        Scene scene = new Scene(root);
+        
         root.setTop(toolBar);
         root.setCenter(drawingBoard);
         root.setBottom(statusBar);
 
-        Scene scene = new Scene(
-            root, DEFAULT_WIDTH, 
-            drawingBoard.getHeight() + 2*StatusBar.DEFAULT_HEIGHT
-        );
+        primaryStage.sizeToScene();
         primaryStage.setScene(scene);
         primaryStage.setTitle(PaintToolBar.WINDOW_BASE_NAME);
         primaryStage.show();

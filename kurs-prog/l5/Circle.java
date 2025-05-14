@@ -72,6 +72,12 @@ public class Circle extends TBaseShape<CircleState> {
     }
 
     /**
+     * Rotation does not affect the cricle duh
+     */
+    @Override
+    public void rotate(double da) {}
+
+    /**
      * Resize the circle (change the radius by given delta v)
      */
     @Override

@@ -30,6 +30,7 @@ public class DrawingBoard extends Canvas {
     private int historyIdCounter = 0;
     private boolean validMove = false;
     private boolean validScroll = false;
+    private boolean validRotate = false;
 
     /**
      * Get the shape to draw based on the current shape type.
@@ -107,6 +108,7 @@ public class DrawingBoard extends Canvas {
             // reset flags for history
             validMove = false;
             validScroll = false;
+            validRotate = false;
 
             startX = e.getX();
             startY = e.getY();
@@ -170,8 +172,6 @@ public class DrawingBoard extends Canvas {
                 validScroll = true;
                 history.add(selectedShape.id);
             }
-
-            System.out.println("Scroll: " + e.getDeltaX() + " " + e.getDeltaY());
             selectedShape.resize(e.getDeltaY() / 5);
 
             // Draw the resized shape
@@ -213,6 +213,23 @@ public class DrawingBoard extends Canvas {
                     }
                 }
             } 
+        });
+
+        setOnKeyTyped(e -> {
+            System.out.println(e.getCharacter());
+            if (e.getCharacter() != "R" || selectedShape == null) {
+                return;
+            }
+
+            // Push history
+            if (!validRotate) {
+                validRotate = true;
+                selectedShape.copyState();
+            }
+
+            selectedShape.rotate(5);
+            context.drawImage(canvasSnapshot, 0, 0);
+            selectedShape.draw(context);
         });
 
         setShapeType(ShapeType.LINE);

@@ -1,3 +1,4 @@
+import javafx.geometry.Point2D;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
 import java.io.Serializable;
@@ -62,6 +63,11 @@ interface IShape {
      * Restore the previous state of the shape
      */
     public void restoreState();
+
+    /**
+     * Rotate the shape by given angle (in radians)
+     */
+    public void rotate(double da);
 
     /**
      * Get the name of the shape
@@ -201,5 +207,36 @@ abstract class BaseShape extends TBaseShape<ShapeState> {
         ShapeState state = getLastState();
         state.endX = x;
         state.endY = y;
+    }
+
+    @Override
+    public void rotate(double da) {
+        ShapeState s = getLastState();
+        double [] xpoints = {s.startX, s.endX, s.startX, s.endX};
+        double [] ypoints = {s.startY, s.startY, s.endY, s.endY};
+        Point2D origin = new Point2D((s.startX + s.endX) / 2, (s.startY + s.endY) / 2);
+
+        for (int i = 0; i < xpoints.length; i++) {
+            Point2D p = rotatePoint(new Point2D(xpoints[i], ypoints[i]), origin, da);
+
+            xpoints[i] = p.getX();
+            ypoints[i] = p.getY();
+        }
+    }
+
+    /*
+     * Rotate the point by given origin and angle
+     */
+    public static Point2D rotatePoint(Point2D p, Point2D origin, double da) {
+        double x, y;
+        double cosA = Math.cos(da), sinA = Math.sin(da);
+
+        double nx = p.getX() - origin.getX(),
+               ny = p.getY() - origin.getY();
+
+        x = origin.getX() + nx * cosA - ny * sinA;
+        y = origin.getY() + ny * cosA + nx * sinA;
+
+        return new Point2D(x, y);
     }
 }

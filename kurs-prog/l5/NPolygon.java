@@ -1,48 +1,62 @@
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
 
-// State object for abstract polygons, keeping information
-// about the point's position, center coordinates etc.
+// Base state for polygon
 class PolygonState extends BaseShapeState {
-    private static final long serialVersionUID = 400L;
+    private static final long serialVersionUID = 401L;
     public double[] xPoints;
     public double[] yPoints;
     public int numPoints;
-    public double centerX, centerY;
-    public double radius;
 
-    public PolygonState(
-        double centerX, double centerY, double radius, 
-        int npoints, double rotation, Color fill, Color stroke,
-        double strokeWidth
-    ) {
+    PolygonState(int npoints, Color fill, Color stroke, 
+        double strokeWidth, double rotation) 
+    {
         super(fill, stroke, strokeWidth, rotation);
         this.xPoints    = new double[npoints];
         this.yPoints    = new double[npoints];
-        this.centerX    = centerX;
-        this.centerY    = centerY;
-        this.radius     = radius;
-        this.numPoints  = npoints;
     }
 
     public PolygonState(PolygonState other) {
         super(other);
-        this.numPoints = other.numPoints;
-        this.centerX    = other.centerX;
-        this.centerY    = other.centerY;
-        this.radius     = other.radius;
         this.xPoints    = (double[])other.xPoints.clone();
         this.yPoints    = (double[])other.yPoints.clone();
+        this.numPoints = other.numPoints;
     }
 }
 
-abstract public class NPolygon extends TBaseShape<PolygonState> {
+// State object for abstract polygons, keeping information
+// about the point's position, center coordinates etc.
+class RegularPolygonState extends PolygonState {
+    private static final long serialVersionUID = 400L;
+    public double centerX, centerY;
+    public double radius;
+
+    public RegularPolygonState(
+        double centerX, double centerY, double radius, 
+        int npoints, double rotation, Color fill, Color stroke,
+        double strokeWidth
+    ) {
+        super(npoints, fill, stroke, strokeWidth, rotation);
+        this.centerX    = centerX;
+        this.centerY    = centerY;
+        this.radius     = radius;
+    }
+
+    public RegularPolygonState(RegularPolygonState other) {
+        super(other);
+        this.centerX    = other.centerX;
+        this.centerY    = other.centerY;
+        this.radius     = other.radius;
+    }
+}
+
+abstract public class NPolygon extends TBaseShape<RegularPolygonState> {
     private static final long serialVersionUID = 40L;
     /**
      * Create a polygon points based on the # of points and the center coordinates
      */
     private void prepareCoordinates() {
-        PolygonState state = getLastState();
+        RegularPolygonState state = getLastState();
         double angleIncrement = 2 * Math.PI / state.numPoints;
         for (int i = 0; i < state.numPoints; i++) {
             // Make the polygon rotate clockwise
@@ -68,15 +82,11 @@ abstract public class NPolygon extends TBaseShape<PolygonState> {
         double startX, double startY, double endX, double endY, int numPoints,
         Color fillColor, Color strokeColor, double strokeWidth, double rotation
     ) {
-        PolygonState state = new PolygonState(
+        RegularPolygonState state = new RegularPolygonState(
             startX, startY, endY, numPoints, rotation, 
             fillColor, strokeColor, strokeWidth
         );
         pushState(state);
-
-        state.numPoints = numPoints;
-        state.xPoints = new double[numPoints];
-        state.yPoints = new double[numPoints];
 
         // Calculate the center and radius of the polygon
         setStart(startX, startY);
@@ -88,7 +98,7 @@ abstract public class NPolygon extends TBaseShape<PolygonState> {
      */
     @Override
     public void setStart(double x, double y) {
-        PolygonState state = getLastState();
+        RegularPolygonState state = getLastState();
         state.centerX = x;
         state.centerY = y;
     }
@@ -99,7 +109,7 @@ abstract public class NPolygon extends TBaseShape<PolygonState> {
     @Override
     public void setEnd(double x, double y) {
         // r = sqrt((x0 - x1)^2 + (y0 - y1)^2), simple euclidean distance
-        PolygonState state = getLastState();
+        RegularPolygonState state = getLastState();
         state.radius = Math.sqrt(
             Math.pow(x - state.centerX, 2) + Math.pow(y - state.centerY, 2)
         );
@@ -111,7 +121,7 @@ abstract public class NPolygon extends TBaseShape<PolygonState> {
      */
     @Override
     public void copyState() {
-        stateList.add(new PolygonState(getLastState()));
+        stateList.add(new RegularPolygonState(getLastState()));
     }
 
     /**
@@ -119,7 +129,7 @@ abstract public class NPolygon extends TBaseShape<PolygonState> {
      */
     @Override
     public void move(double dx, double dy) {
-        PolygonState state =  getLastState();
+        RegularPolygonState state =  getLastState();
         // Just add to every point dx and dy vectors
         for (int i = 0; i < state.numPoints; i++) {
             state.xPoints[i] += dx;
@@ -134,10 +144,19 @@ abstract public class NPolygon extends TBaseShape<PolygonState> {
      */
     @Override
     public void resize(double dv) {
-        PolygonState state =  getLastState();
+        RegularPolygonState state =  getLastState();
         state.radius += dv / 2;
         state.radius = Math.max(state.radius, 1);
         prepareCoordinates();
+    }
+
+    /**
+     * Rotate the polygon by delta angle
+     */
+    @Override
+    public void rotate(double da) {
+        RegularPolygonState state =  getLastState();
+        state.rotation += da;
     }
 
     /**
@@ -145,7 +164,7 @@ abstract public class NPolygon extends TBaseShape<PolygonState> {
      */
     @Override
     public void draw(GraphicsContext gc) {
-        PolygonState state = getLastState();
+        RegularPolygonState state = getLastState();
 
         if (state.fillColor != null) {
             // Draw the filled polygon
@@ -167,6 +186,11 @@ abstract public class NPolygon extends TBaseShape<PolygonState> {
      */
     @Override
     public boolean contains(double x, double y) {
+        RegularPolygonState s = getLastState();
+        return isContained(x, y, s.xPoints, s.yPoints);
+    }
+    
+    static public boolean isContained(double x, double y, double[] px, double[] py) {
         // Author: W. Randolph Franklin (although that was written in C)
         // https://wrfranklin.org/Research/Short_Notes/pnpoly.html
 
@@ -179,16 +203,14 @@ abstract public class NPolygon extends TBaseShape<PolygonState> {
             }
             return c;
          */
-        PolygonState state = getLastState();
         boolean inside = false;
-        for (int i = 0, j = state.numPoints - 1; i < state.numPoints; j = i++) {
-            if ((state.yPoints[i] > y) != (state.yPoints[j] > y) 
-                && (x < (state.xPoints[j] - state.xPoints[i]) * (y - state.yPoints[i]) 
-                        / (state.yPoints[j] - state.yPoints[i]) + state.xPoints[i])) {
+        for (int i = 0, j = px.length - 1; i < px.length; j = i++) {
+            if ((py[i] > y) != (py[j] > y) 
+                && (x < (px[j] - px[i]) * (y - py[i]) 
+                        / (py[j] - py[i]) + px[i])) {
                 inside = !inside;
             }
         }
         return inside;
     }
-    
 }
