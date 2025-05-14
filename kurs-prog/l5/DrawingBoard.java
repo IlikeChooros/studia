@@ -185,7 +185,7 @@ public class DrawingBoard extends Canvas {
 
             endX = e.getX();
             endY = e.getY();
-
+            
             // DONE: Apply move vector
             if (shapeType == ShapeType.NONE && selectedShape != null) {
                 // Push history
