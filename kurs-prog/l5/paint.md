@@ -37,7 +37,7 @@ TODO:
 - [x] Custom polygon
 - [x] Fill on right click
 - [ ] Make the shape selection more obvious (with slightly changed colors of the shape)
-- [ ] Save on exit
+- [x] Save on exit
 - [ ] Modify the polygon vertecies if one of them dragged
 - [x] Make the UI prettier:
   - [x] File menu (save / load)

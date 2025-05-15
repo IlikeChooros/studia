@@ -1,6 +1,7 @@
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+
 import java.io.Serializable;
 
 import javafx.event.EventHandler;
@@ -55,6 +56,7 @@ public class DrawingBoard extends Canvas {
     private boolean validMove = false;
     private boolean validScroll = false;
     private boolean validRotate = false;
+    private boolean modified = false; // for file save
     private ContextMenu contextMenu = new ContextMenu();
 
     /**
@@ -119,6 +121,22 @@ public class DrawingBoard extends Canvas {
     }
 
     /**
+     * Push new history entry (when adding a new figure, or modifing one)
+     * @param action type of action performed
+     */
+    private void pushHistory(BaseShape shape, HistoryEntry.Action action) {
+        if (action == HistoryEntry.Action.MODIFY) {
+            shape.copyState();
+        }
+        else {
+            shapes.addFirst(shape);
+        }
+        
+        history.add(new HistoryEntry(shape.id, action));
+        modified = true;
+    }
+
+    /**
      * Enum for different shapes to draw.
      */
     public enum ShapeType {
@@ -150,8 +168,7 @@ public class DrawingBoard extends Canvas {
         // Setup color change handler
         colorPicker.setOnAction(ae -> {
             Color newColor = colorPicker.getValue();
-            selectedShape.copyState(); // push new state
-            history.add(new HistoryEntry(selectedShape.id, HistoryEntry.Action.MODIFY));
+            pushHistory(selectedShape, HistoryEntry.Action.MODIFY);
             selectedShape.setFillColor(newColor);
             context.drawImage(canvasSnapshot, 0, 0);
             selectedShape.draw(context);
@@ -168,8 +185,7 @@ public class DrawingBoard extends Canvas {
                 clonedShape.id = historyIdCounter++;
                 // Offset the duplicated shape by (10,10)
                 clonedShape.move(10, 10);
-                shapes.addFirst(clonedShape);
-                history.add(new HistoryEntry(clonedShape.id, HistoryEntry.Action.ADD));
+                pushHistory(clonedShape, HistoryEntry.Action.ADD);
                 clear();
                 drawShapes();
             }
@@ -253,9 +269,8 @@ public class DrawingBoard extends Canvas {
 
             // Push history
             if(!validRotate) {
-                selectedShape.copyState(); // push new state
+                pushHistory(selectedShape, HistoryEntry.Action.MODIFY);
                 validRotate = true;
-                history.add(new HistoryEntry(selectedShape.id, HistoryEntry.Action.MODIFY));
             }
 
             // Calculate the angle of rotation
@@ -319,6 +334,7 @@ public class DrawingBoard extends Canvas {
                 ((Polygon) selectedShape).addPoint(startX, startY);
                 canvasSnapshot = this.snapshot(null, null);
                 history.add(new HistoryEntry(selectedShape.id, HistoryEntry.Action.ADD)); // push history
+                modified = true;
             }
 
             // Add a new point to the polygon
@@ -334,9 +350,8 @@ public class DrawingBoard extends Canvas {
                     return;
                 }
 
-                selectedShape.copyState(); // push new state
+                pushHistory(selectedShape, HistoryEntry.Action.MODIFY);
                 ((Polygon) selectedShape).addPoint(startX, startY);
-                history.add(new HistoryEntry(selectedShape.id, HistoryEntry.Action.MODIFY)); // push history
             }
 
             context.drawImage(canvasSnapshot, 0, 0);
@@ -380,9 +395,8 @@ public class DrawingBoard extends Canvas {
         if (shapeType == ShapeType.NONE && selectedShape != null) {
             // Push history
             if (!validMove) {
-                selectedShape.copyState(); // push new state
+                pushHistory(selectedShape, HistoryEntry.Action.MODIFY);
                 validMove = true;
-                history.add(new HistoryEntry(selectedShape.id, HistoryEntry.Action.MODIFY)); // push history
             }
             selectedShape.move(dx, dy);
         }
@@ -423,8 +437,7 @@ public class DrawingBoard extends Canvas {
             // Draw new shape on canvas, and add it to the list
             BaseShape shape = getShape();
             shape.draw(context);
-            shapes.addFirst(shape);
-            history.add(new HistoryEntry(shape.id, HistoryEntry.Action.ADD)); // push history
+            pushHistory(shape, HistoryEntry.Action.ADD);
 
             canvasSnapshot = null; // Clear the snapshot and redraw the canvas
             clear();
@@ -452,9 +465,8 @@ public class DrawingBoard extends Canvas {
 
         // Push history
         if (!validScroll) {
-            selectedShape.copyState(); // push new state
+            pushHistory(selectedShape, HistoryEntry.Action.MODIFY);
             validScroll = true;
-            history.add(new HistoryEntry(selectedShape.id, HistoryEntry.Action.MODIFY)); // push history
         }
         selectedShape.resize(e.getDeltaY() / 5);
 
@@ -485,6 +497,20 @@ public class DrawingBoard extends Canvas {
     public void setStrokeWidth(double width) {
         this.strokeWidth = width;
         context.setLineWidth(width);
+    }
+
+    /**
+     * Get modified flag
+     */
+    public boolean isModified() {
+        return this.modified;
+    }
+
+    /**
+     * Set the modified flag
+     */
+    public void setModified(boolean mod) {
+        this.modified = mod;
     }
 
     /**

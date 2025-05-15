@@ -1,4 +1,6 @@
 import javafx.geometry.Insets;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
 import javafx.scene.control.ColorPicker;
 import javafx.scene.control.Separator;
@@ -105,6 +107,24 @@ public class PaintToolBar extends ToolBar {
         Button undoButton = new Button("Undo");
         undoButton.setOnAction(e -> drawingBoard.undo());
 
+        // Info button as a separate component of the toolbar
+        Button infoButton = new Button("Info");
+        infoButton.setTooltip(new Tooltip("Show program information"));
+        infoButton.setOnAction(e -> {
+            Alert alert = new Alert(AlertType.INFORMATION);
+            alert.setTitle("About PaintFX");
+            alert.setHeaderText("PaintFX Information");
+            alert.setContentText("Author: Paweł Smolnicki\n" +
+                                 "Program Name: PaintFX\n\n" +
+                                 "Instructions:\n" +
+                                 "To make use of your art genius, select preferred shape (triangle, rectangle, pentagon, " +
+                                 "hexagon, circle, or custom polygon), then by left-clicking create a new shape. If polygon is " +
+                                 "selected, then right-click to put the last point. To modify the shapes, select the pointy-finger " +
+                                 "and: by dragging move the shape, with SHIFT held rotate the shape, and by scrolling resize it. " +
+                                 "By right-clicking the shape you can change the fill color, duplicate it, or remove it from the canvas.");
+            alert.showAndWait();
+        });
+
         // Assemble the toolbar
         getItems().addAll(
             fileMenuButton,
@@ -119,7 +139,9 @@ public class PaintToolBar extends ToolBar {
             fillColorPicker,
             new Separator(),
             clearButton,
-            undoButton
+            undoButton,
+            new Separator(),
+            infoButton
         );
     }
 

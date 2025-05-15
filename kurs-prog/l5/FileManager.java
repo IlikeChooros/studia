@@ -50,6 +50,7 @@ public class FileManager {
     }
 
     public static final String FILE_EXTENSION = ".pfx";
+    public static boolean fileCreated = false;
 
     /**
      * Saves the current state of the drawing board to a file.
@@ -57,6 +58,7 @@ public class FileManager {
      * @param stage The primary stage, used to show the FileChooser dialog.
      */
     public static String save(DrawingBoard drawingBoard, Stage stage) {
+        fileCreated = false;
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("Save Drawing");
         fileChooser.getExtensionFilters().addAll(
@@ -79,6 +81,7 @@ public class FileManager {
                 );
                 oos.writeObject(data);
                 System.out.println("Drawing saved to " + file.getAbsolutePath());
+                fileCreated = true;
             } catch (IOException e) {
                 e.printStackTrace();
                 // Consider showing an error Alert to the user
@@ -93,6 +96,7 @@ public class FileManager {
      * @return DrawingData object if successful, null otherwise.
      */
     public static DrawingData load(Stage stage) {
+        fileCreated = false;
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("Load Drawing");
         fileChooser.getExtensionFilters().addAll(
@@ -104,6 +108,7 @@ public class FileManager {
             try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(file))) {
                 Object loadedObject = ois.readObject();
                 if (loadedObject instanceof DrawingData) {
+                    fileCreated = true;
                     System.out.println("Drawing loaded from " + file.getAbsolutePath());
                     return (DrawingData) loadedObject;
                 } else {
