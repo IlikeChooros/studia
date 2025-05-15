@@ -1,28 +1,23 @@
-import javafx.geometry.Point2D;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
 
 // Class for keeping circle's state, holds center x,y and radius
 class CircleState extends BaseShapeState {
     private static final long serialVersionUID = 300L;
-    public double centerX, centerY, radius;
+    public double radius;
 
     public CircleState(
         double centerX, double centerY, double radius,
         Color fillColor, Color strokeColor, double strokeWidth
     )
     {
-        super(fillColor, strokeColor, strokeWidth, 0);
-        this.centerX = centerX;
-        this.centerY = centerY;
+        super(centerX, centerY, fillColor, strokeColor, strokeWidth, 0);
         this.radius  = radius;
     }
 
     // Copy constructor
     public CircleState(CircleState other) {
         super(other);
-        this.centerX = other.centerX;
-        this.centerY = other.centerY;
         this.radius  = other.radius;
     }
 };
@@ -94,21 +89,7 @@ public class Circle extends TBaseShape<CircleState> {
     @Override
     public void copyState() {
         stateList.add(new CircleState(getLastState()));
-    }
-
-    /**
-     * Get the center coordinates of the circle
-     */
-    @Override
-    public Point2D getCenter() {
-        CircleState s = getLastState();
-        return new Point2D(s.centerX, s.centerY);
-    }
-
-    @Override
-    public double getRotation() {
-        return 0; // Circle has no rotation
-    }
+    }    
 
     @Override
     public void draw(GraphicsContext gc) {

@@ -1,6 +1,11 @@
 import javafx.geometry.Point2D;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
+
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.io.Serializable;
 
 import java.util.ArrayList;
@@ -85,6 +90,17 @@ interface IShape {
      */
     public String getType(); 
 
+
+    /**
+     * Set the color of the shape
+     */
+    public void setFillColor(Color color);
+
+    /**
+     * Get the color of the shape
+     */
+    public Color getFillColor();
+
     // public void onHover();
     // public void onClick();
     // public void onRelease();
@@ -95,7 +111,39 @@ interface IShape {
  */
 abstract class BaseShape implements IShape, Serializable, Cloneable {
     private static final long serialVersionUID = 1L;
-    public int id = 0;
+    public int id;
+
+    // default constructor
+    public BaseShape() {
+        this.id = 0;
+    }
+
+    // copy constructor
+    public BaseShape(BaseShape other) {
+        this.id = other.id;
+    }
+
+    /**
+     * Performs a deep copy of the object, using Serialization
+     */
+   @Override
+    public BaseShape clone() {
+        try {
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            ObjectOutputStream oos = new ObjectOutputStream(baos);
+            oos.writeObject(this);
+            oos.close();
+            
+            ByteArrayInputStream bais = new ByteArrayInputStream(baos.toByteArray());
+            ObjectInputStream ois = new ObjectInputStream(bais);
+            BaseShape cloned = (BaseShape) ois.readObject();
+            ois.close();
+            return cloned;
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            return null;
+        }
+    }
 
     /*
      * Rotate the point by given origin and angle
@@ -173,9 +221,23 @@ abstract class BaseShape implements IShape, Serializable, Cloneable {
 }
 
 // Base class for shapes, can be extended for specific shapes
-abstract class TBaseShape<T> extends BaseShape {
+abstract class TBaseShape<T extends BaseShapeState> extends BaseShape {
     private static final long serialVersionUID = 2L;
-    protected List<T> stateList = new ArrayList<T>();
+    protected List<T> stateList;
+
+    /**
+     * Default constructor
+     */
+    public TBaseShape() {
+        super();
+        this.stateList = new ArrayList<T>();
+    }
+
+    // Copy constructor
+    public TBaseShape(TBaseShape<T> other) {
+        super(other);
+        this.stateList = new ArrayList<T>(other.stateList);
+    }
 
     /**
      * Push new state to the list
@@ -210,5 +272,49 @@ abstract class TBaseShape<T> extends BaseShape {
         if (stateList.size() >= 2) {
             stateList.remove(stateList.size() - 1);
         }
+    }
+
+    /**
+     * Set the color of the shape
+     */
+    @Override
+    public void setFillColor(Color color) {
+        getLastState().fillColor = color;
+    }
+
+    /**
+     * Get the current color of the shape
+     */
+    @Override
+    public Color getFillColor() {
+        return getLastState().fillColor;
+    }
+
+    /**
+     * Get the current rotation angle
+     */
+    @Override
+    public double getRotation() {
+        return getLastState().rotation;
+    }
+    
+    /**
+     * Get the center coordinates of the polygon
+     */
+    @Override
+    public Point2D getCenter() {
+        T s = getLastState();
+        return new Point2D(s.centerX, s.centerY);
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append(getType()).append(" id=").append(id).append(" stateList=[");
+        for (T state : stateList) {
+            sb.append(state.toString()).append(", ");
+        }
+        sb.append("]");
+        return sb.toString();
     }
 }

@@ -27,6 +27,15 @@ public class Polygon extends TBaseShape<PolygonState> {
         ));
     }
 
+    // Copy constructor
+    public Polygon(Polygon other) {
+        super(other);
+    }
+
+    /**
+     * Copy current state, and add it to the state list.
+     * This is used for undo/redo functionality.
+     */
     @Override
     public void copyState() {
         stateList.add(new PolygonState(getLastState()));
@@ -70,6 +79,9 @@ public class Polygon extends TBaseShape<PolygonState> {
         calculateCenter(s);
     }
 
+    /**
+     * Rotate the polygon by given angle
+     */
     public void rotate(double angle) {
         // Use the rotatePoint method from the base class
         PolygonState s = getLastState();
@@ -91,23 +103,6 @@ public class Polygon extends TBaseShape<PolygonState> {
 
         // Normalize the rotation angle
         s.rotation = (s.rotation + Math.PI * 2) % (Math.PI * 2);
-    }
-
-    /**
-     * Get the current rotation angle
-     */
-    @Override
-    public double getRotation() {
-        return getLastState().rotation;
-    }
-
-    /**
-     * Get the center coordinates of the polygon
-     */
-    @Override
-    public Point2D getCenter() {
-        PolygonState s = getLastState();
-        return new Point2D(s.centerX, s.centerY);
     }
 
     /**
@@ -185,6 +180,9 @@ public class Polygon extends TBaseShape<PolygonState> {
         return false;
     }
 
+    /**
+     * Set the starting point of the polygon
+     */
     @Override
     public void  setStart(double x, double y) {
         PolygonState s = getLastState();
@@ -195,6 +193,10 @@ public class Polygon extends TBaseShape<PolygonState> {
         calculateCenter(s);
     }
 
+    /**
+     * Set the end point of the polygon.
+     * This is used for creating the polygon
+     */
     @Override
     public void setEnd(double x, double y) {
         PolygonState s = getLastState();
@@ -211,19 +213,13 @@ public class Polygon extends TBaseShape<PolygonState> {
     public void draw(GraphicsContext g) {
         PolygonState s = getLastState();
 
-        System.out.println("DRAWING: " + s.numPoints + " points" +
-            " center: (" + s.centerX + ", " + s.centerY + ") " +
-            Arrays.toString(s.xPoints) + " " +
-            Arrays.toString(s.yPoints));
-
         g.setFill(s.fillColor);
         g.setStroke(s.strokeColor);
         g.setLineWidth(s.strokeWidth);
 
-        // If there is only one point, do not draw anything
-        if (s.numPoints == 1)
-        {
-            
+        // If there is only one point, do not draw anything (this scenario
+        // should not happen, but just in case)
+        if (s.numPoints == 1) {
             return;
         }
 
@@ -236,9 +232,6 @@ public class Polygon extends TBaseShape<PolygonState> {
 
         g.fillPolygon(s.xPoints, s.yPoints, s.numPoints);
         g.strokePolygon(s.xPoints, s.yPoints, s.numPoints);
-
-        g.strokeOval(s.centerX - VERTEX_RADIUS, s.centerY - VERTEX_RADIUS, 
-                VERTEX_RADIUS*2, VERTEX_RADIUS*2);
     }
 
     /**

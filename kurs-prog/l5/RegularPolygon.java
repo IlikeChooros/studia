@@ -1,4 +1,5 @@
-import javafx.geometry.Point2D;
+import java.util.Arrays;
+
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
 
@@ -7,17 +8,14 @@ class PolygonState extends BaseShapeState {
     private static final long serialVersionUID = 401L;
     public double[] xPoints;
     public double[] yPoints;
-    public double centerX, centerY;
     public int numPoints;
 
     PolygonState(double centerX, double centerY, int npoints, 
     Color fill, Color stroke, double strokeWidth, double rotation) 
     {
-        super(fill, stroke, strokeWidth, rotation);
+        super(centerX, centerY, fill, stroke, strokeWidth, rotation);
         this.xPoints    = new double[npoints];
         this.yPoints    = new double[npoints];
-        this.centerX    = centerX;
-        this.centerY    = centerY;
         this.numPoints  = npoints;
 
         for (int i = 0; i < npoints; i++) {
@@ -31,8 +29,24 @@ class PolygonState extends BaseShapeState {
         this.xPoints    = (double[])other.xPoints.clone();
         this.yPoints    = (double[])other.yPoints.clone();
         this.numPoints = other.numPoints;
-        this.centerX    = other.centerX;
-        this.centerY    = other.centerY;
+    }
+
+    // For debugging purposes
+    @Override
+    public String toString() {
+        // Print all data
+        StringBuilder sb = new StringBuilder();
+        sb.append("{PolygonState: ");
+        sb.append("center=(").append(centerX).append(", ").append(centerY).append("), ");
+        sb.append("points=[");
+        sb.append(Arrays.toString(xPoints)).append(", ");
+        sb.append(Arrays.toString(yPoints)).append("], ");
+        sb.append("numPoints=").append(numPoints).append(", ");
+        sb.append("Fill: ").append(fillColor).append(", ");
+        sb.append("strokeColor=").append(strokeColor).append(", ");
+        sb.append("strokeWidth=").append(strokeWidth).append(", ");
+        sb.append("Rotation: ").append(rotation).append("}");
+        return sb.toString();
     }
 }
 
@@ -166,23 +180,6 @@ abstract public class RegularPolygon extends TBaseShape<RegularPolygonState> {
         RegularPolygonState state =  getLastState();
         state.rotation += da;
         prepareCoordinates();
-    }
-
-    /**
-     * Get current rotation angle
-     */
-    @Override
-    public double getRotation() {
-        return getLastState().rotation;
-    }
-
-    /**
-     * Get the center coordinates of the polygon
-     */
-    @Override
-    public Point2D getCenter() {
-        RegularPolygonState state =  getLastState();
-        return new Point2D(state.centerX, state.centerY);
     }
 
     /**

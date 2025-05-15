@@ -35,11 +35,11 @@ TODO:
   - [x] Other
   - [x] Rectangle
 - [x] Custom polygon
-- [ ] Fill on right click
-- [ ] Make the shape selection more obvious (width slightly changed colors of the shape)
+- [x] Fill on right click
+- [ ] Make the shape selection more obvious (with slightly changed colors of the shape)
 - [ ] Save on exit
 - [ ] Modify the polygon vertecies if one of them dragged
-- [ ] Make the UI prettier:
-  - [ ] File menu (save / load)
-  - [ ] Use icons for shapes (if none selected then -> shapeType = NONE)
+- [x] Make the UI prettier:
+  - [x] File menu (save / load)
+  - [x] Use icons for shapes (if none selected then -> shapeType = NONE)
   - [ ] Undo button + (Ctrl + Z)

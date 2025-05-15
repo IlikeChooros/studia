@@ -12,12 +12,16 @@ class BaseShapeState implements Serializable {
     public transient Color strokeColor;
     public double strokeWidth;
     public double rotation;
+    public double centerX, centerY;
 
     public BaseShapeState(
+        double centerX, double centerY,
         Color fillColor, Color strokeColor, 
         double strokeWidth, double rotation
     )
     {
+        this.centerX = centerX;
+        this.centerY = centerY;
         this.fillColor = fillColor;
         this.strokeColor = strokeColor;
         this.strokeWidth = strokeWidth;
@@ -29,6 +33,8 @@ class BaseShapeState implements Serializable {
         this.strokeColor = other.strokeColor;
         this.strokeWidth = other.strokeWidth;
         this.rotation = other.rotation;
+        this.centerX = other.centerX;
+        this.centerY = other.centerY;
     }
 
     // Custom serialization method
@@ -84,30 +90,3 @@ class BaseShapeState implements Serializable {
         }
     }
 }
-
-// Class for holding the position, rotation and visual data for the shape
-class ShapeState extends BaseShapeState {
-    private static final long serialVersionUID = 200L; // Different SUID from BaseShapeState
-    public double startX, startY, endX, endY;
-    
-    public ShapeState(
-        double startX, double startY, double endX, double endY,
-        Color fillColor, Color strokeColor, double strokeWidth,double rotation
-    )
-    {
-        super(fillColor, strokeColor, strokeWidth, rotation);
-        this.startX = startX;
-        this.startY = startY;
-        this.endX = endX;
-        this.endY = endY;
-    }
-
-    // Copy constructor
-    public ShapeState(ShapeState other) {
-        super(other);
-        this.startX = other.startX;
-        this.startY = other.startY;
-        this.endX = other.endX;
-        this.endY = other.endY;
-    }
-};

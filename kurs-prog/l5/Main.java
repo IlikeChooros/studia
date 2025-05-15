@@ -15,7 +15,7 @@ public class Main extends Application {
     @Override
     public void start(Stage primaryStage) {
         // Create a simple scene with a button
-        final double DEFAULT_WIDTH = 800, DEFAULT_HEIGHT = 600;
+        final double DEFAULT_WIDTH = 1200, DEFAULT_HEIGHT = 800;
 
         drawingBoard = new DrawingBoard(DEFAULT_WIDTH, DEFAULT_HEIGHT);
         BorderPane root = new BorderPane();
@@ -25,7 +25,6 @@ public class Main extends Application {
         toolBar.setPrefHeight(StatusBar.DEFAULT_HEIGHT);
 
         Scene scene = new Scene(root);
-        
         root.setTop(toolBar);
         root.setCenter(drawingBoard);
         root.setBottom(statusBar);

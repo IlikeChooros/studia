@@ -6,6 +6,7 @@ import javafx.scene.text.Font;
 public class StatusBar extends HBox {
 
     public static final double DEFAULT_HEIGHT = 30.0;
+    private final Label statusLabel;
 
     /**
      * Creates a simple status bar with a light gray background.
@@ -15,6 +16,10 @@ public class StatusBar extends HBox {
     public StatusBar(DrawingBoard drawingBoard) {
         setStyle("-fx-background-color: lightgray; -fx-padding: 5; -fx-spacing: 10;");
         setPrefHeight(DEFAULT_HEIGHT);
+        statusLabel = new Label();
+        statusLabel.setTextFill(Color.BLACK);
+        statusLabel.setFont(Font.font("Arial", 14));
+        getChildren().add(statusLabel);
 
         drawingBoard.setOnMouseMoved(event -> {
             double x = event.getX();
@@ -30,11 +35,7 @@ public class StatusBar extends HBox {
      * @param status The status message to display.
      */
     public void updateStatus(String status) {
-        getChildren().clear();
-        Label statusLabel = new Label(status);
-        statusLabel.setTextFill(Color.BLACK);
-        statusLabel.setFont(Font.font("Arial", 14));
-        getChildren().add(new javafx.scene.control.Label(status));
+        statusLabel.setText(status);
     }
 
 }

@@ -5,9 +5,7 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.LinkedList;
-import java.util.List;
 
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
@@ -19,17 +17,17 @@ public class FileManager {
      * Must be public static to be accessible from other classes like PaintToolBar.
      */
     public static class DrawingData implements Serializable {
-        private static final long serialVersionUID = 20231115L; // Use a meaningful serialVersionUID
+        private static final long serialVersionUID = 20231115L;
         private final LinkedList<BaseShape> shapes;
-        private final List<Integer> history;
+        private final LinkedList<DrawingBoard.HistoryEntry> history;
         private final int historyIdCounter;
         private final String filename;
 
-        public DrawingData(LinkedList<BaseShape> shapes, List<Integer> history, int historyIdCounter, String filename) {
+        public DrawingData(LinkedList<BaseShape> shapes, LinkedList<DrawingBoard.HistoryEntry> history, int historyIdCounter, String filename) {
             // Store copies to ensure immutability of this data object after creation if needed,
             // though for serialization, direct references are fine.
             this.shapes = new LinkedList<>(shapes);
-            this.history = new ArrayList<>(history);
+            this.history = new LinkedList<>(history);
             this.historyIdCounter = historyIdCounter;
             this.filename = filename;
         }
@@ -38,8 +36,8 @@ public class FileManager {
             return new LinkedList<>(shapes); 
         }
 
-        public List<Integer> getHistory() { 
-            return new ArrayList<>(history); 
+        public LinkedList<DrawingBoard.HistoryEntry> getHistory() { 
+            return new LinkedList<>(history); 
         }
 
         public int getHistoryIdCounter() { 
@@ -84,7 +82,7 @@ public class FileManager {
             } catch (IOException e) {
                 e.printStackTrace();
                 // Consider showing an error Alert to the user
-            }
+            } 
         }
         return file != null ? file.getName() : "";
     }

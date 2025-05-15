@@ -8,7 +8,8 @@
             "vmArgs": "--module-path /opt/javafx-sdk-17.0.15/lib --add-modules javafx.controls,javafx.fxml,javafx.graphics,javafx.media,javafx.swing,javafx.web",
             "mainClass": "${workspaceFolder}/Main.java",
             "classPaths": [
-                "${workspaceFolder}/classes"
+                "${workspaceFolder}/classes",
+                "${workspaceFolder}/resources"
             ]
         }
     ]
