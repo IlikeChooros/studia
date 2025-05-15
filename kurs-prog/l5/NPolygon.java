@@ -1,3 +1,4 @@
+import javafx.geometry.Point2D;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
 
@@ -6,14 +7,23 @@ class PolygonState extends BaseShapeState {
     private static final long serialVersionUID = 401L;
     public double[] xPoints;
     public double[] yPoints;
+    public double centerX, centerY;
     public int numPoints;
 
-    PolygonState(int npoints, Color fill, Color stroke, 
-        double strokeWidth, double rotation) 
+    PolygonState(double centerX, double centerY, int npoints, 
+    Color fill, Color stroke, double strokeWidth, double rotation) 
     {
         super(fill, stroke, strokeWidth, rotation);
         this.xPoints    = new double[npoints];
         this.yPoints    = new double[npoints];
+        this.centerX    = centerX;
+        this.centerY    = centerY;
+        this.numPoints  = npoints;
+
+        for (int i = 0; i < npoints; i++) {
+            this.xPoints[i] = centerX;
+            this.yPoints[i] = centerY;
+        }
     }
 
     public PolygonState(PolygonState other) {
@@ -21,6 +31,8 @@ class PolygonState extends BaseShapeState {
         this.xPoints    = (double[])other.xPoints.clone();
         this.yPoints    = (double[])other.yPoints.clone();
         this.numPoints = other.numPoints;
+        this.centerX    = other.centerX;
+        this.centerY    = other.centerY;
     }
 }
 
@@ -28,7 +40,7 @@ class PolygonState extends BaseShapeState {
 // about the point's position, center coordinates etc.
 class RegularPolygonState extends PolygonState {
     private static final long serialVersionUID = 400L;
-    public double centerX, centerY;
+    
     public double radius;
 
     public RegularPolygonState(
@@ -36,16 +48,12 @@ class RegularPolygonState extends PolygonState {
         int npoints, double rotation, Color fill, Color stroke,
         double strokeWidth
     ) {
-        super(npoints, fill, stroke, strokeWidth, rotation);
-        this.centerX    = centerX;
-        this.centerY    = centerY;
+        super(centerX, centerY, npoints, fill, stroke, strokeWidth, rotation);
         this.radius     = radius;
     }
 
     public RegularPolygonState(RegularPolygonState other) {
         super(other);
-        this.centerX    = other.centerX;
-        this.centerY    = other.centerY;
         this.radius     = other.radius;
     }
 }
@@ -157,6 +165,24 @@ abstract public class NPolygon extends TBaseShape<RegularPolygonState> {
     public void rotate(double da) {
         RegularPolygonState state =  getLastState();
         state.rotation += da;
+        prepareCoordinates();
+    }
+
+    /**
+     * Get current rotation angle
+     */
+    @Override
+    public double getRotation() {
+        return getLastState().rotation;
+    }
+
+    /**
+     * Get the center coordinates of the polygon
+     */
+    @Override
+    public Point2D getCenter() {
+        RegularPolygonState state =  getLastState();
+        return new Point2D(state.centerX, state.centerY);
     }
 
     /**
@@ -190,27 +216,4 @@ abstract public class NPolygon extends TBaseShape<RegularPolygonState> {
         return isContained(x, y, s.xPoints, s.yPoints);
     }
     
-    static public boolean isContained(double x, double y, double[] px, double[] py) {
-        // Author: W. Randolph Franklin (although that was written in C)
-        // https://wrfranklin.org/Research/Short_Notes/pnpoly.html
-
-        /*
-         int i, j, c = 0;
-            for (i = 0, j = nvert-1; i < nvert; j = i++) {
-                if ( ((verty[i]>testy) != (verty[j]>testy)) &&
-                (testx < (vertx[j]-vertx[i]) * (testy-verty[i]) / (verty[j]-verty[i]) + vertx[i]) )
-                c = !c;
-            }
-            return c;
-         */
-        boolean inside = false;
-        for (int i = 0, j = px.length - 1; i < px.length; j = i++) {
-            if ((py[i] > y) != (py[j] > y) 
-                && (x < (px[j] - px[i]) * (y - py[i]) 
-                        / (py[j] - py[i]) + px[i])) {
-                inside = !inside;
-            }
-        }
-        return inside;
-    }
 }

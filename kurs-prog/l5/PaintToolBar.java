@@ -20,12 +20,12 @@ public class PaintToolBar extends ToolBar {
 
         DrawingBoard.ShapeType types[] = {
             DrawingBoard.ShapeType.NONE,
-            DrawingBoard.ShapeType.LINE,
             DrawingBoard.ShapeType.TRIANGLE,
             DrawingBoard.ShapeType.RECTANGLE,
             DrawingBoard.ShapeType.PENTAGON,
             DrawingBoard.ShapeType.HEXAGON,
-            DrawingBoard.ShapeType.CIRCLE
+            DrawingBoard.ShapeType.CIRCLE,
+            DrawingBoard.ShapeType.POLYGON,
         };
 
         for (DrawingBoard.ShapeType type : types) {

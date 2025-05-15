@@ -3,6 +3,9 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.ArrayList;
 
+import javafx.event.Event;
+import javafx.event.EventHandler;
+import javafx.geometry.Point2D;
 import javafx.scene.canvas.*;
 import javafx.scene.image.WritableImage;
 import javafx.scene.paint.Color;
@@ -19,7 +22,7 @@ public class DrawingBoard extends Canvas {
      */
     private double startX, startY;
     private double endX, endY;
-    private ShapeType shapeType = ShapeType.LINE;
+    private ShapeType shapeType = ShapeType.NONE;
     private Color fillColor = Color.WHITE;
     private Color strokeColor = Color.BLACK;
     private double strokeWidth = 2;
@@ -39,9 +42,6 @@ public class DrawingBoard extends Canvas {
     {
         BShape s = null;
         switch (shapeType) {
-            case LINE:
-                s = new Line(startX, startY, endX, endY, strokeColor, strokeWidth);
-                break;
             case RECTANGLE:
                 s = new Rectangle(startX, startY, endX, endY, fillColor, strokeColor, strokeWidth, 0);
                 break;
@@ -57,12 +57,16 @@ public class DrawingBoard extends Canvas {
             case TRIANGLE:
                 s = new Triangle(startX, startY, endX, endY, fillColor, strokeColor, strokeWidth);
                 break;
+            case POLYGON:
+                s = new Polygon(startX, startY, fillColor, strokeColor, strokeWidth);
+                break;
             default:
                 break;
         }
 
         if (s != null) {
-            s.id = historyIdCounter++;
+            s.id = historyIdCounter;
+            historyIdCounter++;
         }
         return s;
     }
@@ -81,11 +85,23 @@ public class DrawingBoard extends Canvas {
         return null;
     }
 
+    
+    private void makeSnapshotWithout(BShape shape) 
+    {
+        shapes.remove(shapes.indexOf(shape));
+        clear();
+        drawShapes();
+        // Create a snapshot of the current canvas & restore the shape
+        canvasSnapshot = this.snapshot(null, null);
+        shapes.addFirst(shape);
+    }
+
     /**
      * Enum for different shapes to draw.
      */
     public enum ShapeType {
-        NONE, LINE, RECTANGLE, CIRCLE, PENTAGON, HEXAGON, TRIANGLE
+        NONE, RECTANGLE, CIRCLE, PENTAGON, HEXAGON, TRIANGLE,
+        POLYGON
     }
 
     public static final Color DEFAULT_BG_COLOR = Color.WHITESMOKE;
@@ -105,6 +121,8 @@ public class DrawingBoard extends Canvas {
         context.fillRect(0, 0, width, height);
 
         setOnMousePressed(e -> {
+            System.out.println("Mouse pressed at: " + e.getX() + ", " + e.getY());
+
             // reset flags for history
             validMove = false;
             validScroll = false;
@@ -129,27 +147,61 @@ public class DrawingBoard extends Canvas {
             // 7a. Make the cursor change (if drawing a pencil or smth, 
             // otherwise an arrow, if possible selction of figure -> pointer)
 
+            if (shapeType == ShapeType.POLYGON) 
+            {
+                // Create a new polygon, and select it
+                if (selectedShape == null) {
+                    selectedShape = getShape();
+                    shapes.addFirst(selectedShape);
+                    selectedShape.copyState(); // push new state (2nd point)
+                    ((Polygon) selectedShape).addPoint(startX, startY);
+                    canvasSnapshot = this.snapshot(null, null);
+                }
+
+                // Add a new point to the polygon
+                else if (selectedShape instanceof Polygon) 
+                {
+                    // If that's a secondary button click, end the polygon
+                    if (e.isSecondaryButtonDown()) {
+                        ((Polygon) selectedShape).setEnd(startX, startY);
+                        context.drawImage(canvasSnapshot, 0, 0);
+                        selectedShape.draw(context);
+                        canvasSnapshot = null; // Clear the snapshot and redraw the canvas
+                        selectedShape = null;
+                        return;
+                    }
+
+                    selectedShape.copyState(); // push new state
+                    ((Polygon) selectedShape).addPoint(startX, startY);
+                }
+
+                history.add(selectedShape.id); // push history
+                context.drawImage(canvasSnapshot, 0, 0);
+                selectedShape.draw(context);
+                return;
+            }
+
+            // Create a snapshot of the current canvas
+            canvasSnapshot = this.snapshot(null, null);
+
             // Step 1: Select the shape
             if (shapeType == ShapeType.NONE) {
-                selectedShape = getShapeOnCoords(startX, startY);
+                BShape shapeBeneath = getShapeOnCoords(startX, startY);
+
+                if (shapeBeneath == null && shapeType == ShapeType.NONE) {
+                    return;
+                }
 
                 // We selected an actual shape
-                if (selectedShape != null) {
+                if (shapeBeneath != null) {
                     // Find the selected shape and
                     // remove it temporarily (for snapshot)
-                    shapes.remove(shapes.indexOf(selectedShape));
-                    clear();
-                    drawShapes();
-                    // Create a snapshot of the current canvas & restore the shape
-                    canvasSnapshot = this.snapshot(null, null);
-                    shapes.addFirst(selectedShape);
-                    drawShapes();
+                    selectedShape = shapeBeneath;
+                    makeSnapshotWithout(selectedShape);
+                    selectedShape.draw(context);
                     return;
                 }
             }
-    
-            // Create a snapshot of the current canvas
-            canvasSnapshot = this.snapshot(null, null);
         });
 
         setOnScroll(e -> {
@@ -215,37 +267,11 @@ public class DrawingBoard extends Canvas {
             } 
         });
 
-        setOnKeyTyped(e -> {
-            System.out.println(e.getCharacter());
-            if (e.getCharacter() != "R" || selectedShape == null) {
-                return;
-            }
-
-            // Push history
-            if (!validRotate) {
-                validRotate = true;
-                selectedShape.copyState();
-            }
-
-            selectedShape.rotate(5);
-            context.drawImage(canvasSnapshot, 0, 0);
-            selectedShape.draw(context);
-        });
-
-        setShapeType(ShapeType.LINE);
-    }
-
-    /**
-     * Set the shape type to draw.
-     */
-    public void setShapeType(ShapeType shapeType) {
-        this.shapeType = shapeType;
-
         setOnMouseReleased(e -> {
             endX = e.getX();
             endY = e.getY();
 
-            if (shapeType != ShapeType.NONE) {
+            if (shapeType != ShapeType.NONE && shapeType != ShapeType.POLYGON) {
                 // Draw new shape on canvas, and add it to the list
                 BShape shape = getShape();
                 shape.draw(context);
@@ -257,6 +283,31 @@ public class DrawingBoard extends Canvas {
                 drawShapes();
             }
         });
+
+        setOnContextMenuRequested(new EventHandler<Event>() {
+            @Override
+            public void handle(Event event) {
+                System.out.println("Right mouse button clicked");
+
+                // If the right mouse button is clicked, we need to
+                // check if there is a shape selected
+                if (shapeType == ShapeType.NONE && selectedShape != null) {
+                    // Allow user to change the color of the shape
+
+                }
+            }
+        });
+
+        setShapeType(ShapeType.NONE);
+    }
+
+    /**
+     * Set the shape type to draw.
+     */
+    public void setShapeType(ShapeType shapeType) {
+        this.shapeType = shapeType;
+        this.selectedShape = null;
+        this.canvasSnapshot = null;
     }
 
     /**
@@ -275,6 +326,40 @@ public class DrawingBoard extends Canvas {
         } 
         else {
             setCursor(javafx.scene.Cursor.DEFAULT);
+        }
+
+        // If we are creating a polygon, we need to set the 
+        // end coordinates to the current mouse position
+        if (shapeType == ShapeType.POLYGON 
+            && selectedShape != null 
+            && selectedShape instanceof Polygon
+        ) {
+            ((Polygon) selectedShape).setEnd(e.getX(), e.getY());
+
+            // Draw the polygon on the canvas
+            context.drawImage(canvasSnapshot, 0, 0);
+            selectedShape.draw(context);
+        }
+
+        // Check if we should rotate the shape
+        if (shapeType == ShapeType.NONE && selectedShape != null && e.isShiftDown()) {
+
+            // Push history
+            if(!validRotate) {
+                selectedShape.copyState(); // push new state
+                validRotate = true;
+                history.add(selectedShape.id);
+            }
+
+            // Calculate the angle of rotation
+            Point2D center = selectedShape.getCenter();
+            double angle = Math.atan2(e.getY() - center.getY(), e.getX() - center.getX());
+            double deltaAngle = angle - selectedShape.getRotation();
+
+            // Rotate the shape and draw it
+            selectedShape.rotate(deltaAngle);
+            context.drawImage(canvasSnapshot, 0, 0);
+            selectedShape.draw(context);
         }
     }
 
@@ -306,8 +391,12 @@ public class DrawingBoard extends Canvas {
      * Get the current shape type.
      */
     public void undo() {
-        if (history.isEmpty())
+        selectedShape = null;
+        canvasSnapshot = null;
+
+        if (history.isEmpty()) {
             return;
+        }
         
         clear();
 
@@ -352,6 +441,10 @@ public class DrawingBoard extends Canvas {
     public void clearShapes() {
         shapes.clear();
         clear();
+        selectedShape = null;
+        canvasSnapshot = null;
+        history.clear();
+        historyIdCounter = 0;
     }
 
     /**

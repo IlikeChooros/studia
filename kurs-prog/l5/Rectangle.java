@@ -1,3 +1,4 @@
+import javafx.geometry.Point2D;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
 
@@ -100,6 +101,12 @@ public class Rectangle extends BaseShape {
         ShapeState state = getLastState();
 
         
+    }
+
+    @Override
+    public Point2D getCenter() {
+        ShapeState state = getLastState();
+        return new Point2D((state.startX + state.endX) / 2, (state.startY + state.endY) / 2);
     }
 
     /**

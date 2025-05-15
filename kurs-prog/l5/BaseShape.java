@@ -70,6 +70,16 @@ interface IShape {
     public void rotate(double da);
 
     /**
+     * Get rotation angle of the shape
+     */
+    public double getRotation();
+
+    /**
+     * Get the center coordinates of the shape
+     */
+    public Point2D getCenter();
+
+    /**
      * Get the name of the shape
      * @return Human redable string of the shape
      */
@@ -82,6 +92,80 @@ interface IShape {
 abstract class BShape implements IShape, Serializable, Cloneable {
     private static final long serialVersionUID = 1L;
     public int id = 0;
+
+    /*
+     * Rotate the point by given origin and angle
+     */
+    public static Point2D rotatePoint(Point2D p, Point2D origin, double da) {
+        double x, y;
+        double cosA = Math.cos(da), sinA = Math.sin(da);
+
+        double nx = p.getX() - origin.getX(),
+               ny = p.getY() - origin.getY();
+
+        x = origin.getX() + nx * cosA - ny * sinA;
+        y = origin.getY() + ny * cosA + nx * sinA;
+
+        return new Point2D(x, y);
+    }
+
+    /**
+     * Check if the given point (x, y) is contained within the polygon, defined as
+     * array of vertices (px, py)
+     * @return true if the point is inside the polygon, false otherwise
+     */
+    static public boolean isContained(double x, double y, double[] px, double[] py) {
+        // Author: W. Randolph Franklin (although that was written in C)
+        // https://wrfranklin.org/Research/Short_Notes/pnpoly.html
+
+        /*
+         int i, j, c = 0;
+            for (i = 0, j = nvert-1; i < nvert; j = i++) {
+                if ( ((verty[i]>testy) != (verty[j]>testy)) &&
+                (testx < (vertx[j]-vertx[i]) * (testy-verty[i]) / (verty[j]-verty[i]) + vertx[i]) )
+                c = !c;
+            }
+            return c;
+         */
+        boolean inside = false;
+        for (int i = 0, j = px.length - 1; i < px.length; j = i++) {
+            if ((py[i] > y) != (py[j] > y) 
+                && (x < (px[j] - px[i]) * (y - py[i]) 
+                        / (py[j] - py[i]) + px[i])) {
+                inside = !inside;
+            }
+        }
+        return inside;
+    }
+
+    /**
+     * Check if given point p is on the line segment
+     * (start, end) with given strokeWidth
+     * @param start Start point of the line
+     * @param end End point of the line
+     * @param p Point to check
+     * @param strokeWidth Width of the line
+     * @return true if the point is on the line segment, false otherwise
+     */
+    public static boolean containsInLine(
+        Point2D start, Point2D end, Point2D p, double strokeWidth) 
+    {
+        double minX = Math.min(start.getX(), end.getX());
+        double maxX = Math.max(start.getX(), end.getX());
+        double minY = Math.min(start.getY(), end.getY());
+        double maxY = Math.max(start.getY(), end.getY());
+        
+        if (p.getX() < minX || p.getX() > maxX || p.getY() < minY || p.getY() > maxY) {
+            return false;
+        }
+
+        // Calculate the distance from the point to the line segment
+        double distance = Math.abs(
+            (end.getY() - start.getY()) * p.getX() - (end.getX() - start.getX()) * p.getY() + end.getX() * start.getY() - end.getY() * start.getX()
+        ) / Math.sqrt(Math.pow(end.getY() - start.getY(), 2) + Math.pow(end.getX() - start.getX(), 2));
+
+        return distance <= strokeWidth / 2;
+    }
 }
 
 // Base class for shapes, can be extended for specific shapes
@@ -137,6 +221,11 @@ abstract class BaseShape extends TBaseShape<ShapeState> {
         pushState(new ShapeState(
                 startX, startY, endX, endY, fillColor, 
                 strokeColor, strokeWidth, rotation));
+    }
+
+    @Override
+    public double getRotation() {
+        return getLastState().rotation;
     }
 
     /**
@@ -224,19 +313,5 @@ abstract class BaseShape extends TBaseShape<ShapeState> {
         }
     }
 
-    /*
-     * Rotate the point by given origin and angle
-     */
-    public static Point2D rotatePoint(Point2D p, Point2D origin, double da) {
-        double x, y;
-        double cosA = Math.cos(da), sinA = Math.sin(da);
-
-        double nx = p.getX() - origin.getX(),
-               ny = p.getY() - origin.getY();
-
-        x = origin.getX() + nx * cosA - ny * sinA;
-        y = origin.getY() + ny * cosA + nx * sinA;
-
-        return new Point2D(x, y);
-    }
+    
 }

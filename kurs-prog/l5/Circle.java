@@ -1,3 +1,4 @@
+import javafx.geometry.Point2D;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
 
@@ -95,6 +96,19 @@ public class Circle extends TBaseShape<CircleState> {
         stateList.add(new CircleState(getLastState()));
     }
 
+    /**
+     * Get the center coordinates of the circle
+     */
+    @Override
+    public Point2D getCenter() {
+        CircleState s = getLastState();
+        return new Point2D(s.centerX, s.centerY);
+    }
+
+    @Override
+    public double getRotation() {
+        return 0; // Circle has no rotation
+    }
 
     @Override
     public void draw(GraphicsContext gc) {
