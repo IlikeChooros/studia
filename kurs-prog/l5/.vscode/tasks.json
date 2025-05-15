@@ -18,7 +18,7 @@
                 "ShapeState.java",
                 "Circle.java",
                 "Rectangle.java",
-                "NPolygon.java",
+                "RegularPolygon.java",
                 "Polygon.java",
                 "Triangle.java",
                 "Pentagon.java",

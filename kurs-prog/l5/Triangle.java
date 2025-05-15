@@ -2,7 +2,7 @@ import javafx.scene.paint.Color;
 
 // Triangle shape, can be either filled or just an outline,
 // interprated as a polygon with 3 points
-public class Triangle extends NPolygon {
+public class Triangle extends RegularPolygon {
     private static final long serialVersionUID = 70L;
     private static final int NUM_POINTS = 3;
 

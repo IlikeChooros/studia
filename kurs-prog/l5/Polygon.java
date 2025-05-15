@@ -9,15 +9,15 @@ public class Polygon extends TBaseShape<PolygonState> {
     public static final double VERTEX_RADIUS = 2.5;
 
     private void calculateCenter(PolygonState s) {
-        // Calculate the center of the polygon
-        s.centerX = 0;
-        s.centerY = 0;
-        for (int i = 0; i < s.numPoints; i++) {
-            s.centerX += s.xPoints[i];
-            s.centerY += s.yPoints[i];
+        // Update the center coordinates (update the average)
+        s.centerX = s.xPoints[0];
+        s.centerY = s.yPoints[0];
+
+        // Recaulculate the center coordinates
+        for (int i = 1; i < s.numPoints; i++) {
+            s.centerX += (s.xPoints[i] - s.centerX) / (i + 1);
+            s.centerY += (s.yPoints[i] - s.centerY) / (i + 1);
         }
-        s.centerX /= s.numPoints;
-        s.centerY /= s.numPoints;
     }
     
     public Polygon(double startX, double startY, 
@@ -65,36 +65,9 @@ public class Polygon extends TBaseShape<PolygonState> {
         px[px.length - 1] = x;
         py[py.length - 1] = y;
 
-        // Update the center coordinates (update the average)
-        // instead of calculating every time:
-        // for i in range(0, npoints):
-        //     centerX += xPoints[i]
-        //     centerY += yPoints[i]
-        // centerX /= npoints
-        // centerY /= npoints
-        // We can use the formula:
-        // centerX = xpoints[0], centerY = ypoints[0]
-        // for i in range(1, npoints):
-        //     centerX += (xpoints[i] - centerX) / i
-        //     centerY += (ypoints[i] - centerY) / i
-        // But since we will be essentially calling every time 'addPoint'
-        // we can incrementally update the center coordinates:
-
         s.xPoints = px;
         s.yPoints = py;
         calculateCenter(s);
-        // s.centerX = px[0];
-        // s.centerY = py[0];
-        // // Recaulculate the center coordinates
-        // for (int i = 1; i < s.numPoints; i++) {
-        //     s.centerX += (px[i] - s.centerX) / (i + 1);
-        //     s.centerY += (py[i] - s.centerY) / (i + 1);
-        // }
-
-        System.out.println("Add point: " + s.numPoints + " points" +
-            " center: (" + s.centerX + ", " + s.centerY + ") " +
-            Arrays.toString(s.xPoints) + " " +
-            Arrays.toString(s.yPoints));
     }
 
     public void rotate(double angle) {

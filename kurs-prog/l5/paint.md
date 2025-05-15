@@ -23,7 +23,7 @@ Running on linux (Ubuntu 22.04) with Java 17 and JavaFX 17.0.15.
 Compile with 1 *simple* command:
 
 ```sh
-javac --module-path /opt/javafx-sdk-17.0.15/lib --add-modules javafx.controls Main.java DrawingBoard.java PaintToolBar.java StatusBar.java Shapes.java Circle.java Rectangle.java Line.java NPolygon.java Triangle.java Pentagon.java Hexagon.java -d classes
+javac --module-path /opt/javafx-sdk-17.0.15/lib --add-modules javafx.controls Main.java DrawingBoard.java PaintToolBar.java StatusBar.java Shapes.java Circle.java Rectangle.java Line.java RegularPolygon.java Triangle.java Pentagon.java Hexagon.java -d classes
 ```
 
 ```sh
@@ -31,6 +31,15 @@ cd classes && java --module-path /opt/javafx-sdk-17.0.15/lib --add-modules javaf
 ```
 
 TODO:
-- [ ] Rotate
-- [ ] Custom polygon
+- [x] Rotate
+  - [x] Other
+  - [x] Rectangle
+- [x] Custom polygon
 - [ ] Fill on right click
+- [ ] Make the shape selection more obvious (width slightly changed colors of the shape)
+- [ ] Save on exit
+- [ ] Modify the polygon vertecies if one of them dragged
+- [ ] Make the UI prettier:
+  - [ ] File menu (save / load)
+  - [ ] Use icons for shapes (if none selected then -> shapeType = NONE)
+  - [ ] Undo button + (Ctrl + Z)

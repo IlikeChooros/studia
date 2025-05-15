@@ -20,12 +20,12 @@ public class FileManager {
      */
     public static class DrawingData implements Serializable {
         private static final long serialVersionUID = 20231115L; // Use a meaningful serialVersionUID
-        private final LinkedList<BShape> shapes;
+        private final LinkedList<BaseShape> shapes;
         private final List<Integer> history;
         private final int historyIdCounter;
         private final String filename;
 
-        public DrawingData(LinkedList<BShape> shapes, List<Integer> history, int historyIdCounter, String filename) {
+        public DrawingData(LinkedList<BaseShape> shapes, List<Integer> history, int historyIdCounter, String filename) {
             // Store copies to ensure immutability of this data object after creation if needed,
             // though for serialization, direct references are fine.
             this.shapes = new LinkedList<>(shapes);
@@ -34,7 +34,7 @@ public class FileManager {
             this.filename = filename;
         }
 
-        public LinkedList<BShape> getShapes() { 
+        public LinkedList<BaseShape> getShapes() { 
             return new LinkedList<>(shapes); 
         }
 

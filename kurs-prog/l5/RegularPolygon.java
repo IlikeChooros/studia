@@ -58,7 +58,7 @@ class RegularPolygonState extends PolygonState {
     }
 }
 
-abstract public class NPolygon extends TBaseShape<RegularPolygonState> {
+abstract public class RegularPolygon extends TBaseShape<RegularPolygonState> {
     private static final long serialVersionUID = 40L;
     /**
      * Create a polygon points based on the # of points and the center coordinates
@@ -86,7 +86,7 @@ abstract public class NPolygon extends TBaseShape<RegularPolygonState> {
      * @param strokeWidth Width of the outline
      * @param rotation Rotation angle in radians
      */
-    public NPolygon(
+    public RegularPolygon(
         double startX, double startY, double endX, double endY, int numPoints,
         Color fillColor, Color strokeColor, double strokeWidth, double rotation
     ) {

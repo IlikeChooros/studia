@@ -3,7 +3,7 @@ import javafx.scene.paint.Color;
 /**
  * A regular hexgon representation
  */
-public class Hexagon extends NPolygon {
+public class Hexagon extends RegularPolygon {
     private static final long serialVersionUID = 20L;
     private static final int NUM_POINTS = 6;
 

@@ -7,6 +7,7 @@ import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.geometry.Point2D;
 import javafx.scene.canvas.*;
+import javafx.scene.control.ContextMenu;
 import javafx.scene.image.WritableImage;
 import javafx.scene.paint.Color;
 
@@ -26,10 +27,10 @@ public class DrawingBoard extends Canvas {
     private Color fillColor = Color.WHITE;
     private Color strokeColor = Color.BLACK;
     private double strokeWidth = 2;
-    private LinkedList<BShape> shapes = new LinkedList<>();
+    private LinkedList<BaseShape> shapes = new LinkedList<>();
     private List<Integer> history = new ArrayList<>();
     private WritableImage canvasSnapshot = null;
-    private BShape selectedShape = null;
+    private BaseShape selectedShape = null;
     private int historyIdCounter = 0;
     private boolean validMove = false;
     private boolean validScroll = false;
@@ -38,9 +39,9 @@ public class DrawingBoard extends Canvas {
     /**
      * Get the shape to draw based on the current shape type.
      */
-    private BShape getShape()
+    private BaseShape getShape()
     {
-        BShape s = null;
+        BaseShape s = null;
         switch (shapeType) {
             case RECTANGLE:
                 s = new Rectangle(startX, startY, endX, endY, fillColor, strokeColor, strokeWidth, 0);
@@ -76,8 +77,8 @@ public class DrawingBoard extends Canvas {
      * @param x the x coordinate of the mouse
      * @param y the y coordinate of the mouse
      */
-    private BShape getShapeOnCoords(double x, double y) {
-        for (BShape shape : shapes) {
+    private BaseShape getShapeOnCoords(double x, double y) {
+        for (BaseShape shape : shapes) {
             if (shape.contains(x, y)) {
                 return shape;
             }
@@ -86,7 +87,7 @@ public class DrawingBoard extends Canvas {
     }
 
     
-    private void makeSnapshotWithout(BShape shape) 
+    private void makeSnapshotWithout(BaseShape shape) 
     {
         shapes.remove(shapes.indexOf(shape));
         clear();
@@ -120,6 +121,12 @@ public class DrawingBoard extends Canvas {
         context.setFill(DEFAULT_BG_COLOR);
         context.fillRect(0, 0, width, height);
 
+        // When pressing the mouse, if we are creating a shape,
+        // set the start coordinates, and create a snapshot of the canvas
+        // If we are over a shape, then we select it, and create a snapshot
+        // of the canvas without the selected shape
+        // OR if we are creating a polygon, we need to add points
+        // to the polygon
         setOnMousePressed(e -> {
             System.out.println("Mouse pressed at: " + e.getX() + ", " + e.getY());
 
@@ -184,9 +191,9 @@ public class DrawingBoard extends Canvas {
             // Create a snapshot of the current canvas
             canvasSnapshot = this.snapshot(null, null);
 
-            // Step 1: Select the shape
+            // Select the shape
             if (shapeType == ShapeType.NONE) {
-                BShape shapeBeneath = getShapeOnCoords(startX, startY);
+                BaseShape shapeBeneath = getShapeOnCoords(startX, startY);
 
                 if (shapeBeneath == null && shapeType == ShapeType.NONE) {
                     return;
@@ -204,15 +211,16 @@ public class DrawingBoard extends Canvas {
             }
         });
 
+        // On mouse scroll, we either are resizing a shape
         setOnScroll(e -> {
             // If the mouse is over a shape, and we selected it
             // then we can resize it
 
-            // TODO: implement resizing of the shape
+            // DONE: implement resizing of the shape
             // 1. Add easy-to-use resize handles to 'BaseShape'
             // 2. Make sure NONE is selected (as a shape) when resizing (shapeType == ShapeType.NONE)
             // 3. No need to create a snapshot of the canvas, it's already created
-            // 4. Apply deltaX and deltaY to the shape
+            // 4. Apply deltaY to the shape
 
             if (selectedShape == null || shapeType != ShapeType.NONE)
                 return;
@@ -231,6 +239,8 @@ public class DrawingBoard extends Canvas {
             selectedShape.draw(context);
         });
 
+        // On mouse drag, we either are creating a shape
+        // or moving one
         setOnMouseDragged(e -> {
             double dx = e.getX() - endX;
             double dy = e.getY() - endY;
@@ -255,7 +265,7 @@ public class DrawingBoard extends Canvas {
 
                 // Draw the shape we are currently creating
                 if (shapeType != ShapeType.NONE) {
-                    BShape shape = getShape();
+                    BaseShape shape = getShape();
                     shape.draw(context);
                 }
                 else {
@@ -267,13 +277,16 @@ public class DrawingBoard extends Canvas {
             } 
         });
 
+
+        // On mouse release, if the shape was being created,
+        // commit it to the list of shapes
         setOnMouseReleased(e -> {
             endX = e.getX();
             endY = e.getY();
 
             if (shapeType != ShapeType.NONE && shapeType != ShapeType.POLYGON) {
                 // Draw new shape on canvas, and add it to the list
-                BShape shape = getShape();
+                BaseShape shape = getShape();
                 shape.draw(context);
                 shapes.addFirst(shape);
                 history.add(shape.id); // push history
@@ -287,13 +300,13 @@ public class DrawingBoard extends Canvas {
         setOnContextMenuRequested(new EventHandler<Event>() {
             @Override
             public void handle(Event event) {
-                System.out.println("Right mouse button clicked");
 
                 // If the right mouse button is clicked, we need to
                 // check if there is a shape selected
                 if (shapeType == ShapeType.NONE && selectedShape != null) {
                     // Allow user to change the color of the shape
-
+                    // ContextMenu contextMenu = new ContextMenu();
+                    
                 }
             }
         });
@@ -317,7 +330,7 @@ public class DrawingBoard extends Canvas {
      * @param e the mouse event
      */
     public void onMouseMovedCallback(javafx.scene.input.MouseEvent e) {
-        BShape shape = getShapeOnCoords(e.getX(), e.getY());
+        BaseShape shape = getShapeOnCoords(e.getX(), e.getY());
 
         // If there is nothing selected, only then indicate that the 
         // shape is selectable
@@ -403,10 +416,10 @@ public class DrawingBoard extends Canvas {
         // Get last modified shape (or created) from history list
         int lastId = history.remove(history.size() - 1);
         int shapeIdx = 0;
-        BShape shape = null;
+        BaseShape shape = null;
 
         // Find the shape with given id
-        for (BShape s : shapes) {
+        for (BaseShape s : shapes) {
             if (s.id == lastId) {
                 shape = s;
                 break;
@@ -452,8 +465,8 @@ public class DrawingBoard extends Canvas {
      */
     public void drawShapes() {
         // Draw all shapes on the canvas starting from the bottom
-        for (Iterator<BShape> it = shapes.descendingIterator(); it.hasNext();) {
-            BShape shape = it.next();
+        for (Iterator<BaseShape> it = shapes.descendingIterator(); it.hasNext();) {
+            BaseShape shape = it.next();
             shape.draw(context);
         }
     }
@@ -463,7 +476,7 @@ public class DrawingBoard extends Canvas {
     /**
      * Gets the current list of shapes on the drawing board.
      */
-    public LinkedList<BShape> getShapes() {
+    public LinkedList<BaseShape> getShapes() {
         return this.shapes;
     }
 
@@ -489,7 +502,7 @@ public class DrawingBoard extends Canvas {
      * @param loadedHistoryIdCounter The history ID counter to load.
      */
     public void loadDrawingData(
-        LinkedList<BShape> loadedShapes, 
+        LinkedList<BaseShape> loadedShapes, 
         List<Integer> loadedHistory, 
         int loadedHistoryIdCounter
     ) {

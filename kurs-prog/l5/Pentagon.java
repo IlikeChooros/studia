@@ -3,7 +3,7 @@ import javafx.scene.paint.Color;
 /**
  * A regular Pentagon
  */
-public class Pentagon extends NPolygon {
+public class Pentagon extends RegularPolygon {
     private static final long serialVersionUID = 50L;
     private static final int NUM_POINTS = 5;
 
