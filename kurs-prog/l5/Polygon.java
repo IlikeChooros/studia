@@ -117,6 +117,16 @@ public class Polygon extends TBaseShape<PolygonState> {
 
         PolygonState s = getLastState();
 
+        // Get maximum distance
+        double max = 0;
+        for (int i = 0; i < s.numPoints; i++) {
+            max = Math.max(
+                Math.sqrt(
+                    Math.pow(s.xPoints[i] - s.centerX, 2) + 
+                    Math.pow(s.yPoints[i] - s.centerY, 2)
+                ), max);
+        }
+
         // dx^2 + dy^2 = dv^2
         // dy / dx = alpha -> dy^2 = dx^2 * alpha^2
         // alpha = height / width  = abs(endY - startY) / abs(endX - startX)
@@ -128,6 +138,13 @@ public class Polygon extends TBaseShape<PolygonState> {
             double dx = dv / Math.sqrt(1 + Math.pow(alpha, 2));
             double dy = alpha * dx;
 
+            double norm = Math.sqrt(
+                    Math.pow(s.xPoints[i] - s.centerX, 2) + 
+                    Math.pow(s.yPoints[i] - s.centerY, 2)
+                ) / max;
+
+            dx *= norm;
+            dy *= norm;
             // System.out.println("alpha: " + alpha + " dx: " + dx + " dy: " + dy);
 
             if (Math.abs(s.centerX - s.xPoints[i]) > -2.5 * dx &&
