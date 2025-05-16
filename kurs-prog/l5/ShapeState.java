@@ -75,7 +75,7 @@ class BaseShapeState implements Serializable {
             double oFill = in.readDouble();
             this.fillColor = new Color(rFill, gFill, bFill, oFill);
         } else {
-            this.fillColor = null; // Or a default color
+            this.fillColor = null;
         }
 
         // Manually deserialize strokeColor
@@ -86,7 +86,7 @@ class BaseShapeState implements Serializable {
             double oStroke = in.readDouble();
             this.strokeColor = new Color(rStroke, gStroke, bStroke, oStroke);
         } else {
-            this.strokeColor = null; // Or a default color
+            this.strokeColor = null;
         }
     }
 }

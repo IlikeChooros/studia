@@ -6,7 +6,7 @@ Still better than MS Paint...
 - **Drawing Shapes**: Draw various shapes like circles, rectangles, lines, polygons, etc.
 - **Color Selection**: Choose colors for shapes and the background.
 - **Shape Selection**: Select shapes to move or delete them.
-- **Undo/Redo**: Undo and redo actions.
+- **Undo**: Undo actions.
 - **Save/Load**: Save the drawing to a file and load it back.
 
 ## Requirements
@@ -23,7 +23,7 @@ Running on linux (Ubuntu 22.04) with Java 17 and JavaFX 17.0.15.
 Compile with 1 *simple* command:
 
 ```sh
-javac --module-path /opt/javafx-sdk-17.0.15/lib --add-modules javafx.controls Main.java DrawingBoard.java PaintToolBar.java StatusBar.java Shapes.java Circle.java Rectangle.java Line.java RegularPolygon.java Triangle.java Pentagon.java Hexagon.java -d classes
+javac --module-path /opt/javafx-sdk-17.0.15/lib --add-modules javafx.controls *.java -d classes
 ```
 
 ```sh
