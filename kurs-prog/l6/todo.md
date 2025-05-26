@@ -1,0 +1,25 @@
+TODO:
+- [ ] Move:
+  - [ ] holds a position from and a position to
+  - [ ] has field for the creature that is moving
+  - [ ] has a field for the action (move or eat)
+- [ ] Creature:
+  - [ ] cycle method -> returns the next move
+  - [ ] getColor -> returns the color of the creature
+  - [ ] getPosition -> returns the position of the creature
+- [ ] Board:
+  - [ ] move (Move)
+- [ ] Wolf:
+  - [ ] Features:
+    - [ ] speed (by deafult, 1)
+    - [ ] range (for eating)
+  - [ ] .cycle method:
+    - [ ] find nearest rabbit (for optimization, use a priority queue)
+    - [ ] If rabbit is within range, eat it
+    - [ ] Else, move towards the rabbit (or randomly)
+- [ ] Rabbit:
+  - [ ] Features:
+    - [ ] speed (by deafult, 1)
+    - [ ] range (for escaping)
+  - [ ] .cycle method:
+    - [ ] esape from the nearest wolf (if within range)
