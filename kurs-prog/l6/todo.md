@@ -1,14 +1,18 @@
 TODO:
-- [ ] Move:
-  - [ ] holds a position from and a position to
-  - [ ] has field for the creature that is moving
-  - [ ] has a field for the action (move or eat)
+- [x] Move:
+  - [x] holds a position from and a position to
+  - [x] has field for the creature that is moving
+  - [x] has a field for the action (move or eat)
+- [ ] Global Manager:
+  - [x] holds Random class instance
+  - [x] keeps track of all creatures (wolves and rabbits)
 - [ ] Creature:
   - [ ] cycle method -> returns the next move
-  - [ ] getColor -> returns the color of the creature
-  - [ ] getPosition -> returns the position of the creature
+  - [x] getColor -> returns the color of the creature
+  - [x] getPosition -> returns the position of the creature
+  - [x] findClosest -> returns the closest creature of a given type
 - [ ] Board:
-  - [ ] move (Move)
+  - [x] move (Move)
 - [ ] Wolf:
   - [ ] Features:
     - [ ] speed (by deafult, 1)

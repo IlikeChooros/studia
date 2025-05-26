@@ -1,5 +1,6 @@
 import javafx.scene.layout.GridPane;
 import javafx.scene.paint.Color;
+import javafx.scene.paint.Paint;
 import javafx.scene.shape.Rectangle;
 
 // Simple 2D board as a cell matrix
@@ -31,8 +32,17 @@ public class Board extends GridPane {
         }
     }
 
-    // Set the color on the (x, y) coordinates
-    public void setColor(int x, int y, Color color) {
+    /**
+     * Return the color at given coordinates
+     */
+    public synchronized Paint getColor(int x, int y) {
+        return (Paint)board[y][x].getFill();
+    }
+
+    /**
+     * Set the color on the (x, y) coordinates
+    */ 
+    public synchronized void setColor(int x, int y, Paint color) {
         board[y][x].setFill(color);
     }
 }
