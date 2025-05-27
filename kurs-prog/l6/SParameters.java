@@ -1,7 +1,7 @@
 
-// Class for keeping the parameters
+// Class for keeping the simulation parameters
 public class SParameters {
-    static public double cycleRate = 1.5;
+    static public double cycleRate = 400;
     static public int nRows = 20;
     static public int nCols = 20;
     static public int wolfCount = 1;

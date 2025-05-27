@@ -1,3 +1,4 @@
+
 import javafx.application.Application;
 import javafx.scene.*;
 import javafx.stage.Stage;
@@ -16,6 +17,9 @@ public class Main extends Application {
         // final double DEFAULT_WIDTH = 1200, DEFAULT_HEIGHT = 800;
 
         // BorderPane root = new BorderPane();
+        
+
+
         Manager manager = new Manager();
         Scene scene = new Scene(manager.getUIBoard());
 
@@ -23,6 +27,10 @@ public class Main extends Application {
         primaryStage.setScene(scene);
         primaryStage.setTitle(WINDOW_BASE_NAME);
         primaryStage.show();
+
+        primaryStage.setOnCloseRequest((event) -> {
+            manager.kill();
+        });
     }
 
 }

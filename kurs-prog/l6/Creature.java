@@ -1,19 +1,76 @@
+import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.PriorityQueue;
+import java.util.Vector;
+import java.util.concurrent.ThreadLocalRandom;
 
+import javafx.application.Platform;
 import javafx.geometry.Point2D;
 import javafx.scene.paint.Color;
+import javafx.util.Pair;
 
 /**
- * Interface for creatures (in this case just for the wolves and rabbits)
+ * Interface for creatures (in this case just for the wolves and rabbits),
+ * Each creature should define:
+ * - public Move genMove() -> generate a move it's turn
+ * - public Color getColor() -> get the color of the creature
  */
 interface CreatureLike {
-    public Color getColor();
-    public Point2D getPosition();
-    public void cycle();
+
+    /**
+     * Generate the move in 1 cycle, will either make:
+     * - random move
+     * - run towrads closest creature (for example rabbit)
+     * - run away (ex. from wolf)
+     */
     public Move genMove();
+
+    /**
+     * Get the color of the creature
+     */
+    public Color getColor();
+
+    /**
+     * Check if given type of creature can be captured,
+     * (for example for wolf: RABBIT is valid)
+     */
+    public boolean isCapture(Creature.Type t);
+
+
+    // ---------- DEFINED IN CREATURE CLASS ----------
+
+    /**
+     * Get position of the creature on the 2D board
+     */
+    public Point2D getPosition();
+
+    /**
+     * Set the position of the creature
+     */
+    public void setPosition(Point2D pos);
+
+    /**
+     * Make one turn of movement
+     */
+    public void cycle();
+
+    /**
+     * Get the type of the creature
+     */
     public Creature.Type getType();
+
+    /**
+     * Get X coordinate of the creature, but as integer
+     */
+    public int x();
+
+    /**
+     * Get Y coordinate of the creature, but as integer
+     */
+    public int y();
 }
+
+
 
 /**
  * Base class for all creatures, it is a thread, with random wait cycle
@@ -24,13 +81,21 @@ abstract public class Creature implements Runnable, CreatureLike {
      * Type of the creature
      */
     static public enum Type {
-        WOLF, RABBIT
+        WOLF, RABBIT, NONE
     }
+
+    /**
+     * Type of move to make, either move towards 
+     * given creature, or run away from it
+     */
+    static protected enum MoveType {
+        TOWARDS, AWAY, RANDOM
+    };
 
     /**
      * Data class for finding the closest creature
      */
-    static protected class CreatureInfo implements Comparable<CreatureInfo> {
+    static protected class CreatureInfo {
         int posDiff = 0;
         Creature creature = null;
 
@@ -38,20 +103,29 @@ abstract public class Creature implements Runnable, CreatureLike {
             this.posDiff = diff;
             this.creature = c;
         }
-
-        @Override
-        public int compareTo(CreatureInfo cmp) {
-            return posDiff - cmp.posDiff;
-        }
     };
 
+    static protected class CreatureInfoComparator implements Comparator<CreatureInfo> {
+        @Override
+        public int compare(CreatureInfo x, CreatureInfo y) {
+            // negative -> x < y (so x should be in front)
+            // zero -> x == y (are the same)
+            // positive -> x > y (so y should be in front of the queue)
+            return x.posDiff - y.posDiff;
+        }
+    }
+
     protected Point2D position;
-    protected boolean isRunning;
+    protected volatile boolean isRunning = false;
     protected LinkedList<Creature> creaturesRef;
     protected Type type;
+    protected Manager manager;
 
-    public Creature(Point2D position) {
+    public Creature(Point2D position, Manager manager, Type type) {
         this.position = position;
+        this.manager = manager;
+        this.isRunning = true;
+        this.type = type;
     }
 
     /**
@@ -63,6 +137,13 @@ abstract public class Creature implements Runnable, CreatureLike {
 
     @Override
     public void run() {
+        // Add it self to the simulation (simply set the color on it's coordinates)
+        // It is illegal to modify the JavaFX components in child threads (no the main JavaFX thread)
+        // So this is needed, rather than simply calling the 'setColor'
+        Platform.runLater(() -> {
+            manager.getUIBoard().setColor((int)position.getX(), (int)position.getY(), getColor());
+        });
+
         while (isRunning) {
             try {
                 cycle();
@@ -74,32 +155,159 @@ abstract public class Creature implements Runnable, CreatureLike {
     }
 
     /**
-     * Get the closest type of creature
+     * One turn for the creature to make it's move,
+     * simply calls 'genMove' and then 'makeMove' on the manager
+     */
+    @Override 
+    public void cycle() {
+        // genMove will use probably `findClosest` and
+        // then make a decision to move (either towards it or run away from it)
+        Move move = genMove();
+
+        if (move != null) {
+            manager.makeMove(move, this);
+        }
+    }
+
+    /**
+     * Generate a move based on the closest target creature
+     * @param info target creature
+     * @param type either move towards it, or run away from it
+     * @return generated move
+     */
+    synchronized protected Move genMoveType(CreatureInfo info, MoveType type) {
+        // SYNCHRONIZE
+
+        // Add all possible moves
+        Vector<Move> moves = new Vector<>(8);
+        Vector<Move> validMoves = new Vector<>(8);
+        boolean capturePossible = false;
+
+        double diffX[] = {-1, 0, 1, -1, 1, -1,  0,  1};
+        double diffY[] = { 1, 1, 1,  0, 0, -1, -1, -1};
+
+        for(int i = 0; i < diffX.length; i++) {
+            Point2D to = position.add(diffX[i], diffY[i]);
+
+            // Check if the point is within bounds
+            if (!Manager.inBounds(to)) {
+                continue;
+            }
+
+            Creature c = manager.at(to);
+
+            // No occupant at this square
+            if (c == null) {
+                moves.add(new Move(position, to));
+                continue;
+            }
+
+            // Occupied by the same type, ignore it
+            if (c.getType() == getType()) {
+                continue;
+            }
+
+            // Check if I can capture this creature
+            if (isCapture(c.getType())) {
+                moves.add(new Move(position, to, c));
+                capturePossible = true;
+            }
+        }
+
+        switch (type) {
+            case TOWARDS:
+                // Simply check if the distance between the target and
+                // given move shrinks
+                for (Move m : moves) {
+                    // If there is a capture, make it the only move
+                    if (capturePossible) {
+                        if (m.getType() == Move.Type.CAPTURE){
+                            validMoves.add(m);
+                        }
+                    } 
+                    else if (distance(positionDiff(m.getTo(), info.creature.getPosition())) < info.posDiff) {
+                        validMoves.add(m);
+                    }
+                }
+                break;
+            
+            case AWAY:
+                // If the distance increases, add it to the valid moves
+                for (Move m : moves) {
+                    if (distance(positionDiff(m.getTo(), info.creature.getPosition())) >= info.posDiff) {
+                        validMoves.add(m);
+                    }
+                }
+                break;
+            case RANDOM:
+            default: 
+                // All possible moves are valid
+                validMoves = moves;
+                break;
+        }
+
+        // No valid moves
+        if (validMoves.isEmpty()) {
+            return null;
+        }
+
+        // Only 1, so there is no need to randomly select one
+        if (validMoves.size() == 1) {
+            return validMoves.firstElement();
+        }
+        
+        // Choose randomly
+        return validMoves.get(ThreadLocalRandom.current().nextInt(validMoves.size()));
+    }
+
+    /**
+     * Get the abs. difference from given point (1st x, 2nd y)
+     */
+    static protected Pair<Integer, Integer> positionDiff(Point2D p1, Point2D p2) {
+        return new Pair<Integer,Integer>(
+            Math.abs((int)(p1.getX() - p2.getX())),
+            Math.abs((int)(p1.getX() - p2.getX())) 
+        );
+    }
+
+    /**
+     * Get the distance from given point
+     */
+    static protected int distance(Pair<Integer, Integer> dist) {
+        return Math.max(dist.getKey(), dist.getValue());
+    }
+
+    /**
+     * Get the closest type of creature, if many withing the same range,
+     * select at random
      */
     protected CreatureInfo findClosest(Type type) {
         CreatureInfo creature = null;
-        
+
         // Working in multi-thread enviorment,
         // the creatures may be modified (deleted),
         // by other threads
         synchronized (creaturesRef) {
-            PriorityQueue<CreatureInfo> queue = new PriorityQueue<>();
+            Comparator<CreatureInfo> cmp = new CreatureInfoComparator();
+            PriorityQueue<CreatureInfo> queue = new PriorityQueue<>(creaturesRef.size(), cmp);
 
             for (Creature c : creaturesRef) {
                 if (c.type != type) {
                     continue;
                 }
 
-                Point2D target = c.getPosition();
-                int diffX = Math.abs((int)(target.getX() - position.getX()));
-                int diffY = Math.abs((int)(target.getY() - position.getY()));
-
-                if (this == c || (diffX == 0 && diffY == 0)) {
+                Pair<Integer, Integer> diffs = positionDiff(c.getPosition(), position);
+                if (this == c || (diffs.getKey() == 0 && diffs.getValue() == 0)) {
                     continue;
                 }
 
                 // Get the square distance from the target, and put it on the queue
-                queue.add(new CreatureInfo(Math.max(diffX, diffY), c));
+                queue.add(new CreatureInfo(distance(diffs), c));
+            }
+
+            // No creatures of given type
+            if (queue.isEmpty()) {
+                return null;
             }
 
             // Get the closest creature
@@ -109,14 +317,14 @@ abstract public class Creature implements Runnable, CreatureLike {
 
             // Add other creatures within the distance
             CreatureInfo other;
-            while (target.posDiff == (other = queue.poll()).posDiff) {
+            while (!queue.isEmpty() && target.posDiff == (other = queue.poll()).posDiff) {
                 closest.add(other);
             }
 
             // Choose at random the target
             int targetIndex = 0;
             if (closest.size() != 1) {
-                targetIndex = Manager.random.nextInt(closest.size());
+                targetIndex = ThreadLocalRandom.current().nextInt(closest.size());
             }
 
             // Set the target
@@ -135,8 +343,33 @@ abstract public class Creature implements Runnable, CreatureLike {
     }
 
     /**
+     * Set the position of the creature
+     */
+    @Override
+    public void setPosition(Point2D pos) {
+        this.position = pos;
+    }
+
+    /**
+     * Get x position as int
+     */
+    @Override
+    public int x() {
+        return (int)position.getX();
+    }
+
+    /**
+     * Get y position as int
+     */
+    @Override
+    public int y() {
+        return (int)position.getY();
+    }
+
+    /**
      * Return enum type of the creature
      */
+    @Override
     public Type getType() {
         return type;
     }
