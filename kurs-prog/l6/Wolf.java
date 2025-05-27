@@ -30,6 +30,14 @@ public class Wolf extends Creature {
     }
 
     /**
+     * Makes a turn for the rabbit, depends on the 'wolfSpeed' setting
+     */
+    @Override
+    public void cycle() throws InterruptedException {
+        cycle(SParameters.wolfSpeed);
+    }
+
+    /**
      * Return wheter given type of creature can be captured,
      * by rabbit (no creature can be, so it always returns false)
      */

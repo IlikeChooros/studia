@@ -1,11 +1,19 @@
 
 import javafx.application.Application;
 import javafx.scene.*;
+import javafx.scene.control.Alert;
+import javafx.scene.paint.Color;
 import javafx.stage.Stage;
+import javafx.application.Platform;
+
+import javafx.fxml.FXMLLoader;
+import java.io.IOException;
+import java.net.URL;
 
 public class Main extends Application {
     
-    private static final String WINDOW_BASE_NAME = "h";
+    private static final String SIMULATION_WINDOW_TITLE = "Wolf Rabbit Simulation";
+    private static final String PARAMETERS_WINDOW_TITLE = "Simulation Parameters";
 
     public static void main(String[] args) {
         launch(args);
@@ -13,24 +21,62 @@ public class Main extends Application {
 
     @Override
     public void start(Stage primaryStage) {
-        // Create a simple scene with a button
-        // final double DEFAULT_WIDTH = 1200, DEFAULT_HEIGHT = 800;
+        try {
+            FXMLLoader loader = new FXMLLoader();
 
-        // BorderPane root = new BorderPane();
-        
+            // Make sure the path to fxml is correct, assuming it's in 'resources' folder
+            // and 'resources' is on the classpath or specified correctly.
+            URL fxmlUrl = getClass().getResource("parameters.fxml"); 
+            if (fxmlUrl == null) {
+                System.err.println("Cannot find FXML file. Make sure 'resources' is in classpath.");
+                return;
+            }
+            loader.setLocation(fxmlUrl);
+            Parent root = loader.load();
 
+            ParametersController controller = loader.getController();
+            controller.setStage(primaryStage);
 
-        Manager manager = new Manager();
-        Scene scene = new Scene(manager.getUIBoard());
+            Scene scene = new Scene(root);
+            URL cssUrl = getClass().getResource("styles.css");
+            if (cssUrl != null) {
+                scene.getStylesheets().add(cssUrl.toExternalForm());
+            } else {
+                System.err.println("Cannot find CSS file. Styles will not be applied.");
+            }
+            
+            primaryStage.setTitle(PARAMETERS_WINDOW_TITLE);
+            primaryStage.setScene(scene);
+            primaryStage.show();
 
-        primaryStage.sizeToScene();
-        primaryStage.setScene(scene);
-        primaryStage.setTitle(WINDOW_BASE_NAME);
-        primaryStage.show();
-
-        primaryStage.setOnCloseRequest((event) -> {
-            manager.kill();
-        });
+        } catch (IOException e) {
+            e.printStackTrace();
+            // Fallback or error handling
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Loading Error");
+            alert.setHeaderText("Could not load the parameters screen.");
+            alert.setContentText("There was an error loading the FXML or CSS file: " + e.getMessage());
+            alert.showAndWait();
+        }
     }
 
+    public void startSimulationScene(Stage primaryStage) {
+        Manager manager = new Manager();
+        Scene simulationScene = new Scene(manager.getUIBoard());
+        simulationScene.setFill(Color.BLACK);
+        
+        URL cssUrl = getClass().getResource("styles.css");
+        if (cssUrl != null) {
+            simulationScene.getStylesheets().add(cssUrl.toExternalForm());
+        }
+
+        primaryStage.sizeToScene();
+        primaryStage.setScene(simulationScene);
+        primaryStage.setTitle(SIMULATION_WINDOW_TITLE);
+
+        primaryStage.setOnCloseRequest((event) -> {
+            manager.kill(); // Ensure simulation threads are stopped
+            Platform.exit();
+        });
+    }
 }

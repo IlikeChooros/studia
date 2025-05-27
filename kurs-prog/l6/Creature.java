@@ -52,7 +52,7 @@ interface CreatureLike {
     /**
      * Make one turn of movement
      */
-    public void cycle();
+    public void cycle() throws InterruptedException;
 
     /**
      * Get the type of the creature
@@ -147,7 +147,6 @@ abstract public class Creature implements Runnable, CreatureLike {
         while (isRunning) {
             try {
                 cycle();
-                Thread.sleep(Manager.getCycleDuration());
             } catch(InterruptedException e) {
                 isRunning = false;
             }
@@ -155,17 +154,30 @@ abstract public class Creature implements Runnable, CreatureLike {
     }
 
     /**
-     * One turn for the creature to make it's move,
-     * simply calls 'genMove' and then 'makeMove' on the manager
+     * Makes 1 turn for the creature
      */
     @Override 
-    public void cycle() {
+    public void cycle() throws InterruptedException {
+        cycle(1);
+    }
+
+
+    /**
+     * Makes 'nCycles' turns for the creature to make it's move,
+     * simply calls 'genMove' and then 'makeMove' on the manager
+     */
+    protected void cycle(int nCycyles) throws InterruptedException {
         // genMove will use probably `findClosest` and
         // then make a decision to move (either towards it or run away from it)
-        Move move = genMove();
+        long cycleDuration = Manager.getCycleDuration();
+        for (int i = 0; i < nCycyles; i++) {
+            Move move = genMove();
 
-        if (move != null) {
-            manager.makeMove(move, this);
+            if (move != null) {
+                manager.makeMove(move, this);
+            }
+            
+            Thread.sleep(cycleDuration / nCycyles);
         }
     }
 
@@ -233,11 +245,24 @@ abstract public class Creature implements Runnable, CreatureLike {
             
             case AWAY:
                 // If the distance increases, add it to the valid moves
+                Vector<Move> keepSameDist = new Vector<>(8);
                 for (Move m : moves) {
-                    if (distance(positionDiff(m.getTo(), info.creature.getPosition())) >= info.posDiff) {
+                    int dist = distance(positionDiff(m.getTo(), info.creature.getPosition()));
+
+                    if (dist > info.posDiff) {
                         validMoves.add(m);
                     }
+                    else if (dist == info.posDiff) {
+                        keepSameDist.add(m);
+                    }
                 }
+
+                // Check if ideal moves are not possible,
+                // then keep the same distance
+                if (validMoves.isEmpty()) {
+                    validMoves = keepSameDist;
+                }
+
                 break;
             case RANDOM:
             default: 
