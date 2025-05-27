@@ -40,7 +40,7 @@ public class Manager {
 
         // Based on parameters, make the creatures
         populate(Rabbit.class, SParameters.rabbitCount);
-        populate(Wolf.class, 1);
+        populate(Wolf.class, SParameters.wolfCount);
         
         for (Thread t : threads) {
             t.start();

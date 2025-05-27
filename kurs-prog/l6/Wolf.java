@@ -19,7 +19,7 @@ public class Wolf extends Creature {
      */
     @Override
     public Move genMove() {
-        CreatureInfo closest = findClosest(Type.RABBIT);
+        CreatureInfo closest = findClosest(Type.RABBIT, SParameters.wolfRange);
 
         // No target creatures
         if (closest == null) {

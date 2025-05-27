@@ -175,7 +175,7 @@ abstract public class Creature implements Runnable, CreatureLike {
      * @param type either move towards it, or run away from it
      * @return generated move
      */
-    synchronized protected Move genMoveType(CreatureInfo info, MoveType type) {
+    protected Move genMoveType(CreatureInfo info, MoveType type) {
         // SYNCHRONIZE
 
         // Add all possible moves
@@ -281,7 +281,7 @@ abstract public class Creature implements Runnable, CreatureLike {
      * Get the closest type of creature, if many withing the same range,
      * select at random
      */
-    protected CreatureInfo findClosest(Type type) {
+    protected CreatureInfo findClosest(Type type, int maxRange) {
         CreatureInfo creature = null;
 
         // Working in multi-thread enviorment,
@@ -297,12 +297,13 @@ abstract public class Creature implements Runnable, CreatureLike {
                 }
 
                 Pair<Integer, Integer> diffs = positionDiff(c.getPosition(), position);
-                if (this == c || (diffs.getKey() == 0 && diffs.getValue() == 0)) {
+                int dist = distance(diffs);
+                if (this == c || (dist == 0) || (dist > maxRange)) {
                     continue;
                 }
 
                 // Get the square distance from the target, and put it on the queue
-                queue.add(new CreatureInfo(distance(diffs), c));
+                queue.add(new CreatureInfo(dist, c));
             }
 
             // No creatures of given type
