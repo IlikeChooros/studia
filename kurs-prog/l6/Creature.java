@@ -115,7 +115,7 @@ abstract public class Creature implements Runnable, CreatureLike {
         }
     }
 
-    protected Point2D position;
+    protected volatile Point2D position;
     protected volatile boolean isRunning = false;
     protected LinkedList<Creature> creaturesRef;
     protected Type type;
@@ -188,7 +188,8 @@ abstract public class Creature implements Runnable, CreatureLike {
      * @return generated move
      */
     protected Move genMoveType(CreatureInfo info, MoveType type) {
-        // SYNCHRONIZE
+       
+        Point2D currentPos = getPosition();
 
         // Add all possible moves
         Vector<Move> moves = new Vector<>(8);
@@ -206,6 +207,7 @@ abstract public class Creature implements Runnable, CreatureLike {
                 continue;
             }
 
+            // at is already synchronized, so no need to synchronize it again
             Creature c = manager.at(to);
 
             // No occupant at this square
@@ -291,7 +293,7 @@ abstract public class Creature implements Runnable, CreatureLike {
     static protected Pair<Integer, Integer> positionDiff(Point2D p1, Point2D p2) {
         return new Pair<Integer,Integer>(
             Math.abs((int)(p1.getX() - p2.getX())),
-            Math.abs((int)(p1.getX() - p2.getX())) 
+            Math.abs((int)(p1.getY() - p2.getY())) 
         );
     }
 
@@ -365,7 +367,9 @@ abstract public class Creature implements Runnable, CreatureLike {
      */
     @Override 
     public Point2D getPosition() {
-        return this.position;
+        synchronized (this) {
+            return position;
+        }
     }
 
     /**
@@ -373,7 +377,9 @@ abstract public class Creature implements Runnable, CreatureLike {
      */
     @Override
     public void setPosition(Point2D pos) {
-        this.position = pos;
+        synchronized (this) {
+            this.position = pos;
+        }
     }
 
     /**
@@ -381,7 +387,9 @@ abstract public class Creature implements Runnable, CreatureLike {
      */
     @Override
     public int x() {
-        return (int)position.getX();
+        synchronized (this) {
+            return (int)position.getX();
+        }
     }
 
     /**
@@ -389,7 +397,9 @@ abstract public class Creature implements Runnable, CreatureLike {
      */
     @Override
     public int y() {
-        return (int)position.getY();
+        synchronized (this) {
+            return (int)position.getY();
+        }
     }
 
     /**

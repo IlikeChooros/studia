@@ -73,8 +73,10 @@ public class Manager {
     /**
      * Get the creature type at given position
      */
-    public synchronized Creature at(Point2D position) {
-        return occupancy[(int)position.getY()][(int)position.getX()];
+    public Creature at(Point2D position) {
+        synchronized (occupancy) {
+            return occupancy[(int)position.getY()][(int)position.getX()];
+        }
     }
 
     /**
@@ -145,6 +147,11 @@ public class Manager {
 
                 if (index != -1) {
                     Thread t = threads.get(index);
+
+                    synchronized (eatenCreature) {
+                        eatenCreature.isRunning = false; // mark the creature as not running
+                    }
+
                     t.interrupt(); // signal the creature thread to stop
 
                     // Remove it from the lists
