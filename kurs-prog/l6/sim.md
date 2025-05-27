@@ -30,3 +30,20 @@ FEATURES:
         - else stay in place
       - if on the edge of the board, move randomly
   - if the user clicks on the rabbit, it will be suspended, until the user clicks on it again
+
+
+# Run the project
+
+Make sure you have downloaded the Java SDK (not headless), and JavaFX with version according to your SDK.
+
+### On Linux
+
+Compile:
+*(Supposing javafx version is 17.0.15 and path to the library on your machine is: `/opt/javafx-sdk-17.0.15/lib`)*
+
+From the project root call:
+
+```sh
+chmod +x run.sh
+./run.sh
+```
