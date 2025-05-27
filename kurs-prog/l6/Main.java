@@ -51,11 +51,10 @@ public class Main extends Application {
 
         } catch (IOException e) {
             e.printStackTrace();
-            // Fallback or error handling
             Alert alert = new Alert(Alert.AlertType.ERROR);
-            alert.setTitle("Loading Error");
-            alert.setHeaderText("Could not load the parameters screen.");
-            alert.setContentText("There was an error loading the FXML or CSS file: " + e.getMessage());
+            alert.setTitle("Error Loading FXML");
+            alert.setHeaderText("Could not load the parameters window.");
+            alert.setContentText("Please check the console for details.");
             alert.showAndWait();
         }
     }

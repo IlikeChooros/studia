@@ -92,6 +92,14 @@ abstract public class Creature implements Runnable, CreatureLike {
         TOWARDS, AWAY, RANDOM
     };
 
+    static interface MoveGenerator {
+        /**
+         * Generate a move for the creature
+         * @return generated move
+         */
+        public Move genMove();  
+    }
+
     /**
      * Data class for finding the closest creature
      */
@@ -200,7 +208,7 @@ abstract public class Creature implements Runnable, CreatureLike {
         double diffY[] = { 1, 1, 1,  0, 0, -1, -1, -1};
 
         for(int i = 0; i < diffX.length; i++) {
-            Point2D to = position.add(diffX[i], diffY[i]);
+            Point2D to = currentPos.add(diffX[i], diffY[i]);
 
             // Check if the point is within bounds
             if (!Manager.inBounds(to)) {
@@ -212,7 +220,7 @@ abstract public class Creature implements Runnable, CreatureLike {
 
             // No occupant at this square
             if (c == null) {
-                moves.add(new Move(position, to));
+                moves.add(new Move(currentPos, to));
                 continue;
             }
 
@@ -223,7 +231,7 @@ abstract public class Creature implements Runnable, CreatureLike {
 
             // Check if I can capture this creature
             if (isCapture(c.getType())) {
-                moves.add(new Move(position, to, c));
+                moves.add(new Move(currentPos, to, c));
                 capturePossible = true;
             }
         }

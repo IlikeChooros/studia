@@ -76,7 +76,7 @@ public class ParametersController {
         }
     }
 
-    private void showAlert(String title, String content) {
+    public static void showAlert(String title, String content) {
         Alert alert = new Alert(AlertType.ERROR);
         alert.setTitle(title);
         alert.setHeaderText(null);

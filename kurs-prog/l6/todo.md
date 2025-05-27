@@ -12,6 +12,8 @@ TODO:
   - [x] getPosition -> returns the position of the creature
   - [x] findClosest -> returns the closest creature of a given type
   - [ ] MovePolicy object, that's attached to the creature
+    - [ ] refactor Creature:
+      - [ ] remove genMove, genMoveType, MoveType etc. and move it to the MovePolicy
 - [ ] Wolf:
   - [ ] Features:
     - [x] speed (by deafult, 1)
