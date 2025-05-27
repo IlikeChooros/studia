@@ -73,7 +73,7 @@ public class Manager {
     /**
      * Get the creature type at given position
      */
-    public Creature at(Point2D position) {
+    public synchronized Creature at(Point2D position) {
         return occupancy[(int)position.getY()][(int)position.getX()];
     }
 

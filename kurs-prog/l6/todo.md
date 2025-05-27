@@ -11,17 +11,20 @@ TODO:
   - [x] getColor -> returns the color of the creature
   - [x] getPosition -> returns the position of the creature
   - [x] findClosest -> returns the closest creature of a given type
+  - [ ] MovePolicy object, that's attached to the creature
 - [ ] Wolf:
   - [ ] Features:
-    - [ ] speed (by deafult, 1)
-    - [ ] range (for eating)
+    - [x] speed (by deafult, 1)
+    - [x] range (for eating)
+    - [ ] MovePolicy (default: move towards the closest rabbit)
   - [x] .cycle method:
     - [x] find nearest rabbit (for optimization, use a priority queue)
     - [x] If rabbit is within range, eat it
     - [x] Else, move towards the rabbit (or randomly)
 - [ ] Rabbit:
   - [ ] Features:
-    - [ ] speed (by deafult, 1)
-    - [ ] range (for escaping)
+    - [x] speed (by deafult, 1)
+    - [x] range (for escaping)
+    - [ ] MovePolicy (default: always move away from the closest wolf)
   - [x] .cycle method:
     - [x] esape from the nearest wolf (if within range)
