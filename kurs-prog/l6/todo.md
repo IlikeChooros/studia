@@ -19,6 +19,8 @@ TODO:
     - [x] speed (by deafult, 1)
     - [x] range (for eating)
     - [x] MovePolicy (default: move towards the closest rabbit)
+      - [ ] After killing a rabbit, may rest for a few cycles (default = 5)
+      - [ ] May die of hunger (default = 20 cycles without eating)
   - [x] .cycle method:
     - [x] find nearest rabbit (for optimization, use a priority queue)
     - [x] If rabbit is within range, eat it
