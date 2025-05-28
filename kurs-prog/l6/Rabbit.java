@@ -9,23 +9,11 @@ public class Rabbit extends Creature {
      * @param managerRef
      */
     public Rabbit(Point2D position, Manager managerRef) {
-        super(position, managerRef, Type.RABBIT);
+        super(position, managerRef, Type.RABBIT, RabbitMovePolicies.getDefault());
     }
 
-    /**
-     * Generates a move for the rabbit, runs away from the closest wolf,
-     * if there is no wolves, walks randomly
-     */
-    @Override
-    public Move genMove() {
-        CreatureInfo closest = findClosest(Type.WOLF, SParameters.rabbitRange);
-
-        // No target creatures
-        if (closest == null) {
-            return genMoveType(null, MoveType.RANDOM);
-        }
-
-        return genMoveType(closest, MoveType.AWAY);        
+    public Rabbit(Point2D posisiton, Manager managerRef, MovePolicy movepolicy) {
+        super(posisiton, managerRef, Type.RABBIT, movepolicy);
     }
 
     /**

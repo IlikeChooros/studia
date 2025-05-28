@@ -8,29 +8,26 @@ import javafx.geometry.Point2D;
 import javafx.util.Pair;
 
 abstract public class MovePolicy implements Creature.MoveGenerator {
-    
-    protected final Creature thisCreature;
 
-    public MovePolicy(Creature creature) {
-        this.thisCreature = creature;
+    public enum Policies {
+        RANDOM, PROBLEM_MOVEMENT, ALWAYS_RUN_AWAY_FROM_WOLVES,
+        ALWAYS_TOWRADS_RABBITS
+    }
+    
+    protected Creature thisCreature = null;
+    protected boolean capturePossible = false;
+
+    public void setOwner(Creature owner) {
+        thisCreature = owner;
     }
 
     /**
-     * Generate a move based on the closest target creature
-     * @param info target creature
-     * @param type either move towards it, or run away from it
-     * @return generated move
+     * Generate possible moves for this creature (so that it doesn't)
      */
-    protected Move genMoveType(Creature.CreatureInfo info, Creature.MoveType type) {
-
-        // Get the current position of the creature
-        Point2D currentPos = thisCreature.getPosition();
-
-        // Add all possible moves
+    protected Vector<Move> genPossibleMoves() {
+        capturePossible = false;
         Vector<Move> moves = new Vector<>(8);
-        Vector<Move> validMoves = new Vector<>(8);
-        boolean capturePossible = false;
-
+        Point2D currentPos = thisCreature.getPosition();
         double diffX[] = {-1, 0, 1, -1, 1, -1,  0,  1};
         double diffY[] = { 1, 1, 1,  0, 0, -1, -1, -1};
 
@@ -62,6 +59,22 @@ abstract public class MovePolicy implements Creature.MoveGenerator {
                 capturePossible = true;
             }
         }
+
+        return moves;
+    }
+
+    /**
+     * Generate a move based on the closest target creature
+     * @param info target creature
+     * @param type either move towards it, or run away from it
+     * @return generated move
+     */
+    protected Move genMoveType(Creature.CreatureInfo info, Creature.MoveType type) {
+
+        // Add all possible moves
+        Vector<Move> moves = genPossibleMoves();
+        Vector<Move> validMoves = new Vector<>(8);
+        
 
         switch (type) {
             case TOWARDS:
