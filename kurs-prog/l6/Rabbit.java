@@ -12,8 +12,8 @@ public class Rabbit extends Creature {
         super(position, managerRef, Type.RABBIT, RabbitMovePolicies.getDefault());
     }
 
-    public Rabbit(Point2D posisiton, Manager managerRef, MovePolicy movepolicy) {
-        super(posisiton, managerRef, Type.RABBIT, movepolicy);
+    public Rabbit(Point2D posisiton, Manager managerRef, MovePolicy.Policies movepolicy) {
+        super(posisiton, managerRef, Type.RABBIT, AllMovementPolicies.get(movepolicy));
     }
 
     /**

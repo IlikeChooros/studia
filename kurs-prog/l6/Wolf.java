@@ -19,8 +19,8 @@ public class Wolf extends Creature {
      * @param managerRef
      * @param movePolicy
      */
-    public Wolf(Point2D position, Manager managerRef, MovePolicy movePolicy) {
-        super(position, managerRef, Type.WOLF, movePolicy);
+    public Wolf(Point2D position, Manager managerRef, MovePolicy.Policies movePolicy) {
+        super(position, managerRef, Type.WOLF, AllMovementPolicies.get(movePolicy));
     }
 
     /**

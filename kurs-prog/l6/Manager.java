@@ -11,10 +11,10 @@ public class Manager {
     private final Board uiBoard;
 
     // Templated function to populate the creatures of given type
-    private <E extends Creature> void populate(Class<E> clazz, int count) {
+    private <E extends Creature> void populate(Class<E> clazz, int count, MovePolicy.Policies movePolicy) {
         for (int i = 0; i < count; i++) {
             try {
-                E c = clazz.getConstructor(Point2D.class, Manager.class).newInstance(getRandomPoint(), this);
+                E c = clazz.getConstructor(Point2D.class, Manager.class, MovePolicy.Policies.class).newInstance(getRandomPoint(), this, movePolicy);
                 c.setCreatures(creatures);
                 creatures.add(c);
                 threads.add(new Thread(c));
@@ -39,8 +39,8 @@ public class Manager {
         }
 
         // Based on parameters, make the creatures
-        populate(Rabbit.class, SParameters.rabbitCount);
-        populate(Wolf.class, SParameters.wolfCount);
+        populate(Rabbit.class, SParameters.rabbitCount, SParameters.rabbitMovePolicy);
+        populate(Wolf.class, SParameters.wolfCount, SParameters.wolfMovePolicy);
         
         for (Thread t : threads) {
             t.start();
