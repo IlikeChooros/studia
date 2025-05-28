@@ -1,3 +1,4 @@
+import javafx.geometry.Point2D;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.RowConstraints;
@@ -55,12 +56,30 @@ public class Board extends GridPane {
 
                 // Add the rectangle to the container.
                 cellContainer.getChildren().add(cell);
-                // Save the reference if needed later.
                 board[r][c] = cell;
                 // Add the container to the grid at (c, r)
                 add(cellContainer, c, r);
             }
         }
+    }
+
+    /**
+     * Converts given mouse click (pixel coordinates) to board coordinates
+     * (x, y)
+     */
+    public Point2D toBoardCoordinates(Point2D mouseClick) {
+        
+        int ncols = getColumnCount();
+        int nrows = getRowCount();
+
+        if (getWidth() <= 0 || getHeight() <= 0) {
+            return null;
+        }
+
+        int x = (int)(mouseClick.getX() / (getWidth() / ncols));
+        int y = (int)(mouseClick.getY() / (getHeight() / nrows));
+
+        return new Point2D(x, y);
     }
 
     /**

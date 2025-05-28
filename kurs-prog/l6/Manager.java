@@ -3,6 +3,7 @@ import java.util.concurrent.ThreadLocalRandom;
 
 import javafx.application.Platform;
 import javafx.geometry.Point2D;
+import javafx.scene.input.MouseEvent;
 
 public class Manager {
     private volatile LinkedList<Creature> creatures;
@@ -45,6 +46,39 @@ public class Manager {
         for (Thread t : threads) {
             t.start();
         }
+
+        // Add mouse clicked callback
+        uiBoard.setOnMouseClicked((event) -> {
+            this.handleClick(event);
+        });
+    }
+
+    /**
+     * Handle click (freezing the creature)
+     */
+    private void handleClick(MouseEvent event) {
+        System.out.println(String.format("Click (%.2f, %.2f)", event.getX(), event.getY()));
+
+        Point2D boardPos = uiBoard.toBoardCoordinates(new Point2D(event.getX(), event.getY()));
+
+        if (boardPos != null) {
+            System.out.println(String.format("Board coords (%.2f, %.2f)", boardPos.getX(), boardPos.getY()));
+        }
+        
+        // Get the creature at these coordinates
+        Creature creature = at(boardPos);
+
+        if (creature == null) {
+            return;
+        }
+
+        // Set the proper state for the creature
+        if (creature.getSuspended()) {
+            creature.resume();
+        }
+        else {
+            creature.suspend();
+        }
     }
 
     /**
@@ -74,6 +108,10 @@ public class Manager {
      * Get the creature type at given position
      */
     public Creature at(Point2D position) {
+        if (position == null) {
+            return null;
+        }
+
         synchronized (occupancy) {
             return occupancy[(int)position.getY()][(int)position.getX()];
         }
@@ -148,10 +186,7 @@ public class Manager {
                 if (index != -1) {
                     Thread t = threads.get(index);
 
-                    synchronized (eatenCreature) {
-                        eatenCreature.isRunning = false; // mark the creature as not running
-                    }
-
+                    eatenCreature.kill();
                     t.interrupt(); // signal the creature thread to stop
 
                     // Remove it from the lists

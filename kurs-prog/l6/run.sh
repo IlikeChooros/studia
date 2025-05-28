@@ -1,5 +1,4 @@
 #!/bin/bash
-# filepath: /home/who-ate-my-ram/studia/kurs-prog/l6/run.sh
 
 # Configuration variables
 JAVAFX_PATH="/opt/javafx-sdk-17.0.15/lib"

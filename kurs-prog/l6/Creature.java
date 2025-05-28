@@ -42,6 +42,26 @@ interface CreatureLike {
     public void cycle() throws InterruptedException;
 
     /**
+     * Kill the creature
+     */
+    public void kill();
+
+    /**
+     * Put the creature to sleep
+     */
+    public void suspend();
+
+    /**
+     * Wake up the creature
+     */
+    public void resume();
+
+    /**
+     * Get suspended state
+     */
+    public boolean getSuspended();
+
+    /**
      * Get the type of the creature
      */
     public Creature.Type getType();
@@ -81,6 +101,7 @@ abstract public class Creature implements Runnable, CreatureLike {
 
     protected volatile Point2D position;
     protected volatile boolean isRunning = false;
+    protected volatile boolean isSuspended = false;
     protected MovePolicy policy = null;
     protected LinkedList<Creature> creaturesRef;
     protected Type type;
@@ -114,10 +135,54 @@ abstract public class Creature implements Runnable, CreatureLike {
         while (isRunning) {
             try {
                 cycle();
+
+                // Suspended state
+                if (isSuspended) {
+                    synchronized(this) {
+                        while(isSuspended) {
+                            wait();
+                        }
+                    }
+                }
+
             } catch(InterruptedException e) {
                 isRunning = false;
             }
         }
+    }
+
+    /**
+     * Kills the creature
+     */
+    @Override
+    public synchronized void kill() {
+        isRunning = false;
+    }
+
+    /**
+     * Puts the creature to sleep...
+     */
+    @Override
+    public synchronized void suspend() {
+        isSuspended = true;
+        notify();
+    }
+
+    /**
+     * Resumes the creature from the sleep state
+     */
+    @Override
+    public synchronized void resume() {
+        isSuspended = false;
+        notify();
+    }
+
+    /**
+     * Get the suspended state
+     */
+    @Override
+    public synchronized boolean getSuspended() {
+        return isSuspended;
     }
 
     /**
@@ -152,40 +217,32 @@ abstract public class Creature implements Runnable, CreatureLike {
      * Get the position of the creature (x,y)
      */
     @Override 
-    public Point2D getPosition() {
-        synchronized (this) {
-            return position;
-        }
+    public synchronized Point2D getPosition() {
+        return position;
     }
 
     /**
      * Set the position of the creature
      */
     @Override
-    public void setPosition(Point2D pos) {
-        synchronized (this) {
-            this.position = pos;
-        }
+    public synchronized void setPosition(Point2D pos) {
+        this.position = pos;
     }
 
     /**
      * Get x position as int
      */
     @Override
-    public int x() {
-        synchronized (this) {
-            return (int)position.getX();
-        }
+    public synchronized int x() {
+        return (int)position.getX();
     }
 
     /**
      * Get y position as int
      */
     @Override
-    public int y() {
-        synchronized (this) {
-            return (int)position.getY();
-        }
+    public synchronized int y() {
+        return (int)position.getY();
     }
 
     /**
