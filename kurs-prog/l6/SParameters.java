@@ -10,6 +10,6 @@ public class SParameters {
     public static int rabbitRange = nCols;
     public static int wolfSpeed = 1;
     public static int rabbitSpeed = 1;
-    public static MovePolicy.Policies rabbitMovePolicy = MovePolicy.Policies.ALWAYS_RUN_AWAY_FROM_WOLVES;
+    public static MovePolicy.Policies rabbitMovePolicy = MovePolicy.Policies.RABBIT_PROBLEM_MOVEMENT;
     public static MovePolicy.Policies wolfMovePolicy = MovePolicy.Policies.ALWAYS_TOWRADS_RABBITS;
 }

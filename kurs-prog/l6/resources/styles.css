@@ -20,6 +20,14 @@
     -fx-border-radius: 5px;
 }
 
+.spinner, .combo-box, .text-field {
+    -fx-background-color: #e0e0e0;
+}
+
+.spinner:hover, .combo-box:hover, .text-field:hover {
+    -fx-background-color: #babbba;
+}
+
 .spinner .increment-arrow-button, .spinner .decrement-arrow-button {
     -fx-background-radius: 5px;
 }

@@ -15,7 +15,10 @@ final public class WolfMovePolicies {
                 return genMoveType(null, MoveType.RANDOM);
             }
 
-            return genMoveType(closest, MoveType.TOWARDS);
+            // Don't allow death of the rabbit (for example by other wolf)
+            synchronized(closest.creature) {
+                return genMoveType(closest, MoveType.TOWARDS);
+            }
         }
     }
 };

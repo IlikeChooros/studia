@@ -57,13 +57,7 @@ public class Manager {
      * Handle click (freezing the creature)
      */
     private void handleClick(MouseEvent event) {
-        System.out.println(String.format("Click (%.2f, %.2f)", event.getX(), event.getY()));
-
         Point2D boardPos = uiBoard.toBoardCoordinates(new Point2D(event.getX(), event.getY()));
-
-        if (boardPos != null) {
-            System.out.println(String.format("Board coords (%.2f, %.2f)", boardPos.getX(), boardPos.getY()));
-        }
         
         // Get the creature at these coordinates
         Creature creature = at(boardPos);

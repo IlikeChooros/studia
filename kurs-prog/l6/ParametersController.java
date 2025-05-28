@@ -44,8 +44,20 @@ public class ParametersController {
         rabbitSpeedSpinner.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(1, 10, SParameters.rabbitSpeed));
         
         // Initialize wolf and rabbit policy comboboxes with all available policies
-        wolfMovePolicyComboBox.getItems().addAll(MovePolicy.allPoliciesNames(null));
-        rabbitMovePolicyComboBox.getItems().addAll(MovePolicy.allPoliciesNames(null));
+        wolfMovePolicyComboBox.getItems().addAll(
+            MovePolicy.getPoliciesNames(
+                null, 
+                MovePolicy.Policies.RANDOM, 
+                MovePolicy.Policies.ALWAYS_TOWRADS_RABBITS
+        ));
+
+        rabbitMovePolicyComboBox.getItems().addAll(
+            MovePolicy.getPoliciesNames(
+                null,
+                MovePolicy.Policies.RANDOM,
+                MovePolicy.Policies.ALWAYS_RUN_AWAY_FROM_WOLVES,
+                MovePolicy.Policies.RABBIT_PROBLEM_MOVEMENT
+        ));
         
         // Set default values from SParameters
         wolfMovePolicyComboBox.setValue(MovePolicy.getPolicyName(SParameters.wolfMovePolicy));
@@ -65,7 +77,6 @@ public class ParametersController {
             SParameters.wolfSpeed = wolfSpeedSpinner.getValue();
             SParameters.rabbitSpeed = rabbitSpeedSpinner.getValue();
 
-
             // Set the movement policies
             String wolfPolicyString = wolfMovePolicyComboBox.getValue();
             String rabbitPolicyString = rabbitMovePolicyComboBox.getValue();
@@ -83,9 +94,6 @@ public class ParametersController {
                     SParameters.rabbitMovePolicy = policies[i];
                 }
             }
-
-            // Ensure ranges are not greater than board dimensions if that's a constraint
-            // For now, we assume they can be independent as per SParameters current structure
 
             if (SParameters.cycleRate <= 0) {
                 showAlert("Invalid Input", "Cycle Rate must be a positive number.");
@@ -107,6 +115,9 @@ public class ParametersController {
         }
     }
 
+    /**
+     * Helper function to show alert
+     */
     public static void showAlert(String title, String content) {
         Alert alert = new Alert(AlertType.ERROR);
         alert.setTitle(title);

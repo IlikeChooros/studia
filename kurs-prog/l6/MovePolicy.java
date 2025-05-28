@@ -51,9 +51,9 @@ abstract public class MovePolicy implements Creature.MoveGenerator {
     }
 
     /**
-     * Get array of all policies names (if argument is null, translated using 'getPolicyName')
+     * Get array of given policies names (if argument is null, translated using 'getPolicyName')
      */
-    public static String[] allPoliciesNames(Function<Policies,String> translate) {
+    public static String[] getPoliciesNames(Function<Policies,String> translate, Policies... policies) {
         if (translate == null) {
             translate = new Function<MovePolicy.Policies,String>() {
                 @Override
@@ -62,8 +62,7 @@ abstract public class MovePolicy implements Creature.MoveGenerator {
                 }
             };
         }
-
-        Policies policies[] = Policies.values();
+        
         String[] names = new String[policies.length];
         
         for (int i = 0; i < policies.length; i++) {
@@ -140,7 +139,9 @@ abstract public class MovePolicy implements Creature.MoveGenerator {
     }
 
     /**
-     * Generate a move based on the closest target creature
+     * Generate a move based on the closest target creature, this function
+     * should be in a `synchronized` block (info.creature as target), to avoid
+     * sudden death of the target, when trying the get it's position etc.
      * @param info target creature
      * @param type either move towards it, or run away from it
      * @return generated move
@@ -151,6 +152,10 @@ abstract public class MovePolicy implements Creature.MoveGenerator {
         Vector<Move> moves = genPossibleMoves();
         Vector<Move> validMoves = new Vector<>(8);
         
+        // No target, make a random move
+        if (info == null || info.creature == null) {
+            type = MoveType.RANDOM;
+        }
 
         switch (type) {
             case TOWARDS:

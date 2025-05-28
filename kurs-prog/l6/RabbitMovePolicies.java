@@ -16,7 +16,10 @@ public class RabbitMovePolicies {
                 return genMoveType(null, MoveType.RANDOM);
             }
 
-            return genMoveType(closest, MoveType.AWAY);        
+            // Dont' allow death of the target
+            synchronized (closest.creature) {
+                return genMoveType(closest, MoveType.AWAY); 
+            }
         }
 
     }
@@ -36,18 +39,22 @@ public class RabbitMovePolicies {
             Point2D myPos = thisCreature.getPosition();
             CreatureInfo closest = findClosest(Creature.Type.WOLF, SParameters.rabbitRange);
 
-            // If on the edge or no wolves, make a random move
-            if (closest == null || onEdge(myPos)) {
-                return genMoveType(null, MoveType.RANDOM);
-            }
+            // Lock the target
+            synchronized (closest.creature) {
 
-            // Try to make a perfect move (run away from the wolf)
-            Move bestmove = genMoveType(closest, MoveType.AWAY);
+                // If on the edge o no wolves, make a random move
+                if (closest == null || onEdge(myPos) || closest.creature == null) {
+                    return genMoveType(null, MoveType.RANDOM);
+                }
 
-            // Check if the distance is increased (move pos diff > current pos diff)
-            if (distance(positionDiff(bestmove.getTo(), closest.creature.getPosition())) > closest.posDiff){
-                // That's best move
-                return bestmove;
+                // Try to make a perfect move (run away from the wolf)
+                Move bestmove = genMoveType(closest, MoveType.AWAY);
+
+                // Check if the distance is increased (move pos diff > current pos diff)
+                if (bestmove != null && distance(positionDiff(bestmove.getTo(), closest.creature.getPosition())) > closest.posDiff){
+                    // That's best move
+                    return bestmove;
+                }
             }
 
             // Just make random move
