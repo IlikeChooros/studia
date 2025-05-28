@@ -13,10 +13,10 @@ public class RabbitMovePolicies {
 
             // No target creatures
             if (closest == null) {
-                return genMoveType(null, Creature.MoveType.RANDOM);
+                return genMoveType(null, MoveType.RANDOM);
             }
 
-            return genMoveType(closest, Creature.MoveType.AWAY);        
+            return genMoveType(closest, MoveType.AWAY);        
         }
 
     }
@@ -38,11 +38,11 @@ public class RabbitMovePolicies {
 
             // If on the edge or no wolves, make a random move
             if (closest == null || onEdge(myPos)) {
-                return genMoveType(null, Creature.MoveType.RANDOM);
+                return genMoveType(null, MoveType.RANDOM);
             }
 
             // Try to make a perfect move (run away from the wolf)
-            Move bestmove = genMoveType(closest, Creature.MoveType.AWAY);
+            Move bestmove = genMoveType(closest, MoveType.AWAY);
 
             // Check if the distance is increased (move pos diff > current pos diff)
             if (distance(positionDiff(bestmove.getTo(), closest.creature.getPosition())) > closest.posDiff){
@@ -51,7 +51,7 @@ public class RabbitMovePolicies {
             }
 
             // Just make random move
-            return genMoveType(null, Creature.MoveType.RANDOM);
+            return genMoveType(null, MoveType.RANDOM);
         }
 
         private static boolean onEdge(Point2D pos) {

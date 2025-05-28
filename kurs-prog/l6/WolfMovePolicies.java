@@ -13,10 +13,10 @@ final public class WolfMovePolicies {
 
             // No target creatures
             if (closest == null) {
-                return genMoveType(null, Creature.MoveType.RANDOM);
+                return genMoveType(null, MoveType.RANDOM);
             }
 
-            return genMoveType(closest, Creature.MoveType.TOWARDS);
+            return genMoveType(closest, MoveType.TOWARDS);
         }
     }
 

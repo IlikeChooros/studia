@@ -9,8 +9,16 @@ import javafx.util.Pair;
 
 abstract public class MovePolicy implements Creature.MoveGenerator {
 
+    /**
+     * Type of move to make, either move towards 
+     * given creature, or run away from it
+     */
+    static protected enum MoveType {
+        TOWARDS, AWAY, RANDOM
+    };
+
     public enum Policies {
-        RANDOM, PROBLEM_MOVEMENT, ALWAYS_RUN_AWAY_FROM_WOLVES,
+        RANDOM, RABBIT_PROBLEM_MOVEMENT, ALWAYS_RUN_AWAY_FROM_WOLVES,
         ALWAYS_TOWRADS_RABBITS
     }
     
@@ -69,7 +77,7 @@ abstract public class MovePolicy implements Creature.MoveGenerator {
      * @param type either move towards it, or run away from it
      * @return generated move
      */
-    protected Move genMoveType(Creature.CreatureInfo info, Creature.MoveType type) {
+    protected Move genMoveType(Creature.CreatureInfo info, MoveType type) {
 
         // Add all possible moves
         Vector<Move> moves = genPossibleMoves();

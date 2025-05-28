@@ -1,8 +1,5 @@
 import java.util.Comparator;
 import java.util.LinkedList;
-import java.util.PriorityQueue;
-import java.util.Vector;
-import java.util.concurrent.ThreadLocalRandom;
 
 import javafx.application.Platform;
 import javafx.geometry.Point2D;
@@ -74,14 +71,6 @@ abstract public class Creature implements Runnable, CreatureLike {
     static public enum Type {
         WOLF, RABBIT, NONE
     }
-
-    /**
-     * Type of move to make, either move towards 
-     * given creature, or run away from it
-     */
-    static protected enum MoveType {
-        TOWARDS, AWAY, RANDOM
-    };
 
     static interface MoveGenerator {
         /**

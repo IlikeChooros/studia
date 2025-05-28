@@ -9,7 +9,7 @@ public class AllMovementPolicies {
          */
         @Override
         public Move genMove() {
-            return genMoveType(null, Creature.MoveType.RANDOM);
+            return genMoveType(null, MoveType.RANDOM);
         }
     }
     
@@ -23,7 +23,7 @@ public class AllMovementPolicies {
         switch (policy) {
             case RANDOM:
                 return new RandomMovePolicy();
-            case PROBLEM_MOVEMENT:
+            case RABBIT_PROBLEM_MOVEMENT:
                 return new RabbitMovePolicies.ProblemMovement();
             case ALWAYS_RUN_AWAY_FROM_WOLVES:
                 return new RabbitMovePolicies.AlwaysRunAwayFromWolves();
