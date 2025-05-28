@@ -9,9 +9,9 @@ import javafx.scene.shape.Rectangle;
 // Simple 2D board as a cell matrix
 public class Board extends GridPane {
 
-    static public final Color WOLF_COLOR = Color.SLATEGRAY;
-    static public final Color RABBIT_COLOR = Color.WHITE;
-    static public final Color EMPTY_COLOR = Color.DARKGREEN;
+    public static final Color WOLF_COLOR = Color.SLATEGRAY;
+    public static final Color RABBIT_COLOR = Color.WHITE;
+    public static final Color EMPTY_COLOR = Color.DARKGREEN;
 
     // Using the rectangle 2D array for easy access
     private Rectangle[][] board;

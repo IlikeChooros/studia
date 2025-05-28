@@ -1,10 +1,12 @@
+
+// Class for getting given type movement policy as an MovePolicy object
 public class AllMovementPolicies {
 
     // Randomly select move, that is non-blocking
     public static class RandomMovePolicy extends MovePolicy {
 
         /**
-         * Generates a random move for the creature, takse into account other creatures,
+         * Generates a random move for the creature, takes into account other creatures,
          * and edges
          */
         @Override

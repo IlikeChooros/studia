@@ -3,6 +3,7 @@ import java.util.LinkedList;
 import java.util.PriorityQueue;
 import java.util.Vector;
 import java.util.concurrent.ThreadLocalRandom;
+import java.util.function.Function;
 
 import javafx.geometry.Point2D;
 import javafx.util.Pair;
@@ -13,13 +14,80 @@ abstract public class MovePolicy implements Creature.MoveGenerator {
      * Type of move to make, either move towards 
      * given creature, or run away from it
      */
-    static protected enum MoveType {
+    protected static enum MoveType {
         TOWARDS, AWAY, RANDOM
     };
 
-    public enum Policies {
+    public static enum Policies {
         RANDOM, RABBIT_PROBLEM_MOVEMENT, ALWAYS_RUN_AWAY_FROM_WOLVES,
         ALWAYS_TOWRADS_RABBITS
+    }
+
+    /**
+     * Data class for finding the closest creature
+     */
+    protected static class CreatureInfo {
+        int posDiff = 0;
+        Creature creature = null;
+
+        public CreatureInfo(int diff, Creature c) {
+            this.posDiff = diff;
+            this.creature = c;
+        }
+    };
+
+    /**
+     * Comparator for PriorityQueue, when looking for closest creature, puts first 
+     * the closest ones (ascending order)
+     */
+    protected static class CreatureInfoComparator implements Comparator<CreatureInfo> {
+        @Override
+        public int compare(CreatureInfo x, CreatureInfo y) {
+            // negative -> x < y (so x should be in front)
+            // zero -> x == y (are the same)
+            // positive -> x > y (so y should be in front of the queue)
+            return x.posDiff - y.posDiff;
+        }
+    }
+
+    /**
+     * Get array of all policies names (if argument is null, translated using 'getPolicyName')
+     */
+    public static String[] allPoliciesNames(Function<Policies,String> translate) {
+        if (translate == null) {
+            translate = new Function<MovePolicy.Policies,String>() {
+                @Override
+                public String apply(MovePolicy.Policies policy) {
+                    return getPolicyName(policy);
+                }
+            };
+        }
+
+        Policies policies[] = Policies.values();
+        String[] names = new String[policies.length];
+        
+        for (int i = 0; i < policies.length; i++) {
+            names[i] = translate.apply(policies[i]);
+        }
+
+        return names;
+    }
+
+    /**
+     * Get polish translation of movement policies enum
+     */
+    public static String getPolicyName(Policies policy) {
+        switch (policy) {
+            case RABBIT_PROBLEM_MOVEMENT:
+                return "Ruch królika zgodny z zadaniem";
+            case ALWAYS_RUN_AWAY_FROM_WOLVES:
+                return "Zawsze uciekaj od wilków";
+            case ALWAYS_TOWRADS_RABBITS:
+                return "Zawsze biegnij w stronę królików";
+            default:
+            case RANDOM:
+                return "Losowe ruchy";
+        }
     }
     
     protected Creature thisCreature = null;
@@ -77,7 +145,7 @@ abstract public class MovePolicy implements Creature.MoveGenerator {
      * @param type either move towards it, or run away from it
      * @return generated move
      */
-    protected Move genMoveType(Creature.CreatureInfo info, MoveType type) {
+    protected Move genMoveType(CreatureInfo info, MoveType type) {
 
         // Add all possible moves
         Vector<Move> moves = genPossibleMoves();
@@ -146,7 +214,7 @@ abstract public class MovePolicy implements Creature.MoveGenerator {
     /**
      * Get the abs. difference from given point (1st x, 2nd y)
      */
-    static protected Pair<Integer, Integer> positionDiff(Point2D p1, Point2D p2) {
+    protected static Pair<Integer, Integer> positionDiff(Point2D p1, Point2D p2) {
         return new Pair<Integer,Integer>(
             Math.abs((int)(p1.getX() - p2.getX())),
             Math.abs((int)(p1.getY() - p2.getY())) 
@@ -156,7 +224,7 @@ abstract public class MovePolicy implements Creature.MoveGenerator {
     /**
      * Get the distance from given point
      */
-    static protected int distance(Pair<Integer, Integer> dist) {
+    protected static int distance(Pair<Integer, Integer> dist) {
         return Math.max(dist.getKey(), dist.getValue());
     }
 
@@ -164,15 +232,15 @@ abstract public class MovePolicy implements Creature.MoveGenerator {
      * Get the closest type of creature, if many withing the same range,
      * select at random
      */
-    protected Creature.CreatureInfo findClosest(Creature.Type type, int maxRange) {
-        Creature.CreatureInfo creature = null;
+    protected CreatureInfo findClosest(Creature.Type type, int maxRange) {
+        CreatureInfo creature = null;
 
         // Working in multi-thread enviorment,
         // the creatures may be modified (deleted),
         // by other threads
         synchronized (thisCreature.creaturesRef) {
-            Comparator<Creature.CreatureInfo> cmp = new Creature.CreatureInfoComparator();
-            PriorityQueue<Creature.CreatureInfo> queue = new PriorityQueue<>(thisCreature.creaturesRef.size(), cmp);
+            Comparator<CreatureInfo> cmp = new CreatureInfoComparator();
+            PriorityQueue<CreatureInfo> queue = new PriorityQueue<>(thisCreature.creaturesRef.size(), cmp);
 
             for (Creature c : thisCreature.creaturesRef) {
                 if (c.type != type) {
@@ -186,7 +254,7 @@ abstract public class MovePolicy implements Creature.MoveGenerator {
                 }
 
                 // Get the square distance from the target, and put it on the queue
-                queue.add(new Creature.CreatureInfo(dist, c));
+                queue.add(new CreatureInfo(dist, c));
             }
 
             // No creatures of given type
@@ -195,12 +263,12 @@ abstract public class MovePolicy implements Creature.MoveGenerator {
             }
 
             // Get the closest creature
-            Creature.CreatureInfo target = queue.poll();
-            LinkedList<Creature.CreatureInfo> closest = new LinkedList<>();
+            CreatureInfo target = queue.poll();
+            LinkedList<CreatureInfo> closest = new LinkedList<>();
             closest.add(target);
 
             // Add other creatures within the distance
-            Creature.CreatureInfo other;
+            CreatureInfo other;
             while (!queue.isEmpty() && target.posDiff == (other = queue.poll()).posDiff) {
                 closest.add(other);
             }

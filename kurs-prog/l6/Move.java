@@ -9,7 +9,7 @@ import javafx.geometry.Point2D;
  */
 public class Move {
     
-    static public enum Type {
+    public static enum Type {
         SILENT,
         CAPTURE
     }

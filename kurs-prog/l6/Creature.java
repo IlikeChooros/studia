@@ -1,4 +1,3 @@
-import java.util.Comparator;
 import java.util.LinkedList;
 
 import javafx.application.Platform;
@@ -68,7 +67,7 @@ abstract public class Creature implements Runnable, CreatureLike {
     /**
      * Type of the creature
      */
-    static public enum Type {
+    public static enum Type {
         WOLF, RABBIT, NONE
     }
 
@@ -78,29 +77,6 @@ abstract public class Creature implements Runnable, CreatureLike {
          * @return generated move
          */
         public Move genMove();  
-    }
-
-    /**
-     * Data class for finding the closest creature
-     */
-    static protected class CreatureInfo {
-        int posDiff = 0;
-        Creature creature = null;
-
-        public CreatureInfo(int diff, Creature c) {
-            this.posDiff = diff;
-            this.creature = c;
-        }
-    };
-
-    static protected class CreatureInfoComparator implements Comparator<CreatureInfo> {
-        @Override
-        public int compare(CreatureInfo x, CreatureInfo y) {
-            // negative -> x < y (so x should be in front)
-            // zero -> x == y (are the same)
-            // positive -> x > y (so y should be in front of the queue)
-            return x.posDiff - y.posDiff;
-        }
     }
 
     protected volatile Point2D position;

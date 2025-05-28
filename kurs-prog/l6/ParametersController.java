@@ -20,8 +20,8 @@ public class ParametersController {
     @FXML private Spinner<Integer> rabbitRangeSpinner;
     @FXML private Spinner<Integer> wolfSpeedSpinner;
     @FXML private Spinner<Integer> rabbitSpeedSpinner;
-    @FXML private ComboBox<MovePolicy.Policies> wolfMovePolicyComboBox;
-    @FXML private ComboBox<MovePolicy.Policies> rabbitMovePolicyComboBox;
+    @FXML private ComboBox<String> wolfMovePolicyComboBox;
+    @FXML private ComboBox<String> rabbitMovePolicyComboBox;
     @FXML private Button startButton;
 
     private Stage stage;
@@ -44,12 +44,12 @@ public class ParametersController {
         rabbitSpeedSpinner.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(1, 10, SParameters.rabbitSpeed));
         
         // Initialize wolf and rabbit policy comboboxes with all available policies
-        wolfMovePolicyComboBox.getItems().addAll(MovePolicy.Policies.values());
-        rabbitMovePolicyComboBox.getItems().addAll(MovePolicy.Policies.values());
+        wolfMovePolicyComboBox.getItems().addAll(MovePolicy.allPoliciesNames(null));
+        rabbitMovePolicyComboBox.getItems().addAll(MovePolicy.allPoliciesNames(null));
         
         // Set default values from SParameters
-        wolfMovePolicyComboBox.setValue(SParameters.wolfMovePolicy);
-        rabbitMovePolicyComboBox.setValue(SParameters.rabbitMovePolicy);
+        wolfMovePolicyComboBox.setValue(MovePolicy.getPolicyName(SParameters.wolfMovePolicy));
+        rabbitMovePolicyComboBox.setValue(MovePolicy.getPolicyName(SParameters.rabbitMovePolicy));
     }
 
     @FXML
@@ -64,8 +64,25 @@ public class ParametersController {
             SParameters.rabbitRange = rabbitRangeSpinner.getValue();
             SParameters.wolfSpeed = wolfSpeedSpinner.getValue();
             SParameters.rabbitSpeed = rabbitSpeedSpinner.getValue();
-            SParameters.wolfMovePolicy = wolfMovePolicyComboBox.getValue();
-            SParameters.rabbitMovePolicy = rabbitMovePolicyComboBox.getValue();
+
+
+            // Set the movement policies
+            String wolfPolicyString = wolfMovePolicyComboBox.getValue();
+            String rabbitPolicyString = rabbitMovePolicyComboBox.getValue();
+
+            SParameters.wolfMovePolicy = null;
+            SParameters.rabbitMovePolicy = null;
+
+            // Find the matching option
+             MovePolicy.Policies policies[] = MovePolicy.Policies.values();
+            for (int i = 0; (i < policies.length); i++) {
+                if (wolfPolicyString == MovePolicy.getPolicyName(policies[i])) {
+                    SParameters.wolfMovePolicy = policies[i];
+                }
+                if (rabbitPolicyString == MovePolicy.getPolicyName(policies[i])) {
+                    SParameters.rabbitMovePolicy = policies[i];
+                }
+            }
 
             // Ensure ranges are not greater than board dimensions if that's a constraint
             // For now, we assume they can be independent as per SParameters current structure

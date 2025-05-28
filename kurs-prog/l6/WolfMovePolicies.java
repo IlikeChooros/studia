@@ -1,6 +1,5 @@
 final public class WolfMovePolicies {
 
-
     static class RunTowardsRabbits extends MovePolicy {
 
         /**
@@ -9,7 +8,7 @@ final public class WolfMovePolicies {
          */
         @Override
         public Move genMove() {
-            Creature.CreatureInfo closest = findClosest(Creature.Type.RABBIT, SParameters.wolfRange);
+            CreatureInfo closest = findClosest(Creature.Type.RABBIT, SParameters.wolfRange);
 
             // No target creatures
             if (closest == null) {
@@ -19,11 +18,6 @@ final public class WolfMovePolicies {
             return genMoveType(closest, MoveType.TOWARDS);
         }
     }
-
-    public static MovePolicy getDefault() {
-        return new RunTowardsRabbits();
-    }
-
 };
 
 

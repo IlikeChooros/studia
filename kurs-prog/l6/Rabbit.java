@@ -9,7 +9,7 @@ public class Rabbit extends Creature {
      * @param managerRef
      */
     public Rabbit(Point2D position, Manager managerRef) {
-        super(position, managerRef, Type.RABBIT, RabbitMovePolicies.getDefault());
+        super(position, managerRef, Type.RABBIT, new RabbitMovePolicies.AlwaysRunAwayFromWolves());
     }
 
     public Rabbit(Point2D posisiton, Manager managerRef, MovePolicy.Policies movepolicy) {

@@ -2,14 +2,14 @@ import javafx.geometry.Point2D;
 
 public class RabbitMovePolicies {
     
-    static public class AlwaysRunAwayFromWolves extends MovePolicy {
+    public static class AlwaysRunAwayFromWolves extends MovePolicy {
         /**
          * Generates a move for the rabbit, runs away from the closest wolf,
          * if there is no wolves, walks randomly
          */
         @Override
         public Move genMove() {
-            Creature.CreatureInfo closest = findClosest(Creature.Type.WOLF, SParameters.rabbitRange);
+            CreatureInfo closest = findClosest(Creature.Type.WOLF, SParameters.rabbitRange);
 
             // No target creatures
             if (closest == null) {
@@ -34,7 +34,7 @@ public class RabbitMovePolicies {
             */
             
             Point2D myPos = thisCreature.getPosition();
-            Creature.CreatureInfo closest = findClosest(Creature.Type.WOLF, SParameters.rabbitRange);
+            CreatureInfo closest = findClosest(Creature.Type.WOLF, SParameters.rabbitRange);
 
             // If on the edge or no wolves, make a random move
             if (closest == null || onEdge(myPos)) {
@@ -58,21 +58,5 @@ public class RabbitMovePolicies {
             return (pos.getX() == 0 || pos.getX() == SParameters.nCols - 1)
                 || (pos.getY() == 0 || pos.getY() == SParameters.nRows - 1);
         }
-    }
-
-
-    /**
-     * Get the default move policy, always runs away from wolves.
-     */
-    public static MovePolicy getDefault() {
-        return new AlwaysRunAwayFromWolves();
-    }
-
-    /**
-     * Get the move policy as described in the problem statement.
-     * It runs away from wolves, and makes random moves if on the edge.
-     */
-    public static MovePolicy getProblemMovePolicy() {
-        return new ProblemMovement();
     }
 }

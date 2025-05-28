@@ -48,7 +48,7 @@
             <Label text="Rabbit Count:" GridPane.rowIndex="3" />
             <Spinner fx:id="rabbitCountSpinner" editable="true" minWidth="100.0" GridPane.columnIndex="1" GridPane.rowIndex="3" />
             <Label text="Cycle Rate (ms):" GridPane.rowIndex="4" />
-            <TextField fx:id="cycleRateField" GridPane.columnIndex="1" GridPane.rowIndex="4" />
+            <TextField fx:id="cycleRateField" prefWidth="200.0" GridPane.columnIndex="1" GridPane.rowIndex="4" />
             <Label text="Wolf Range:" GridPane.rowIndex="5" />
             <Spinner fx:id="wolfRangeSpinner" editable="true" minWidth="100.0" GridPane.columnIndex="1" GridPane.rowIndex="5" />
             <Label text="Rabbit Range:" GridPane.rowIndex="6" />
