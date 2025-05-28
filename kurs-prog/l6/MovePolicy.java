@@ -58,7 +58,7 @@ abstract public class MovePolicy implements Creature.MoveGenerator {
             translate = new Function<MovePolicy.Policies,String>() {
                 @Override
                 public String apply(MovePolicy.Policies policy) {
-                    return getPolicyName(policy);
+                    return getPolicyNameEN(policy);
                 }
             };
         }
@@ -75,7 +75,7 @@ abstract public class MovePolicy implements Creature.MoveGenerator {
     /**
      * Get polish translation of movement policies enum
      */
-    public static String getPolicyName(Policies policy) {
+    public static String getPolicyNamePL(Policies policy) {
         switch (policy) {
             case RABBIT_PROBLEM_MOVEMENT:
                 return "Ruch królika zgodny z zadaniem";
@@ -86,6 +86,23 @@ abstract public class MovePolicy implements Creature.MoveGenerator {
             default:
             case RANDOM:
                 return "Losowe ruchy";
+        }
+    }
+
+    /**
+     * Get polish translation of movement policies enum
+     */
+    public static String getPolicyNameEN(Policies policy) {
+        switch (policy) {
+            case RABBIT_PROBLEM_MOVEMENT:
+                return "Rabbit's problem movement";
+            case ALWAYS_RUN_AWAY_FROM_WOLVES:
+                return "Always run away from wolves";
+            case ALWAYS_TOWRADS_RABBITS:
+                return "Run towards rabbits";
+            default:
+            case RANDOM:
+                return "Random move";
         }
     }
     
@@ -254,7 +271,7 @@ abstract public class MovePolicy implements Creature.MoveGenerator {
 
                 Pair<Integer, Integer> diffs = positionDiff(c.getPosition(), thisCreature.getPosition());
                 int dist = distance(diffs);
-                if ((dist == 0) || (dist > maxRange)) {
+                if ((dist == 0 || thisCreature == c) || (dist > maxRange)) {
                     continue;
                 }
 

@@ -60,8 +60,8 @@ public class ParametersController {
         ));
         
         // Set default values from SParameters
-        wolfMovePolicyComboBox.setValue(MovePolicy.getPolicyName(SParameters.wolfMovePolicy));
-        rabbitMovePolicyComboBox.setValue(MovePolicy.getPolicyName(SParameters.rabbitMovePolicy));
+        wolfMovePolicyComboBox.setValue(MovePolicy.getPolicyNameEN(SParameters.wolfMovePolicy));
+        rabbitMovePolicyComboBox.setValue(MovePolicy.getPolicyNameEN(SParameters.rabbitMovePolicy));
     }
 
     @FXML
@@ -77,6 +77,7 @@ public class ParametersController {
             SParameters.wolfSpeed = wolfSpeedSpinner.getValue();
             SParameters.rabbitSpeed = rabbitSpeedSpinner.getValue();
 
+
             // Set the movement policies
             String wolfPolicyString = wolfMovePolicyComboBox.getValue();
             String rabbitPolicyString = rabbitMovePolicyComboBox.getValue();
@@ -87,10 +88,10 @@ public class ParametersController {
             // Find the matching option
              MovePolicy.Policies policies[] = MovePolicy.Policies.values();
             for (int i = 0; (i < policies.length); i++) {
-                if (wolfPolicyString == MovePolicy.getPolicyName(policies[i])) {
+                if (wolfPolicyString == MovePolicy.getPolicyNameEN(policies[i])) {
                     SParameters.wolfMovePolicy = policies[i];
                 }
-                if (rabbitPolicyString == MovePolicy.getPolicyName(policies[i])) {
+                if (rabbitPolicyString == MovePolicy.getPolicyNameEN(policies[i])) {
                     SParameters.rabbitMovePolicy = policies[i];
                 }
             }
