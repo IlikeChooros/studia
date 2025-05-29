@@ -147,8 +147,8 @@ abstract public class MovePolicy implements Creature.MoveGenerator {
                 continue;
             }
 
-            // Check if I can capture this Creature
-            if (thisCreature.isCapture(c.getType())) {
+            // Check if I can capture this Creature (don't allow suspended creatures)
+            if (!c.getSuspended() && thisCreature.isCapture(c.getType())) {
                 moves.add(new Move(currentPos, to, c));
                 capturePossible = true;
             }
@@ -267,7 +267,7 @@ abstract public class MovePolicy implements Creature.MoveGenerator {
             PriorityQueue<CreatureInfo> queue = new PriorityQueue<>(thisCreature.creaturesRef.size(), cmp);
 
             for (Creature c : thisCreature.creaturesRef) {
-                if (c.type != type) {
+                if (c.type != type || c.getSuspended()) {
                     continue;
                 }
 
