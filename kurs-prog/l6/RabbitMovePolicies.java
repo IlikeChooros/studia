@@ -39,11 +39,16 @@ public class RabbitMovePolicies {
             Point2D myPos = thisCreature.getPosition();
             CreatureInfo closest = findClosest(Creature.Type.WOLF, SParameters.rabbitRange);
 
+            // No target creatures
+            if (closest == null || closest.creature == null) {
+                return genMoveType(null, MoveType.RANDOM);
+            }
+
             // Lock the target
             synchronized (closest.creature) {
 
                 // If on the edge o no wolves, make a random move
-                if (closest == null || onEdge(myPos) || closest.creature == null) {
+                if (onEdge(myPos)) {
                     return genMoveType(null, MoveType.RANDOM);
                 }
 
