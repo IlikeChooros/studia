@@ -6,6 +6,7 @@ JAVAFX_MODULES="javafx.controls,javafx.fxml"
 OUTPUT_DIR="classes"
 MAIN_CLASS="Main"
 RESOURCES_DIR="resources"
+JAVA_OPTIONS=""
 
 # Function to display error message and exit
 error_exit() {
@@ -20,7 +21,7 @@ compile() {
     
     echo "Compiling Java sources with JavaFX..."
     javac --module-path "$JAVAFX_PATH" --add-modules "$JAVAFX_MODULES" \
-          -d "$OUTPUT_DIR" *.java || error_exit "Compilation failed"
+             -d "$OUTPUT_DIR" *.java || error_exit "Compilation failed"
     
     echo "Compilation successful!"
 }
@@ -28,8 +29,22 @@ compile() {
 # Function to run the project
 run() {
     echo "Running the application..."
-    java --module-path "$JAVAFX_PATH" --add-modules "$JAVAFX_MODULES" \
-         --class-path "$OUTPUT_DIR:$RESOURCES_DIR" "$MAIN_CLASS" || error_exit "Execution failed"
+
+    if [ "$JAVA_OPTIONS" != "" ]; then
+        echo "Using Java options: $JAVA_OPTIONS"
+
+        java --module-path "$JAVAFX_PATH" --add-modules "$JAVAFX_MODULES" \
+         --class-path "$OUTPUT_DIR:$RESOURCES_DIR" \
+            "$JAVA_OPTIONS" \
+         "$MAIN_CLASS" || error_exit "Execution failed"
+    else
+        echo "No special Java options provided."
+
+        java --module-path "$JAVAFX_PATH" --add-modules "$JAVAFX_MODULES" \
+         --class-path "$OUTPUT_DIR:$RESOURCES_DIR" \
+         "$MAIN_CLASS" || error_exit "Execution failed"
+    fi
+    
 }
 
 # Parse command line arguments
@@ -38,9 +53,23 @@ if [ "$1" == "clean" ]; then
     rm -rf "$OUTPUT_DIR"
     exit 0
 elif [ "$1" == "compile" ]; then
-    compile
+    echo "Compiling the project..."
+    # compile
     exit 0
 elif [ "$1" == "run" ]; then
+
+    # Add supprot for verbose or gc-verbose options
+    if [ "$2" == "verbose" ]; then
+        JAVA_OPTIONS="-Xlint:all"
+        echo "Verbose mode enabled for compilation."
+    elif [ "$2" == "gc-verbose" ]; then
+        JAVA_OPTIONS="-verbose:gc"
+        echo "GC verbose mode enabled for compilation."
+    else
+        JAVA_OPTIONS=""
+        echo "No special options for compilation."
+    fi
+
     run
     exit 0
 else
