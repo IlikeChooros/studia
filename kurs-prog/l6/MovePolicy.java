@@ -20,7 +20,7 @@ abstract public class MovePolicy implements Creature.MoveGenerator {
 
     public static enum Policies {
         RANDOM, RABBIT_PROBLEM_MOVEMENT, ALWAYS_RUN_AWAY_FROM_WOLVES,
-        ALWAYS_TOWRADS_RABBITS
+        ALWAYS_TOWRADS_RABBITS, WAIT_AFTER_KILL
     }
 
     /**
@@ -100,6 +100,8 @@ abstract public class MovePolicy implements Creature.MoveGenerator {
                 return "Always run away from wolves";
             case ALWAYS_TOWRADS_RABBITS:
                 return "Run towards rabbits";
+            case WAIT_AFTER_KILL:
+                return "After killing the rabbit, short sleep";
             default:
             case RANDOM:
                 return "Random move";

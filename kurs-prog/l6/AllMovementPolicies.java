@@ -31,6 +31,8 @@ public class AllMovementPolicies {
                 return new RabbitMovePolicies.AlwaysRunAwayFromWolves();
             case ALWAYS_TOWRADS_RABBITS:
                 return new WolfMovePolicies.RunTowardsRabbits();
+            case WAIT_AFTER_KILL:
+                return new WolfMovePolicies.RunTowardsRabbitsWaitAfterKill();
             default:
                 throw new IllegalArgumentException("Unknown movement policy: " + policy);
         }

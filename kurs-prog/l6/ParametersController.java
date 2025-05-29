@@ -48,7 +48,8 @@ public class ParametersController {
             MovePolicy.getPoliciesNames(
                 null, 
                 MovePolicy.Policies.RANDOM, 
-                MovePolicy.Policies.ALWAYS_TOWRADS_RABBITS
+                MovePolicy.Policies.ALWAYS_TOWRADS_RABBITS,
+                MovePolicy.Policies.WAIT_AFTER_KILL
         ));
 
         rabbitMovePolicyComboBox.getItems().addAll(

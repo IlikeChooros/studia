@@ -49,7 +49,7 @@ interface CreatureLike {
     /**
      * Put the creature to sleep
      */
-    public void suspend();
+    public void suspend(int cycles);
 
     /**
      * Wake up the creature
@@ -102,6 +102,7 @@ abstract public class Creature implements Runnable, CreatureLike {
     protected volatile Point2D position;
     protected volatile boolean isRunning = false;
     protected volatile boolean isSuspended = false;
+    protected volatile int nSuspendCycles = 0;
     protected MovePolicy policy = null;
     protected LinkedList<Creature> creaturesRef;
     protected Type type;
@@ -139,8 +140,16 @@ abstract public class Creature implements Runnable, CreatureLike {
                 // Suspended state
                 if (isSuspended) {
                     synchronized(this) {
-                        while(isSuspended) {
+                        // Wait forever (until 'resume')
+                        while(nSuspendCycles == -1) {
                             wait();
+                        }
+
+                        // Wait for specified number of cycles
+                        if (nSuspendCycles > 0) {
+                            wait(Manager.getCycleDuration() * nSuspendCycles);
+                            nSuspendCycles = 0;
+                            isSuspended = false;
                         }
                     }
                 }
@@ -160,11 +169,13 @@ abstract public class Creature implements Runnable, CreatureLike {
     }
 
     /**
-     * Puts the creature to sleep...
+     * Puts the creature to sleep, for given ncycles,
+     * (if == -1, then wait's for the 'resume')
      */
     @Override
-    public synchronized void suspend() {
+    public synchronized void suspend(int ncycles) {
         isSuspended = true;
+        nSuspendCycles = ncycles;
         notify();
     }
 
@@ -174,6 +185,7 @@ abstract public class Creature implements Runnable, CreatureLike {
     @Override
     public synchronized void resume() {
         isSuspended = false;
+        nSuspendCycles = 0;
         notify();
     }
 
@@ -202,7 +214,7 @@ abstract public class Creature implements Runnable, CreatureLike {
         // genMove will use probably `findClosest` and
         // then make a decision to move (either towards it or run away from it)
         long cycleDuration = Manager.getCycleDuration();
-        for (int i = 0; i < nCycyles; i++) {
+        for (int i = 0; (i < nCycyles) && !isSuspended; i++) {
             Move move = policy.genMove();
 
             if (move != null) {

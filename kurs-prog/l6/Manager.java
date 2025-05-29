@@ -71,7 +71,7 @@ public class Manager {
             creature.resume();
         }
         else {
-            creature.suspend();
+            creature.suspend(-1);
         }
     }
 
