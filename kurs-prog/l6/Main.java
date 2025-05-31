@@ -5,8 +5,9 @@ import javafx.scene.control.Alert;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import javafx.application.Platform;
-
 import javafx.fxml.FXMLLoader;
+import javafx.scene.image.Image;
+
 import java.io.IOException;
 import java.net.URL;
 
@@ -46,6 +47,12 @@ public class Main extends Application {
             }
             
             primaryStage.setTitle(PARAMETERS_WINDOW_TITLE);
+            primaryStage.setResizable(false);
+            primaryStage.getIcons().addAll(
+                new Image("main-icon64.png"),
+                new Image("main-icon32.png"),
+                new Image("main-icon16.png")
+            );
             primaryStage.setScene(scene);
             primaryStage.show();
 

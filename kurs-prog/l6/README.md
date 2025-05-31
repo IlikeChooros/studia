@@ -2,9 +2,9 @@
 
 Welcome to a 2D simulation where digital wolves chase digital rabbits. It's built with Java and JavaFX, because someone had to.
 
-![alt text](image.png)
+![alt text](sim-panel.png)
 
-![alt text](sim-image.png)
+![alt text](sim-demo.gif)
 
 ## Overview
 
@@ -33,6 +33,8 @@ This project bravely attempts to simulate the thrilling (or perhaps, mildly inte
             *   If blocked, it contemplates its existence and stays put.
             *   If it hits a wall (the edge of the board), it panics and picks a random direction. Genius.
     *   **Interactive Pause Button (for Rabbits)**: Because equality. Click a rabbit to make it freeze. Click to release.
+
+*(To pause the simluation, hold control and click on the board, do the same to resume.)*
 
 ## Running the Project (Good luck!)
 

@@ -67,6 +67,21 @@ public class Manager {
      * Handle click (freezing the creature)
      */
     private void handleClick(MouseEvent event) {
+
+        // Pause whole simulation if the secondary button is pressed
+        if (event.isControlDown()){
+            synchronized (creatures) {
+                for (Creature c : creatures) {
+                    if (c.getSuspended()) {
+                        c.resume();
+                    } else {
+                        c.suspend(-1);
+                    }
+                }
+            }
+            return;
+        }
+
         Position boardPos = uiBoard.toBoardCoordinates(new Point2D(event.getX(), event.getY()));
         
         // Get the creature at these coordinates
