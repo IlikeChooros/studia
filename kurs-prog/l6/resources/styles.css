@@ -5,7 +5,7 @@
 .button {
     -fx-background-color: #424242; /* Dark grey */
     -fx-text-fill: white;
-    -fx-font-size: 14px;
+    -fx-font-size: 18px;
     -fx-padding: 8px 15px;
     -fx-background-radius: 15px;
     -fx-border-radius: 15px;
@@ -16,7 +16,7 @@
 }
 
 .label {
-    -fx-font-size: 13px;
+    -fx-font-size: 18px;
     -fx-text-fill: white;
 }
 
@@ -25,9 +25,19 @@
     -fx-border-radius: 5px;
 }
 
+.tooltip {
+    -fx-font-size: 14px;
+    -fx-font-weight: normal;
+    -fx-text-fill: white;
+    -fx-background-color: #333333; /* Dark grey for tooltip background */
+    -fx-padding: 5px;
+    -fx-background-radius: 5px;
+}
+
 .spinner, .combo-box, .combo-box-base, .text-field, .list-cell:selected, .increment-arrow-button, .decrement-arrow-button {
     -fx-background-color: #2c2c2c;
     -fx-text-fill: white;
+    -fx-font-size: 16px;
 }
 
 .increment-arrow, .decrement-arrow {

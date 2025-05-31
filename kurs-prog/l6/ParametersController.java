@@ -7,6 +7,7 @@ import javafx.scene.control.ComboBox;
 import javafx.scene.control.Spinner;
 import javafx.scene.control.SpinnerValueFactory;
 import javafx.scene.control.TextField;
+import javafx.scene.text.Text;
 import javafx.stage.Stage;
 
 public class ParametersController {
@@ -22,6 +23,8 @@ public class ParametersController {
     @FXML private Spinner<Integer> rabbitSpeedSpinner;
     @FXML private ComboBox<String> wolfMovePolicyComboBox;
     @FXML private ComboBox<String> rabbitMovePolicyComboBox;
+    @FXML private Text wolfPolicyText;
+    @FXML private Text rabbitPolicyText;
     @FXML private Button startButton;
 
     private Stage stage;
@@ -63,6 +66,64 @@ public class ParametersController {
         // Set default values from SParameters
         wolfMovePolicyComboBox.setValue(MovePolicy.getPolicyNameEN(SParameters.wolfMovePolicy));
         rabbitMovePolicyComboBox.setValue(MovePolicy.getPolicyNameEN(SParameters.rabbitMovePolicy));
+
+        // Set up policy descriptions
+        setupPolicyDescriptions();
+        
+        // Set initial description text
+        updateWolfPolicyDescription(wolfMovePolicyComboBox.getValue());
+        updateRabbitPolicyDescription(rabbitMovePolicyComboBox.getValue());
+    }
+
+    /**
+     * Set up change listeners for policy descriptions
+     */
+    private void setupPolicyDescriptions() {
+        // Add listener to wolf policy combo box
+        wolfMovePolicyComboBox.valueProperty().addListener((observable, oldValue, newValue) -> {
+            updateWolfPolicyDescription(newValue);
+        });
+        
+        // Add listener to rabbit policy combo box
+        rabbitMovePolicyComboBox.valueProperty().addListener((observable, oldValue, newValue) -> {
+            updateRabbitPolicyDescription(newValue);
+        });
+    }
+    
+    /**
+     * Update wolf policy description based on selected policy
+     */
+    private void updateWolfPolicyDescription(String policyName) {
+        if (policyName == null) return;
+        
+        String description = "";
+        if (policyName.equals(MovePolicy.getPolicyNameEN(MovePolicy.Policies.RANDOM))) {
+            description = "Wolves move randomly without targeting rabbits.";
+        } else if (policyName.equals(MovePolicy.getPolicyNameEN(MovePolicy.Policies.ALWAYS_TOWRADS_RABBITS))) {
+            description = "Wolves always move toward the closest rabbit within range.";
+        } else if (policyName.equals(MovePolicy.getPolicyNameEN(MovePolicy.Policies.WAIT_AFTER_KILL))) {
+            description = "Wolves chase rabbits and wait for 5 cycles after capturing one.";
+        }
+
+        wolfPolicyText.setText(description);
+    }
+    
+    /**
+     * Update rabbit policy description based on selected policy
+     */
+    private void updateRabbitPolicyDescription(String policyName) {
+        if (policyName == null) return;
+        
+        String description = "";
+        if (policyName.equals(MovePolicy.getPolicyNameEN(MovePolicy.Policies.RANDOM))) {
+            description = "Rabbits move randomly without awareness of wolves.";
+        } else if (policyName.equals(MovePolicy.getPolicyNameEN(MovePolicy.Policies.ALWAYS_RUN_AWAY_FROM_WOLVES))) {
+            description = "Rabbits always try to move away from the closest wolf within range.";
+        } else if (policyName.equals(MovePolicy.getPolicyNameEN(MovePolicy.Policies.RABBIT_PROBLEM_MOVEMENT))) {
+            description = "Complex movement: rabbits flee from wolves, choose random directions at walls, and make uniform random choices when multiple escape paths exist.";
+        }
+        
+        rabbitPolicyText.setText(description);
     }
 
     @FXML
