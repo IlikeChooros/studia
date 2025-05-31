@@ -2,10 +2,10 @@
 // Class for keeping the simulation parameters
 public class SParameters {
     public static double cycleRate = 100;
-    public static int nRows = 30;
-    public static int nCols = 30;
-    public static int wolfCount = 1;
-    public static int rabbitCount = 20;
+    public static int nRows = 50;
+    public static int nCols = 90;
+    public static int wolfCount = 25;
+    public static int rabbitCount = 160;
     public static int wolfRange = nRows; // by default max
     public static int rabbitRange = nCols;
     public static int wolfSpeed = 1;

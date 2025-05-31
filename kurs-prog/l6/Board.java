@@ -67,7 +67,7 @@ public class Board extends GridPane {
      * Converts given mouse click (pixel coordinates) to board coordinates
      * (x, y)
      */
-    public Point2D toBoardCoordinates(Point2D mouseClick) {
+    public Position toBoardCoordinates(Point2D mouseClick) {
         
         int ncols = getColumnCount();
         int nrows = getRowCount();
@@ -79,7 +79,7 @@ public class Board extends GridPane {
         int x = (int)(mouseClick.getX() / (getWidth() / ncols));
         int y = (int)(mouseClick.getY() / (getHeight() / nrows));
 
-        return new Point2D(x, y);
+        return new Position(x, y);
     }
 
     /**

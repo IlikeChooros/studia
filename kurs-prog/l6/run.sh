@@ -72,6 +72,15 @@ elif [ "$1" == "run" ]; then
 
     run
     exit 0
+elif [ "$1" == "help" ]; then
+
+    echo "Usage: $0 [clean|compile|run [verbose|gc-verbose]|help]"
+    echo "  clean          - Clean the output directory"
+    echo "  compile        - Compile the Java sources"
+    echo "  run [verbose|gc-verbose] - Run the application with optional Java options"
+    echo "  help           - Display this help message"
+    exit 0
+
 else
     # Default: compile and run
     compile

@@ -1,4 +1,3 @@
-import javafx.geometry.Point2D;
 
 public class RabbitMovePolicies {
     
@@ -35,8 +34,7 @@ public class RabbitMovePolicies {
             jeden z trzech). Jeżli warunki ruchu spełnia więcej niż jedno pole to losuje następne
             pole z rozłkadem jednostajnym. 
             */
-            
-            Point2D myPos = thisCreature.getPosition();
+
             CreatureInfo closest = findClosest(Creature.Type.WOLF, SParameters.rabbitRange);
 
             // No target creatures
@@ -48,7 +46,7 @@ public class RabbitMovePolicies {
             synchronized (closest.creature) {
 
                 // If on the edge o no wolves, make a random move
-                if (onEdge(myPos)) {
+                if (onEdge(thisCreature.getPosition())) {
                     return genMoveType(null, MoveType.RANDOM);
                 }
 
@@ -56,7 +54,7 @@ public class RabbitMovePolicies {
                 Move bestmove = genMoveType(closest, MoveType.AWAY);
 
                 // Check if the distance is increased (move pos diff > current pos diff)
-                if (bestmove != null && distance(positionDiff(bestmove.getTo(), closest.creature.getPosition())) > closest.posDiff){
+                if (bestmove != null && PositionDiff.distance(bestmove.getTo(), closest.creature.getPosition()) > closest.posDiff){
                     // That's best move
                     return bestmove;
                 }
@@ -66,7 +64,7 @@ public class RabbitMovePolicies {
             return genMoveType(null, MoveType.RANDOM);
         }
 
-        private static boolean onEdge(Point2D pos) {
+        private static boolean onEdge(Position pos) {
             return (pos.getX() == 0 || pos.getX() == SParameters.nCols - 1)
                 || (pos.getY() == 0 || pos.getY() == SParameters.nRows - 1);
         }

@@ -1,12 +1,8 @@
 import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.PriorityQueue;
-import java.util.Vector;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.function.Function;
-
-import javafx.geometry.Point2D;
-import javafx.util.Pair;
 
 abstract public class MovePolicy implements Creature.MoveGenerator {
 
@@ -29,6 +25,8 @@ abstract public class MovePolicy implements Creature.MoveGenerator {
     protected static class CreatureInfo {
         int posDiff = 0;
         Creature creature = null;
+
+        public CreatureInfo() {}
 
         public CreatureInfo(int diff, Creature c) {
             this.posDiff = diff;
@@ -111,22 +109,31 @@ abstract public class MovePolicy implements Creature.MoveGenerator {
     protected Creature thisCreature = null;
     protected boolean capturePossible = false;
 
+    // Reduce object creation per cycle
+    private final MoveList reusableMoves = new MoveList();
+    private final MoveList reusableValidMoves = new MoveList();
+    private final MoveList reusableKeepSameDistMoves = new MoveList();
+    private final PriorityQueue<CreatureInfo> reusableQueue = new PriorityQueue<>(10, new CreatureInfoComparator());
+    private final LinkedList<CreatureInfo> reusableClosestList = new LinkedList<>();
+
+
     public void setOwner(Creature owner) {
         thisCreature = owner;
     }
 
     /**
-     * Generate possible moves for this creature (so that it doesn't)
+     * Generate possible moves for this creature,
+     * sets generated moves into
      */
-    protected Vector<Move> genPossibleMoves() {
+    protected void genPossibleMoves() {
         capturePossible = false;
-        Vector<Move> moves = new Vector<>(8);
-        Point2D currentPos = thisCreature.getPosition();
-        double diffX[] = {-1, 0, 1, -1, 1, -1,  0,  1};
-        double diffY[] = { 1, 1, 1,  0, 0, -1, -1, -1};
+        reusableMoves.clear();
+        Position currentPos = thisCreature.getPosition();
+        int diffX[] = {-1, 0, 1, -1, 1, -1,  0,  1};
+        int diffY[] = { 1, 1, 1,  0, 0, -1, -1, -1};
 
         for(int i = 0; i < diffX.length; i++) {
-            Point2D to = currentPos.add(diffX[i], diffY[i]);
+            Position to = currentPos.add(diffX[i], diffY[i]);
 
             // Check if the point is within bounds
             if (!Manager.inBounds(to)) {
@@ -138,7 +145,7 @@ abstract public class MovePolicy implements Creature.MoveGenerator {
 
             // No occupant at this square
             if (c == null) {
-                moves.add(new Move(currentPos, to));
+                reusableMoves.add(currentPos, to, null);
                 continue;
             }
 
@@ -149,12 +156,10 @@ abstract public class MovePolicy implements Creature.MoveGenerator {
 
             // Check if I can capture this Creature (don't allow suspended creatures)
             if (!c.getSuspended() && thisCreature.isCapture(c.getType())) {
-                moves.add(new Move(currentPos, to, c));
+                reusableMoves.add(currentPos, to, c);
                 capturePossible = true;
             }
         }
-
-        return moves;
     }
 
     /**
@@ -168,8 +173,8 @@ abstract public class MovePolicy implements Creature.MoveGenerator {
     protected Move genMoveType(CreatureInfo info, MoveType type) {
 
         // Add all possible moves
-        Vector<Move> moves = genPossibleMoves();
-        Vector<Move> validMoves = new Vector<>(8);
+        genPossibleMoves();
+        reusableValidMoves.clear();
         
         // No target, make a random move
         if (info == null || info.creature == null) {
@@ -180,76 +185,59 @@ abstract public class MovePolicy implements Creature.MoveGenerator {
             case TOWARDS:
                 // Simply check if the distance between the target and
                 // given move shrinks
-                for (Move m : moves) {
+                for (Move m : reusableMoves) {
                     // If there is a capture, make it the only move
                     if (capturePossible) {
                         if (m.getType() == Move.Type.CAPTURE){
-                            validMoves.add(m);
+                            reusableValidMoves.add(m);
                         }
-                    } 
-                    else if (distance(positionDiff(m.getTo(), info.creature.getPosition())) < info.posDiff) {
-                        validMoves.add(m);
+                    }
+                    else if (PositionDiff.distance(m.getTo(), info.creature.getPosition()) < info.posDiff) {
+                        reusableValidMoves.add(m);
                     }
                 }
                 break;
             
             case AWAY:
                 // If the distance increases, add it to the valid moves
-                Vector<Move> keepSameDist = new Vector<>(8);
-                for (Move m : moves) {
-                    int dist = distance(positionDiff(m.getTo(), info.creature.getPosition()));
+                reusableKeepSameDistMoves.clear();
+                for (Move m : reusableMoves) {
+                    int dist = PositionDiff.distance(m.getTo(), info.creature.getPosition());
 
                     if (dist > info.posDiff) {
-                        validMoves.add(m);
+                        reusableValidMoves.add(m);
                     }
                     else if (dist == info.posDiff) {
-                        keepSameDist.add(m);
+                        reusableKeepSameDistMoves.add(m);
                     }
                 }
 
                 // Check if ideal moves are not possible,
                 // then keep the same distance
-                if (validMoves.isEmpty()) {
-                    validMoves = keepSameDist;
+                if (reusableValidMoves.isEmpty()) {
+                    reusableValidMoves.setAll(reusableKeepSameDistMoves);
                 }
 
                 break;
             case RANDOM:
-            default: 
+            default:
                 // All possible moves are valid
-                validMoves = moves;
+                reusableValidMoves.setAll(reusableMoves);
                 break;
         }
 
         // No valid moves
-        if (validMoves.isEmpty()) {
+        if (reusableValidMoves.isEmpty()) {
             return null;
         }
 
         // Only 1, so there is no need to randomly select one
-        if (validMoves.size() == 1) {
-            return validMoves.firstElement();
+        if (reusableValidMoves.size() == 1) {
+            return reusableValidMoves.firstElement();
         }
         
         // Choose randomly
-        return validMoves.get(ThreadLocalRandom.current().nextInt(validMoves.size()));
-    }
-
-    /**
-     * Get the abs. difference from given point (1st x, 2nd y)
-     */
-    protected static Pair<Integer, Integer> positionDiff(Point2D p1, Point2D p2) {
-        return new Pair<Integer,Integer>(
-            Math.abs((int)(p1.getX() - p2.getX())),
-            Math.abs((int)(p1.getY() - p2.getY())) 
-        );
-    }
-
-    /**
-     * Get the distance from given point
-     */
-    protected static int distance(Pair<Integer, Integer> dist) {
-        return Math.max(dist.getKey(), dist.getValue());
+        return reusableValidMoves.get(ThreadLocalRandom.current().nextInt(reusableValidMoves.size()));
     }
 
     /**
@@ -263,48 +251,46 @@ abstract public class MovePolicy implements Creature.MoveGenerator {
         // the creatures may be modified (deleted),
         // by other threads
         synchronized (thisCreature.creaturesRef) {
-            Comparator<CreatureInfo> cmp = new CreatureInfoComparator();
-            PriorityQueue<CreatureInfo> queue = new PriorityQueue<>(thisCreature.creaturesRef.size(), cmp);
-
             for (Creature c : thisCreature.creaturesRef) {
                 if (c.type != type || c.getSuspended()) {
                     continue;
                 }
 
-                Pair<Integer, Integer> diffs = positionDiff(c.getPosition(), thisCreature.getPosition());
-                int dist = distance(diffs);
+                int dist = PositionDiff.distance(c.getPosition(), thisCreature.getPosition());
                 if ((dist == 0 || thisCreature == c) || (dist > maxRange)) {
                     continue;
                 }
 
                 // Get the square distance from the target, and put it on the queue
-                queue.add(new CreatureInfo(dist, c));
+                reusableQueue.add(new CreatureInfo(dist, c));
             }
 
             // No creatures of given type
-            if (queue.isEmpty()) {
+            if (reusableQueue.isEmpty()) {
+                reusableQueue.clear();
                 return null;
             }
 
             // Get the closest creature
-            CreatureInfo target = queue.poll();
-            LinkedList<CreatureInfo> closest = new LinkedList<>();
-            closest.add(target);
+            reusableClosestList.clear();
+            CreatureInfo target = reusableQueue.poll();
+            reusableClosestList.add(target);
 
             // Add other creatures within the distance
             CreatureInfo other;
-            while (!queue.isEmpty() && target.posDiff == (other = queue.poll()).posDiff) {
-                closest.add(other);
+            while (!reusableQueue.isEmpty() && target.posDiff == (other = reusableQueue.poll()).posDiff) {
+                reusableClosestList.add(other);
             }
 
             // Choose at random the target
             int targetIndex = 0;
-            if (closest.size() != 1) {
-                targetIndex = ThreadLocalRandom.current().nextInt(closest.size());
+            if (reusableClosestList.size() != 1) {
+                targetIndex = ThreadLocalRandom.current().nextInt(reusableClosestList.size());
             }
 
             // Set the target
-            creature = closest.get(targetIndex);
+            creature = reusableClosestList.get(targetIndex);
+            reusableQueue.clear();
         }
 
         return creature;

@@ -1,4 +1,3 @@
-import javafx.geometry.Point2D;
 
 /**
  * Class representing a move on the board, holds:
@@ -7,40 +6,56 @@ import javafx.geometry.Point2D;
  * - eaten creature
  * - type of the move
  */
-public class Move {
+public class Move implements CachableItem<Move> {
     
     public static enum Type {
         SILENT,
         CAPTURE
     }
 
-    private final Point2D from;
-    private final Point2D to;
-    private final Creature eaten;
-    private final Type type;
+    private Position from;
+    private Position to;
+    private Creature eaten;
+    private Type type;
 
-    public Move(Point2D from, Point2D to, Creature creature) {
-        eaten = creature;
-        type = creature != null ? Type.CAPTURE : Type.SILENT;
-        this.from = from;
-        this.to = to;
+    public Move() {
+        this.setAllFields(null, null, null);
     }
 
-    public Move(Point2D from, Point2D to) {
-        this(from, to, null);
+    public Move(Position from, Position to, Creature creature) {
+        this.setAllFields(from, to, creature);
+    }
+
+    public Move(Position from, Position to) {
+        this.setAllFields(from, to, null);
+    }
+
+    public void setAllFields(Object... args) {
+        this.from = (Position)args[0];
+        this.to = (Position)args[1];
+        eaten = (Creature)args[2];
+        type = eaten != null ? Type.CAPTURE : Type.SILENT;
+    }
+
+    public void copy(Move m) {
+        this.eaten = m.eaten;
+        // this.from.set(m.from.getX(), m.);
+        this.to = m.to;
+        this.from = m.from;
+        this.type = m.type;
     }
 
     /**
      * Get starting position
      */
-    public Point2D getFrom() {
+    public Position getFrom() {
         return from;
     }
 
     /**
      * Get the end coordiantes
      */
-    public Point2D getTo() {
+    public Position getTo() {
         return to;
     }
 

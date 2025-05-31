@@ -1,4 +1,3 @@
-import javafx.geometry.Point2D;
 import javafx.scene.paint.Color;
 
 public class Rabbit extends Creature {
@@ -8,11 +7,11 @@ public class Rabbit extends Creature {
      * @param position
      * @param managerRef
      */
-    public Rabbit(Point2D position, Manager managerRef) {
+    public Rabbit(Position position, Manager managerRef) {
         super(position, managerRef, Type.RABBIT, new RabbitMovePolicies.AlwaysRunAwayFromWolves());
     }
 
-    public Rabbit(Point2D posisiton, Manager managerRef, MovePolicy.Policies movepolicy) {
+    public Rabbit(Position posisiton, Manager managerRef, MovePolicy.Policies movepolicy) {
         super(posisiton, managerRef, Type.RABBIT, AllMovementPolicies.get(movepolicy));
     }
 

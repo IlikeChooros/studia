@@ -15,7 +15,7 @@ public class Manager {
     private <E extends Creature> void populate(Class<E> clazz, int count, MovePolicy.Policies movePolicy) {
         for (int i = 0; i < count; i++) {
             try {
-                E c = clazz.getConstructor(Point2D.class, Manager.class, MovePolicy.Policies.class).newInstance(getRandomPoint(), this, movePolicy);
+                E c = clazz.getConstructor(Position.class, Manager.class, MovePolicy.Policies.class).newInstance(getRandomPoint(), this, movePolicy);
                 c.setCreatures(creatures);
                 creatures.add(c);
                 threads.add(new Thread(c));
@@ -57,7 +57,7 @@ public class Manager {
      * Handle click (freezing the creature)
      */
     private void handleClick(MouseEvent event) {
-        Point2D boardPos = uiBoard.toBoardCoordinates(new Point2D(event.getX(), event.getY()));
+        Position boardPos = uiBoard.toBoardCoordinates(new Point2D(event.getX(), event.getY()));
         
         // Get the creature at these coordinates
         Creature creature = at(boardPos);
@@ -101,7 +101,7 @@ public class Manager {
     /**
      * Get the creature type at given position
      */
-    public Creature at(Point2D position) {
+    public Creature at(Position position) {
         if (position == null) {
             return null;
         }
@@ -114,7 +114,7 @@ public class Manager {
     /**
      * Generate a radom point that is not occupied yet on the board
      */
-    private Point2D getRandomPoint() {
+    private Position getRandomPoint() {
         ThreadLocalRandom random = ThreadLocalRandom.current();
 
         int x, y;
@@ -123,13 +123,13 @@ public class Manager {
             y = random.nextInt(SParameters.nRows);
         } while (occupancy[y][x] != null);
 
-        return new Point2D(x, y);
+        return new Position(x, y);
     }
 
     /**
      * Check if given point is within the board
      */
-    public static boolean inBounds(Point2D position) {
+    public static boolean inBounds(Position position) {
         int x = (int)position.getX();
         int y = (int)position.getY();
 
@@ -148,8 +148,8 @@ public class Manager {
      * by the creatures
      */
     public void makeMove(Move m, Creature moved) {
-        Point2D from = m.getFrom();
-        Point2D to = m.getTo();
+        Position from = m.getFrom();
+        Position to = m.getTo();
         
         // Ensure 'moved.position' is updated safely if read by other threads
         // without synchronization on 'moved' object.

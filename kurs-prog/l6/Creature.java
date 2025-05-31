@@ -1,7 +1,6 @@
 import java.util.LinkedList;
 
 import javafx.application.Platform;
-import javafx.geometry.Point2D;
 import javafx.scene.paint.Color;
 
 /**
@@ -29,12 +28,12 @@ interface CreatureLike {
     /**
      * Get position of the creature on the 2D board
      */
-    public Point2D getPosition();
+    public Position getPosition();
 
     /**
      * Set the position of the creature
      */
-    public void setPosition(Point2D pos);
+    public void setPosition(Position pos);
 
     /**
      * Make one turn of movement
@@ -99,7 +98,7 @@ abstract public class Creature implements Runnable, CreatureLike {
         public Move genMove();  
     }
 
-    protected volatile Point2D position;
+    protected volatile Position position;
     protected volatile boolean isRunning = false;
     protected volatile boolean isSuspended = false;
     protected volatile int nSuspendCycles = 0;
@@ -108,7 +107,7 @@ abstract public class Creature implements Runnable, CreatureLike {
     protected Type type;
     protected Manager manager;
 
-    public Creature(Point2D position, Manager manager, Type type, MovePolicy policy) {
+    public Creature(Position position, Manager manager, Type type, MovePolicy policy) {
         this.position = position;
         this.manager = manager;
         this.isRunning = true;
@@ -229,7 +228,7 @@ abstract public class Creature implements Runnable, CreatureLike {
      * Get the position of the creature (x,y)
      */
     @Override 
-    public synchronized Point2D getPosition() {
+    public synchronized Position getPosition() {
         return position;
     }
 
@@ -237,7 +236,7 @@ abstract public class Creature implements Runnable, CreatureLike {
      * Set the position of the creature
      */
     @Override
-    public synchronized void setPosition(Point2D pos) {
+    public synchronized void setPosition(Position pos) {
         this.position = pos;
     }
 
