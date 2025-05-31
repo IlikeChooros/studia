@@ -17,6 +17,11 @@ public class Manager {
             try {
                 E c = clazz.getConstructor(Position.class, Manager.class, MovePolicy.Policies.class).newInstance(getRandomPoint(), this, movePolicy);
                 c.setCreatures(creatures);
+
+                // Avoid ConcurrentModificationException with suspending the creature first.
+                // It happens when a wolf catches it's prey, and we didn't finish 'starting'
+                // the threads
+                c.suspend(-1);
                 creatures.add(c);
                 threads.add(new Thread(c));
                 occupancy[c.y()][c.x()] = c;

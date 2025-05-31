@@ -119,11 +119,6 @@ abstract public class Creature implements Runnable, CreatureLike {
         this.type = type;
         this.policy = policy;
         this.policy.setOwner(this);
-
-        // Avoid ConcurrentModificationException with suspending the creature first.
-        // It happens when a wolf catches it's prey, and we didn't finish 'starting'
-        // the threads
-        suspend(-1);
     }
 
     /**
