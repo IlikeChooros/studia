@@ -47,6 +47,11 @@ public class Manager {
             t.start();
         }
 
+        // Resume all creatures
+        for (Creature c : creatures) {
+            c.resume();
+        }
+
         // Add mouse clicked callback
         uiBoard.setOnMouseClicked((event) -> {
             this.handleClick(event);

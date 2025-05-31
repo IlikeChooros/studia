@@ -107,6 +107,11 @@ abstract public class Creature implements Runnable, CreatureLike {
     protected Type type;
     protected Manager manager;
 
+    /**
+     * Create a new creature with given position, type and move policy.
+     * By default all creatures are suspended at first, user should call 
+     * 'resume'to activate them
+     */
     public Creature(Position position, Manager manager, Type type, MovePolicy policy) {
         this.position = position;
         this.manager = manager;
@@ -114,6 +119,11 @@ abstract public class Creature implements Runnable, CreatureLike {
         this.type = type;
         this.policy = policy;
         this.policy.setOwner(this);
+
+        // Avoid ConcurrentModificationException with suspending the creature first.
+        // It happens when a wolf catches it's prey, and we didn't finish 'starting'
+        // the threads
+        suspend(-1);
     }
 
     /**
