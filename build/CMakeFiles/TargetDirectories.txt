@@ -1,0 +1,2 @@
+/home/who-ate-my-ram/studia/build/CMakeFiles/edit_cache.dir
+/home/who-ate-my-ram/studia/build/CMakeFiles/rebuild_cache.dir
