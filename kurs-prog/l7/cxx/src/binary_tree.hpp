@@ -231,7 +231,7 @@ protected:
             } else if (val > (*curr)->M_data) {
                 curr = &(*curr)->M_right;
             } else {
-                break;
+                return;
             }
         }
 
@@ -377,25 +377,17 @@ protected:
      * @param prefix A string prefix showing the branch structure.
      * @param is_left True if current_node is a left child.
      */
-    void M_draw_recursive(node_ptr current_node,
-                          const std::string& prefix,
-                          bool is_left) const noexcept {
+    void M_draw_recursive(node_ptr current_node) const noexcept {
         if (current_node == nullptr) {
-            return;
+            std::cout << "()";
+            return; 
         }
         
-        // Print the current node with branch markers.
-        std::cout << prefix;
-        std::cout << (is_left ? "├── " : "└── ");
-        std::cout << current_node->M_data << std::endl;
-        
-        // Prepare the prefix for the children.
-        std::string child_prefix = prefix + (is_left ? "│   " : "    ");
-        
-        // First print the right child then the left child to have the root at top,
-        // with the left branch visually under the right branch.
-        M_draw_recursive(current_node->M_right.get(), child_prefix, false);
-        M_draw_recursive(current_node->M_left.get(), child_prefix, true);
+        std::cout << "(" << current_node->M_data << ":";
+        M_draw_recursive(current_node->left());        
+        std::cout << ":";
+        M_draw_recursive(current_node->right());
+        std::cout << ")";
     }
 
 public:
@@ -437,15 +429,12 @@ public:
      */
     void draw() const noexcept {
         if (M_root == nullptr) {
-            std::cout << "(empty tree)" << std::endl;
+            std::cout << "(empty tree)\n" << std::endl;
             return;
         }
 
-        std::cout << "ROOT─" << M_root->M_data << std::endl;
-
-        // Draw right subtree first and then left subtree.
-        M_draw_recursive(M_root->M_right.get(), "    ", false);
-        M_draw_recursive(M_root->M_left.get(), "    ", true);
+        M_draw_recursive(M_root.get());
+        std::cout << '\n';
     }
 
     // Returns actual size of the tree (number of nodes)
