@@ -4,6 +4,28 @@
 
 int main() {
     binary_tree<int> tree;
+    binary_tree<std::string> stree;
+    binary_tree<double> dtree;
+
+    stree.insert("hello");
+    stree.insert("no");
+    stree.insert("hello world");
+
+    tree.draw();
+
+    for (auto s : stree) {
+        std::cout << s << '\n';
+    }
+
+    dtree.remove(0);
+    dtree.insert(0);
+    dtree.insert(1);
+    dtree.insert(-1);
+    dtree.insert(2);
+
+    for (auto s : dtree) {
+        std::cout << s << '\n';
+    }
 
     tree.insert(30);
     tree.insert(70);

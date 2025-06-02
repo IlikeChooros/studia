@@ -448,6 +448,11 @@ public:
         M_draw_recursive(M_root->M_left.get(), "    ", true);
     }
 
+    // Returns actual size of the tree (number of nodes)
+    inline size_t size() {
+        return M_size;
+    }
+
     // Returns forward iterator pointing to
     // leftmost element in the tree (the smallest)
     inline iterator begin() noexcept {

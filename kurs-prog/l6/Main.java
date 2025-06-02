@@ -47,7 +47,7 @@ public class Main extends Application {
             }
             
             primaryStage.setTitle(PARAMETERS_WINDOW_TITLE);
-            primaryStage.setResizable(false);
+            // primaryStage.setResizable(false);
             primaryStage.getIcons().addAll(
                 new Image("main-icon64.png"),
                 new Image("main-icon32.png"),
