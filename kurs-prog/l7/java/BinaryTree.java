@@ -34,9 +34,9 @@ public class BinaryTree<E extends Comparable<E>> implements Iterable<E>{
 
         /**
          * Get the leftmost node from given root
-         * @param n
+         * @param root
          */
-        private void init(Node root) {
+        private void leftmost(Node root) {
             current = root;
 
             if (current != null) {
@@ -45,11 +45,10 @@ public class BinaryTree<E extends Comparable<E>> implements Iterable<E>{
                     current = current.left;
                 }
             }
-            prev = current;
         }
 
         public BinaryIterator(Node root) {
-            init(root);
+            leftmost(root);
         }
 
         @Override
@@ -63,7 +62,7 @@ public class BinaryTree<E extends Comparable<E>> implements Iterable<E>{
             // If there is right subtree, go to
             // leftmos element
             if (current.right != null) {
-                init(current.right);
+                leftmost(current.right);
             }
             else if (!path_stack.isEmpty()) {
                 current = path_stack.pop();
@@ -104,7 +103,9 @@ public class BinaryTree<E extends Comparable<E>> implements Iterable<E>{
 
         public Node find(E value) {
             while (this.elem != null) {
-                int cmp = this.elem.value.compareTo(value);
+                int cmp = value.compareTo(this.elem.value);
+
+                System.out.println(value + " " + this.elem.value + " = " + cmp);
 
                 if (cmp < 0) {
                     this.parent = this.elem;
@@ -199,6 +200,7 @@ public class BinaryTree<E extends Comparable<E>> implements Iterable<E>{
             return;
         }
 
+        this.size--;
         Node to_remove = rmv.elem;
         Node parent = rmv.parent;
         Node newchild = null;
@@ -239,7 +241,7 @@ public class BinaryTree<E extends Comparable<E>> implements Iterable<E>{
         else {
             // That means rmv.elem == root
             // So set new root
-            root = newchild;
+            this.root = newchild;
         }
     }
 
@@ -277,7 +279,7 @@ public class BinaryTree<E extends Comparable<E>> implements Iterable<E>{
      * Returns true if given falue exists in the tree
      */
     public boolean search(E value) {
-        return (new FindHelper(root, root)).find(value) != null;
+        return (new FindHelper(root, null)).find(value) != null;
     }
 
     /**
@@ -312,7 +314,7 @@ public class BinaryTree<E extends Comparable<E>> implements Iterable<E>{
      * @return true if it was deleted
      */
     public boolean delete(E value) {
-        FindHelper f = new FindHelper(root, root, value);
+        FindHelper f = new FindHelper(root, null, value);
 
         if (f.elem == null) {
             return false;
@@ -322,6 +324,12 @@ public class BinaryTree<E extends Comparable<E>> implements Iterable<E>{
         return true;
     }
 
+    /**
+     * Print this tree ot standard output stream
+     */
+    public void draw() {
+        System.out.println(toString());
+    }
 
 
     @Override

@@ -4,6 +4,7 @@
 #include <stack>
 #include <concepts>
 #include <iostream>
+#include <initializer_list>
 
 /**
  * Concept to check if a type is weakly comparable (supports <, > operators).
@@ -295,6 +296,7 @@ protected:
         }
 
         // set up variables, and get the children count
+        M_size--;
         node_ptr to_remove = rmv.elem;
         node_ptr parent    = rmv.parent;
         node_ptr newchild  = nullptr;
@@ -374,24 +376,44 @@ protected:
     /**
      * Recursively draws the tree structure.
      * @param current_node The current node to print.
-     * @param prefix A string prefix showing the branch structure.
-     * @param is_left True if current_node is a left child.
      */
-    void M_draw_recursive(node_ptr current_node) const noexcept {
+    void M_draw_recursive(node_ptr current_node, std::ostream& out = std::cout) const noexcept {
         if (current_node == nullptr) {
-            std::cout << "()";
+            out << "()";
             return; 
         }
         
-        std::cout << "(" << current_node->M_data << ":";
+        out << "(" << current_node->M_data << ":";
         M_draw_recursive(current_node->left());        
-        std::cout << ":";
+        out << ":";
         M_draw_recursive(current_node->right());
-        std::cout << ")";
+        out << ")";
     }
 
 public:
+    // Default, empty binary tree constructor
     binary_tree() : M_root(nullptr), M_size(0) {}
+
+    // Constructor with initializer list
+    binary_tree(std::initializer_list<T> init_list) {
+        for (auto t : init_list) {
+            M_insert(&M_root, *t);
+        }
+    }
+
+    // Copy c'tor
+    binary_tree(const binary_tree& other) {
+        (*this) = other;
+    }
+
+    // Copy assigment
+    binary_tree& operator=(const binary_tree& other) {
+        // Recusively copy all the nodes
+        if (other.M_root) {
+            M_root.reset(new node(*other.M_root));
+        }
+        M_size = other.M_size;
+    }
 
     /** 
      * Inserts a value into the binary tree
@@ -428,13 +450,7 @@ public:
      * Draws the structure of the binary tree to standard output.
      */
     void draw() const noexcept {
-        if (M_root == nullptr) {
-            std::cout << "(empty tree)\n" << std::endl;
-            return;
-        }
-
-        M_draw_recursive(M_root.get());
-        std::cout << '\n';
+        std::cout << (*this) << '\n';
     }
 
     // Returns actual size of the tree (number of nodes)
@@ -451,5 +467,15 @@ public:
     // Returns end iterator (pointing to nullpointer as value)
     inline iterator end() noexcept {
         return iterator();
+    }
+
+    // Print given tree to standard output stream
+    friend std::ostream& operator<<(std::ostream& out, const binary_tree& tree) {
+        if (!tree.M_root) {
+            return out << "(empty tree)";
+        }
+
+        tree.M_draw_recursive(tree.M_root.get(), out);
+        return out;
     }
 };
