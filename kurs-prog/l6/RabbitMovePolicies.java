@@ -60,8 +60,8 @@ public class RabbitMovePolicies {
                 }
             }
 
-            // Just make random move
-            return genMoveType(null, MoveType.RANDOM);
+            // Stay still
+            return null;
         }
 
         private static boolean onEdge(Position pos) {
