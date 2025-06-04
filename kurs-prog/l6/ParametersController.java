@@ -36,10 +36,10 @@ public class ParametersController {
     @FXML
     public void initialize() {
         // Initialize spinners with default values from SParameters and set ranges
-        nRowsSpinner.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(5, 100, SParameters.nRows));
-        nColsSpinner.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(5, 100, SParameters.nCols));
+        nRowsSpinner.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(5, 200, SParameters.nRows));
+        nColsSpinner.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(5, 200, SParameters.nCols));
         wolfCountSpinner.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(0, 500, SParameters.wolfCount));
-        rabbitCountSpinner.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(0, 500, SParameters.rabbitCount));
+        rabbitCountSpinner.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(0, 5000, SParameters.rabbitCount));
         cycleRateField.setText(String.valueOf(SParameters.cycleRate));
         wolfRangeSpinner.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(1, 100, SParameters.wolfRange));
         rabbitRangeSpinner.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(1, 100, SParameters.rabbitRange));

@@ -104,12 +104,11 @@ public class Manager {
      * Kill all creatures
      */
     public void kill() {
-        for (Thread t : threads) {
-            t.interrupt();
-            try {
-                t.join();
-            } 
-            catch (InterruptedException e) {}
+        synchronized (creatures) {
+            for (Creature c : creatures) {
+                c.resume();
+                c.kill();
+            }
         }
     }
 
