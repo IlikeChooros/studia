@@ -65,6 +65,8 @@ elif [ "$1" == "run" ]; then
     elif [ "$2" == "gc-verbose" ]; then
         JAVA_OPTIONS="-verbose:gc"
         echo "GC verbose mode enabled for compilation."
+    elif [ "$2" == "mc" ]; then 
+        MAIN_CLASS="$3"
     else
         JAVA_OPTIONS=""
         echo "No special options for compilation."
