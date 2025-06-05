@@ -105,8 +105,6 @@ public class BinaryTree<E extends Comparable<E>> implements Iterable<E>{
             while (this.elem != null) {
                 int cmp = value.compareTo(this.elem.value);
 
-                System.out.println(value + " " + this.elem.value + " = " + cmp);
-
                 if (cmp < 0) {
                     this.parent = this.elem;
                     this.elem = this.elem.left;
