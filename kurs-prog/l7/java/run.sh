@@ -54,7 +54,7 @@ if [ "$1" == "clean" ]; then
     exit 0
 elif [ "$1" == "compile" ]; then
     echo "Compiling the project..."
-    # compile
+    compile
     exit 0
 elif [ "$1" == "run" ]; then
 

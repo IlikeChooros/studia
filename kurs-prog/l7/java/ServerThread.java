@@ -46,5 +46,9 @@ public class ServerThread extends Thread {
             System.out.println("Server exception: " + ex.getMessage());
             ex.printStackTrace();
         }
+        catch(Exception ex) {
+            System.out.println("Unexpected error: " + ex.getMessage());
+            ex.printStackTrace();
+        }
     }
 }

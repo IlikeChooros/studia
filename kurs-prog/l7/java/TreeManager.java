@@ -1,8 +1,8 @@
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Iterator;
 import java.util.function.Function;
 
 public class TreeManager<E extends Comparable<E>> {
@@ -11,6 +11,13 @@ public class TreeManager<E extends Comparable<E>> {
     private PrintWriter out;
     private BufferedReader in;
     private Function<String, E> setter;
+
+    private final String MAX_COMMAND = "max";
+    private final String MIN_COMMAND = "min";
+    private final String PRINT_COMMAND = "print";
+    private final String ADD_COMMAND = "add";
+    private final String DELETE_COMMAND = "delete";
+    private final String SEARCH_COMMAND = "search";
     
 
     public static String stringSetter(String s) {
@@ -18,11 +25,20 @@ public class TreeManager<E extends Comparable<E>> {
     }
 
     public static Integer ingtegerSetter(String s) {
-        return Integer.parseInt(s);
+        try {
+            return Integer.parseInt(s);
+        }
+        catch (NumberFormatException exception) {
+            return null;
+        }
     }
 
     public static Double doubleSetter(String s) {
-        return Double.parseDouble(s);
+        try {
+            return Double.parseDouble(s);
+        } catch (NumberFormatException e) {
+            return null;
+        }
     }
 
     public TreeManager(PrintWriter out, BufferedReader input, Function<String, E> setter) {
@@ -75,15 +91,15 @@ public class TreeManager<E extends Comparable<E>> {
             mainCommand = tokens[0];            
 
             // Single argument commands
-            // print, min, max
+            // print, min, max, exit, etc.
             switch (mainCommand) {
-                case "print":
+                case PRINT_COMMAND:
                     out.println(tree);
                     break;
-                case "min":
+                case MIN_COMMAND:
                     out.println(tree.min());
                     break;
-                case "max":
+                case MAX_COMMAND:
                     out.println(tree.max());
                     break;
             
@@ -94,7 +110,6 @@ public class TreeManager<E extends Comparable<E>> {
                         return;
                     }
                     out.println(">>> Invalid option");
-                    break;
             }
 
             return;
@@ -109,31 +124,33 @@ public class TreeManager<E extends Comparable<E>> {
             // Main commands: 
             // add <n1>,<n2>,...
             // delete <n1>,<n2>,...
+            // search n1
 
             // Parse list-like
-            boolean isAdd = mainCommand.equals("add");
-            if (isAdd || mainCommand.equals("delete")) {
-                String values[] = tokens[1].split(",");
-
-                for (String val : values) {
-                    try {
+            boolean isAdd = mainCommand.equals(ADD_COMMAND);
+            switch (mainCommand) {
+                case ADD_COMMAND:
+                case DELETE_COMMAND:
+                    String values[] = tokens[1].split(",");
+                    for (String val : values) {
                         if (isAdd) {
                             tree.insert(setter.apply(val));
                         } else {
                             tree.delete(setter.apply(val));
                         }
-                    }   
-                    catch(NumberFormatException exception) {}
-                }
+                    }
+                    out.println(">>> Performed: " + mainCommand);             
+                    break;
+                
+                case SEARCH_COMMAND:
+                    Iterator<E> it = tree.find(setter.apply(tokens[1]));
+                    
 
-                String operation = "add";
-                if (!isAdd) {
-                    operation = "delete";
-                }
-
-                out.println(">>> Performed: " + operation);
-                return;
+                default:
+                    out.println(">>> Unhandled command: " + line);
+                    break;
             }
+            return;
         }
         
         out.println(">>> Unhandled command: " + line);

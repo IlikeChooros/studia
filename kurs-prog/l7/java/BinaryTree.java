@@ -51,6 +51,11 @@ public class BinaryTree<E extends Comparable<E>> implements Iterable<E>{
             leftmost(root);
         }
 
+        public BinaryIterator(Node root, Stack<Node> pathStack) {
+            current = root;
+            path_stack = pathStack;
+        }
+
         @Override
         public boolean hasNext() {
             // Dont' allow end interator incrementation
@@ -60,7 +65,7 @@ public class BinaryTree<E extends Comparable<E>> implements Iterable<E>{
             }
 
             // If there is right subtree, go to
-            // leftmos element
+            // leftmost element
             if (current.right != null) {
                 leftmost(current.right);
             }
@@ -89,6 +94,7 @@ public class BinaryTree<E extends Comparable<E>> implements Iterable<E>{
     private class FindHelper {
         public Node elem;
         public Node parent;
+        public final Stack<Node> trace = new Stack<>();
 
         public FindHelper(Node elem, Node parent) {
             this.elem = elem;
@@ -104,6 +110,7 @@ public class BinaryTree<E extends Comparable<E>> implements Iterable<E>{
         public Node find(E value) {
             while (this.elem != null) {
                 int cmp = value.compareTo(this.elem.value);
+                trace.push(this.elem);
 
                 if (cmp < 0) {
                     this.parent = this.elem;
@@ -113,10 +120,15 @@ public class BinaryTree<E extends Comparable<E>> implements Iterable<E>{
                     this.elem = this.elem.right;
                 } else {
                     // Value found
+                    trace.pop();
                     break;
                 }
             }
             return this.elem;
+        }
+
+        public BinaryIterator iteratorFind(E value) {
+            return new BinaryIterator(find(value), trace);
         }
     }
 
@@ -270,7 +282,9 @@ public class BinaryTree<E extends Comparable<E>> implements Iterable<E>{
      * @param value
      */
     public void insert(E value) {
-        insert_helper(root, value);
+        if (value != null) {
+            insert_helper(root, value);
+        }
     }
 
     /**
@@ -278,6 +292,13 @@ public class BinaryTree<E extends Comparable<E>> implements Iterable<E>{
      */
     public boolean search(E value) {
         return (new FindHelper(root, null)).find(value) != null;
+    }
+
+    /**
+     * Returns binary tree iterator, poiting to found element (or 'hasNext()' == false)
+     */
+    public Iterator<E> find(E value) {
+        return (new FindHelper(root, null)).iteratorFind(value);
     }
 
     /**
@@ -312,6 +333,10 @@ public class BinaryTree<E extends Comparable<E>> implements Iterable<E>{
      * @return true if it was deleted
      */
     public boolean delete(E value) {
+        if (value == null) {
+            return false;
+        }
+
         FindHelper f = new FindHelper(root, null, value);
 
         if (f.elem == null) {
