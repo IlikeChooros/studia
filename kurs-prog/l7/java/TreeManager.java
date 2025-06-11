@@ -11,6 +11,7 @@ public class TreeManager<E extends Comparable<E>> {
     private PrintWriter out;
     private BufferedReader in;
     private Function<String, E> setter;
+    private final Commands commands;
 
     private final String MAX_COMMAND = "max";
     private final String MIN_COMMAND = "min";
@@ -41,12 +42,33 @@ public class TreeManager<E extends Comparable<E>> {
         }
     }
 
+    public static Option.Setter<Double> getDoubleSetter() {
+        return (args) -> {
+            try {
+                return Double.parseDouble(args[0]);
+            }
+            catch (NumberFormatException e) {}
+            return 0.0;
+        };
+    }
+
+    private void initCommands() {
+        commands.add(new Option<E>(
+            new String[]{"/add"}, 
+            "Add new elements to the tree, usage: /add <n1>,<n2>,...",
+            null, null, null
+        ));
+    }
+
     public TreeManager(PrintWriter out, BufferedReader input, Function<String, E> setter) {
         this.out = out;
         this.in = input;
         this.setter = setter;
         this.isRunning = true;
         this.tree = new BinaryTree<>();
+        this.commands = new Commands((message) -> {
+            out.println(message);
+        }); 
 
         System.out.println("Created new Tree: " + setter);
     }

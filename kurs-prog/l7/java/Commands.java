@@ -1,6 +1,4 @@
-import java.io.PrintWriter;
 import java.util.Arrays;
-import java.util.List;
 import java.util.Vector;
 
 class ValidationError extends Exception {
@@ -89,7 +87,7 @@ public class Commands {
     private final Vector<Option<?>> options = new Vector<>();
     private Option.Callback<String> helpCallback = null;
 
-    private String[] PREFIX_COMMANDS = {"/", "//"};
+    private String[] PREFIX_COMMANDS = {"/", "--"};
     private final String MAX_COMMAND = "max";
     private final String MIN_COMMAND = "min";
     private final String PRINT_COMMAND = "print";
@@ -126,6 +124,13 @@ public class Commands {
 
     public Commands(Option.Callback<String> helpCallback) {
         this.helpCallback = helpCallback;
+
+        if (helpCallback == null) {
+            // Just print to the output stream
+            this.helpCallback = (help) -> {
+                System.out.println(help);
+            };
+        }
     }
 
 
@@ -173,6 +178,13 @@ public class Commands {
         options.add(new Option<E>(
             names, desctription, callback, validator, setter
         ));
+    }
+
+    /**
+     * Add new option to the commands
+     */
+    public <E> void add(Option<E> option) {
+        this.options.add(option);
     }
 
     /**
