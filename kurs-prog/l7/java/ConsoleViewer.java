@@ -14,25 +14,42 @@ import javafx.scene.text.TextFlow;
 
 public class ConsoleViewer extends BorderPane {
     
+    private final Commands commandParser;
     private final TextFlow commandField = new TextFlow();
     private final TextField textField = new TextField();
+    private final ScrollPane scrollPane;
     private Socket socket = null;
     private PrintWriter out = null;
     private BufferedReader in = null;
 
     private void handleCommand(String[] tokens) {
-        if (tokens == null) {
-            return;
+        try {
+            commandParser.parse(tokens);
+        } 
+        catch(ValidationError err) {
+            appendText(err.getMessage() + "\n");
         }
+    }
 
-        switch (tokens[0]) {
-            case "connect":
-                
-                break;
-        
-            default:
-                break;
-        }
+    private void appendText(String text) {
+        // Add new text object
+        commandField.getChildren().add(new Text(text));
+        // Scroll down
+        scrollPane.setVvalue(scrollPane.getVmax());
+    }
+
+    public static void initCommands(Commands comm) {
+        comm.add(
+            new String[]{"/add"},
+            "   Add new element to the tree", 
+            (String value) -> {
+                System.out.println("Callback /add: " + value);
+            }, 
+            null, 
+            (String[] args) -> {
+                return args[0];
+            }
+        );
     }
 
     public ConsoleViewer() {        
@@ -44,24 +61,27 @@ public class ConsoleViewer extends BorderPane {
         // with simple and elegant UI
         super();
         commandField.setPrefSize(500, 400);
-        ScrollPane scroll = new ScrollPane(commandField);
-        scroll.setFitToWidth(true);
+        scrollPane = new ScrollPane(commandField);
+        scrollPane.setFitToWidth(true);
 
-        super.setCenter(scroll);
+        commandParser = new Commands((String help) -> {
+            appendText(help + "\n");
+        });
+
+        super.setCenter(scrollPane);
         super.setBottom(textField);
 
         textField.setOnAction((event) -> {
             // Append new text to the console, and clear the text
             String command = textField.getText();
-            commandField.getChildren().add(new Text(command + "\n"));
+            appendText(command + "\n");
             textField.setText(null); 
-
-            // Scroll down
-            scroll.setVvalue(scroll.getVmax());
 
             // Do something with this command
             handleCommand(command.split(" "));
         });
+
+        initCommands(commandParser);
     }
 
     private void makeConnection(String datatype) {
