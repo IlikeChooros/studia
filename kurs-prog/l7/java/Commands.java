@@ -20,7 +20,7 @@ class Option<E> {
     }
 
     @FunctionalInterface
-    public static interface Setter<E> {
+    public static interface Converter<E> {
         E convert(String[] toConvert);
     }
 
@@ -28,7 +28,7 @@ class Option<E> {
     private String desctription = null;
     private Callback<E> callback = null;
     private Validator validator = null;
-    private Setter<E> setter = null;
+    private Converter<E> converter = null;
     private E value = null;
     
     public static Validator defaultValidator() {
@@ -40,12 +40,12 @@ class Option<E> {
         };
     }
 
-    public Option(String[] names, String description, Callback<E> callback, Validator validator, Setter<E> setter) {
+    public Option(String[] names, String description, Callback<E> callback, Validator validator, Converter<E> converter) {
         this.names = names;
         Arrays.sort(this.names);
         this.callback = callback;
         this.validator = validator;
-        this.setter = setter;
+        this.converter = converter;
         this.desctription = description;
 
         if (validator == null) {
@@ -62,7 +62,7 @@ class Option<E> {
         validator.validate(values);
 
         // Data is ok
-        value = setter.convert(values);
+        value = converter.convert(values);
 
         // Invoke the callback
         if (callback != null) {
@@ -95,17 +95,17 @@ public class Commands {
     private final String DELETE_COMMAND = "delete";
     private final String SEARCH_COMMAND = "search";
 
-    public static Option.Setter<Boolean> booleanSetter() {
+    public static Option.Converter<Boolean> booleanconverter() {
         return (args) -> {
             return true;
         };
     }
 
-    public static String stringSetter(String[] s) throws ValidationError {
+    public static String stringconverter(String[] s) throws ValidationError {
         return s.toString();
     }
 
-    public static Integer ingtegerSetter(String s) throws ValidationError {
+    public static Integer ingtegerconverter(String s) throws ValidationError {
         try {
             return Integer.parseInt(s);
         }
@@ -114,7 +114,7 @@ public class Commands {
         }
     }
 
-    public static Double doubleSetter(String s) throws ValidationError {
+    public static Double doubleconverter(String s) throws ValidationError {
         try {
             return Double.parseDouble(s);
         } catch (NumberFormatException e) {
@@ -173,10 +173,10 @@ public class Commands {
      */
     public <E> void add(
         String[] names, String desctription, Option.Callback<E> callback, 
-        Option.Validator validator, Option.Setter<E> setter
+        Option.Validator validator, Option.Converter<E> converter
     ) {
         options.add(new Option<E>(
-            names, desctription, callback, validator, setter
+            names, desctription, callback, validator, converter
         ));
     }
 

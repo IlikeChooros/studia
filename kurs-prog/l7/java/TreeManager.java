@@ -5,6 +5,9 @@ import java.util.Arrays;
 import java.util.Iterator;
 import java.util.function.Function;
 
+import java.util.List;
+import java.util.Vector;
+
 public class TreeManager<E extends Comparable<E>> {
     private boolean isRunning;
     private BinaryTree<E> tree;
@@ -42,21 +45,43 @@ public class TreeManager<E extends Comparable<E>> {
         }
     }
 
-    public static Option.Setter<Double> getDoubleSetter() {
-        return (args) -> {
-            try {
-                return Double.parseDouble(args[0]);
+    private Option.Validator getListValidator(Function<String, E> setter) {
+        return (String[] args) -> {
+            for (String arg : args) {
+                String[] tokens = arg.split(",");
+
+                for (String token : tokens) {
+                    if (setter.apply(token) == null) {
+                        // TODO: make it more specific
+                        throw new ValidationError("Validation error");
+                    }      
+                }
             }
-            catch (NumberFormatException e) {}
-            return 0.0;
+        };
+    }
+
+    private Option.Converter<Vector<E>> getListConverter(Function<String, E> setter) {
+        return (args) -> {
+            Vector<E> values = new Vector<>();
+            for (String arg : args) {
+                String[] tokens = arg.split(",");
+
+                for (String token : tokens) {
+                    E value = setter.apply(token);
+                    if (value != null) {
+                        values.add(value);
+                    }       
+                }
+            }
+            return values;
         };
     }
 
     private void initCommands() {
-        commands.add(new Option<E>(
+        commands.add(new Option<Vector<E>>(
             new String[]{"/add"}, 
             "Add new elements to the tree, usage: /add <n1>,<n2>,...",
-            null, null, null
+            null, getListValidator(setter), getListConverter(setter)
         ));
     }
 
