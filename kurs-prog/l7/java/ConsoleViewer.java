@@ -1,11 +1,11 @@
 import java.io.BufferedReader;
-import java.io.Console;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
 import java.net.UnknownHostException;
 
+import javafx.application.Platform;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.BorderPane;
@@ -14,45 +14,23 @@ import javafx.scene.text.TextFlow;
 
 public class ConsoleViewer extends BorderPane {
     
-    private final Commands commandParser;
-    private final TextFlow commandField = new TextFlow();
+    private volatile TextFlow commandField = new TextFlow();
     private final TextField textField = new TextField();
     private final ScrollPane scrollPane;
     private Socket socket = null;
-    private PrintWriter out = null;
-    private BufferedReader in = null;
-
-    private void handleCommand(String[] tokens) {
-        try {
-            commandParser.parse(tokens);
-        } 
-        catch(ValidationError err) {
-            appendText(err.getMessage() + "\n");
-        }
-    }
+    private MessageReceiver receiver = null;
+    private ServerMessenger messenger = null;
 
     private void appendText(String text) {
         // Add new text object
-        commandField.getChildren().add(new Text(text));
-        // Scroll down
-        scrollPane.setVvalue(scrollPane.getVmax());
+        synchronized(commandField) {
+            commandField.getChildren().add(new Text(text));
+        }
+        scrollPane.layout();
+        scrollPane.setVvalue(1.0);
     }
 
-    public static void initCommands(Commands comm) {
-        comm.add(
-            new String[]{"/add"},
-            "   Add new element to the tree", 
-            (String value) -> {
-                System.out.println("Callback /add: " + value);
-            }, 
-            null, 
-            (String[] args) -> {
-                return args[0];
-            }
-        );
-    }
-
-    public ConsoleViewer() {        
+    public ConsoleViewer() {
         // In the middle, make big text view (as a logger, to see the incoming data from the server)
         // This will be a command-like tool, allowing user to save the tree into a file (on server)
         // And load it, if the user specified a given UUID
@@ -64,10 +42,6 @@ public class ConsoleViewer extends BorderPane {
         scrollPane = new ScrollPane(commandField);
         scrollPane.setFitToWidth(true);
 
-        commandParser = new Commands((String help) -> {
-            appendText(help + "\n");
-        });
-
         super.setCenter(scrollPane);
         super.setBottom(textField);
 
@@ -78,42 +52,65 @@ public class ConsoleViewer extends BorderPane {
             textField.setText(null); 
 
             // Do something with this command
-            handleCommand(command.split(" "));
-        });
-
-        initCommands(commandParser);
-    }
-
-    private void makeConnection(String datatype) {
-        try  {
-            Socket socket = new Socket(Server.HOST, Server.PORT); 
-
-            PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
-            BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-
-
-            String text = datatype;
-
-            while (!ServerThread.isEndToken(text)) {
-                // Odbieranie z serwera
-                System.out.println(in.readLine());
-
-                // text = console.readLine("Enter text: ");
-
-                if (text == null) {
-                    break;
+            if (command.equals("connect")) {
+                connect();
+            }
+            else {
+                if (messenger == null) {
+                    appendText("First call 'connect'\n");
+                    return;
                 }
 
-                // Wysylanie do serwera
-                out.println(text);
+                new Thread() {
+                @Override
+                    public void run() {
+                        // Wysylanie do serwera
+                        messenger.begin();
+                        messenger.println(command);
+                        messenger.transmit();
+
+                        try {
+                            String msg = receiver.read();
+                            Platform.runLater(() -> appendText(msg));
+
+                            if (msg.trim().equals("bye")) {
+                                socket.close();
+                                socket = null;
+                                messenger = null;
+                                receiver = null;
+                            }
+                        }
+                        catch (IOException ex) {
+                           Platform.runLater(() -> appendText("Error: " + ex.getMessage() + "\n"));
+                        }
+                    }
+                }.start();
             }
-            socket.close();
- 
-        } catch (UnknownHostException ex) {
-            System.out.println("Server not found: " + ex.getMessage());
- 
-        } catch (IOException ex) {
-            System.out.println("I/O error: " + ex.getMessage());
-        }
+        });
     }
+
+    private void connect() {
+        // Check if we are already connected
+        if (socket != null) {
+            appendText("Already connected");
+            return;
+        }
+
+        try {
+            socket = new Socket(Server.HOST, Server.PORT);
+            messenger = new ServerMessenger(
+                new PrintWriter(socket.getOutputStream(), true));
+            receiver = new MessageReceiver(
+                new BufferedReader(new InputStreamReader(socket.getInputStream())));
+
+            // Read the message upon connecting
+            appendText(receiver.read());
+        }
+        catch (UnknownHostException e) {
+            appendText("Error: " + e.getMessage() + "\n");
+        } 
+        catch(IOException e) {
+            appendText("Error: " + e.getMessage() + "\n");
+        }
+    } 
 }

@@ -42,7 +42,11 @@ public class ServerThread extends Thread {
             socket.close();
 
             System.out.println("Connection closed");
-        } catch (IOException ex) {
+        } 
+        catch(SocketException ex) {
+            System.out.println("Connection closed: " + ex.getMessage());
+        }
+        catch (IOException ex) {
             System.out.println("Server exception: " + ex.getMessage());
             ex.printStackTrace();
         }

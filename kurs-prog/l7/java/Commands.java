@@ -1,8 +1,8 @@
 import java.util.Arrays;
 import java.util.Vector;
 
-class ValidationError extends Exception {
-    public ValidationError(String reason) {
+class ValidationException extends Exception {
+    public ValidationException(String reason) {
         super(reason);
     }
 }
@@ -16,7 +16,7 @@ class Option<E> {
 
     @FunctionalInterface
     public static interface Validator {
-        void validate(String[] args) throws ValidationError;
+        void validate(String[] args) throws ValidationException;
     }
 
     @FunctionalInterface
@@ -31,12 +31,25 @@ class Option<E> {
     private Converter<E> converter = null;
     private E value = null;
     
+    /**
+     * Create a default validator - one that allows every input
+     */
     public static Validator defaultValidator() {
         return new Validator() {
             @Override
-            public void validate(String[] args) throws ValidationError {
+            public void validate(String[] args) throws ValidationException {
                 return;
             }
+        };
+    }
+
+    /**
+     * Create a boolean converter, simply return true
+     * @return
+     */
+    public static Converter<Boolean> booleanConverter() {
+        return (args) -> {
+            return true;
         };
     }
 
@@ -57,7 +70,7 @@ class Option<E> {
         return this.value;
     }
 
-    public void parse(String[] values) throws ValidationError {
+    public void parse(String[] values) throws ValidationException {
         // Will throw the error if failed
         validator.validate(values);
 
@@ -71,7 +84,15 @@ class Option<E> {
     }
 
     public boolean is(String name) {
-        return Arrays.binarySearch(names, name) >= 0;
+        for (String flag : names) {
+            if (flag.equals(name)) {
+                System.out.println(flag + " == " + name);
+                return true;
+            }
+        }
+        
+        return false;
+        // return Arrays.binarySearch(names, name) >= 0;
     }
 
     public String[] flags() {
@@ -86,41 +107,7 @@ class Option<E> {
 public class Commands {
     private final Vector<Option<?>> options = new Vector<>();
     private Option.Callback<String> helpCallback = null;
-
     private String[] PREFIX_COMMANDS = {"/", "--"};
-    private final String MAX_COMMAND = "max";
-    private final String MIN_COMMAND = "min";
-    private final String PRINT_COMMAND = "print";
-    private final String ADD_COMMAND = "add";
-    private final String DELETE_COMMAND = "delete";
-    private final String SEARCH_COMMAND = "search";
-
-    public static Option.Converter<Boolean> booleanconverter() {
-        return (args) -> {
-            return true;
-        };
-    }
-
-    public static String stringconverter(String[] s) throws ValidationError {
-        return s.toString();
-    }
-
-    public static Integer ingtegerconverter(String s) throws ValidationError {
-        try {
-            return Integer.parseInt(s);
-        }
-        catch (NumberFormatException exception) {
-            throw new ValidationError(s + " is not a number");
-        }
-    }
-
-    public static Double doubleconverter(String s) throws ValidationError {
-        try {
-            return Double.parseDouble(s);
-        } catch (NumberFormatException e) {
-            throw new ValidationError(s + " is not a floating point number");
-        }
-    }
 
     public Commands(Option.Callback<String> helpCallback) {
         this.helpCallback = helpCallback;
@@ -132,7 +119,6 @@ public class Commands {
             };
         }
     }
-
 
     /**
      * Get help formatted help message as a String
@@ -187,10 +173,15 @@ public class Commands {
         this.options.add(option);
     }
 
+    private boolean isCommand(String argument) {
+        return argument == null || argument.startsWith(PREFIX_COMMANDS[0]) ||
+                argument.startsWith(PREFIX_COMMANDS[1]);
+    }
+
     /**
      * Parse the arguments, and call the callbacks
      */
-    public void parse(String[] args) throws ValidationError {
+    public void parse(String[] args) throws ValidationException {
 
         if (args == null) {
             return;
@@ -202,8 +193,7 @@ public class Commands {
         boolean usedIncorrectly = true;
 
         while (args.length > index) {
-            if (args[index].startsWith(PREFIX_COMMANDS[0]) || 
-                args[index].startsWith(PREFIX_COMMANDS[1])) {
+            if (isCommand(args[index])) {
 
                 usedIncorrectly = false;
 
@@ -218,7 +208,7 @@ public class Commands {
 
                 for (int i = 0; i < options.size(); i++) {
                     if (options.get(i).is(args[index])) {
-                        option = options.get(index);
+                        option = options.get(i);
                         break;
                     }
                 }
@@ -231,14 +221,21 @@ public class Commands {
                 }
 
                 // Parse the arguments
-                while (index < args.length && !args[index].startsWith("-")) {
+                values.clear();
+                while (index < args.length && !isCommand(args[index])) {
                     values.add(args[index]);
                     index++;
                 }
 
                 // Call the option to parse these values
-                // Might throw ValidationError
-                option.parse((String[])values.toArray());
+                // Might throw ValidationException
+                String[] optionArgs = null;
+
+                if (!values.isEmpty()) {
+                    optionArgs = values.toArray(new String[values.size()]);
+                }
+                
+                option.parse(optionArgs);
             }
             else {
                 index++;

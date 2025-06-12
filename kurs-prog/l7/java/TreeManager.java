@@ -1,28 +1,17 @@
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.Arrays;
-import java.util.Iterator;
 import java.util.function.Function;
 
-import java.util.List;
 import java.util.Vector;
 
 public class TreeManager<E extends Comparable<E>> {
     private boolean isRunning;
     private BinaryTree<E> tree;
-    private PrintWriter out;
-    private BufferedReader in;
     private Function<String, E> setter;
     private final Commands commands;
-
-    private final String MAX_COMMAND = "max";
-    private final String MIN_COMMAND = "min";
-    private final String PRINT_COMMAND = "print";
-    private final String ADD_COMMAND = "add";
-    private final String DELETE_COMMAND = "delete";
-    private final String SEARCH_COMMAND = "search";
-    
+    private final ServerMessenger messenger;
+    private final MessageReceiver receiver;
 
     public static String stringSetter(String s) {
         return s;
@@ -47,13 +36,17 @@ public class TreeManager<E extends Comparable<E>> {
 
     private Option.Validator getListValidator(Function<String, E> setter) {
         return (String[] args) -> {
+            if (args == null) {
+                throw new ValidationException("No arguments provided");
+            }
+
             for (String arg : args) {
                 String[] tokens = arg.split(",");
 
                 for (String token : tokens) {
                     if (setter.apply(token) == null) {
                         // TODO: make it more specific
-                        throw new ValidationError("Validation error");
+                        throw new ValidationException("Invalid argument: " + token);
                     }      
                 }
             }
@@ -77,143 +70,158 @@ public class TreeManager<E extends Comparable<E>> {
         };
     }
 
+    /**
+     * Initialize the commands
+     */
     private void initCommands() {
         commands.add(new Option<Vector<E>>(
-            new String[]{"/add"}, 
+            new String[]{"/add", "/a"}, 
             "Add new elements to the tree, usage: /add <n1>,<n2>,...",
-            null, getListValidator(setter), getListConverter(setter)
+            (Vector<E> data) -> {
+                int prev_size = tree.size();
+                for (E value : data) {
+                    tree.insert(value);
+                }
+                messenger.println(">>> Inserted total of: " + (tree.size() - prev_size) + " element(s)");
+            }, 
+            getListValidator(setter), getListConverter(setter)
+        ));
+
+        commands.add(new Option<Vector<E>>(
+            new String[]{"/delete", "/del"}, 
+            "Delete given value of tree, usage: /del <n1>,<n2>,...",
+            (Vector<E> data) -> {
+                int prev_size = tree.size();
+                for (E value : data) {
+                    tree.delete(value);
+                }
+                messenger.println(">>> Removed total of: " + (prev_size - tree.size()) + " element(s)");
+            }, 
+            getListValidator(setter), getListConverter(setter)
+        ));
+
+        commands.add(new Option<Boolean>(
+            new String[]{"/print", "/p"},
+            "Print the binary tree, usage: /print",
+            (__) -> {
+                messenger.println(">>> " + tree.toString());
+            },
+            Option.defaultValidator(), Option.booleanConverter()
+        ));
+
+        commands.add(new Option<Boolean>(
+            new String[]{"/max"},
+            "Get the maximum element of the tree (rightmost), usage: /max",
+            (__) -> {
+                E max = tree.max();
+                String message = "none";
+
+                if (max != null) {
+                    message = max.toString();
+                }
+                messenger.println(">>> " + message);
+            },
+            Option.defaultValidator(), Option.booleanConverter()
+        ));
+
+        commands.add(new Option<Boolean>(
+            new String[]{"/min"},
+            "Get the minimum element of the tree (leftmost), usage: /min",
+            (__) -> {
+                E min = tree.min();
+                String message = "none";
+
+                if (min != null) {
+                    message = min.toString();
+                }
+                messenger.println(">>> " + message);
+            },
+            Option.defaultValidator(), Option.booleanConverter()
+        ));
+
+        commands.add(new Option<Boolean>(
+            new String[] {"/quit", "/exit", "/q", "/e"},
+            "Exit the connection, usage: /quit", 
+            (__) -> {
+                messenger.println("bye");
+                isRunning = false;
+            },
+            Option.defaultValidator(), Option.booleanConverter()
         ));
     }
 
     public TreeManager(PrintWriter out, BufferedReader input, Function<String, E> setter) {
-        this.out = out;
-        this.in = input;
         this.setter = setter;
         this.isRunning = true;
         this.tree = new BinaryTree<>();
+        this.receiver = new MessageReceiver(input);
+        this.messenger = new ServerMessenger(out);
         this.commands = new Commands((message) -> {
-            out.println(message);
+            this.messenger.println(message);
         }); 
-
-        System.out.println("Created new Tree: " + setter);
+        initCommands();
     }
     
+    /*
+     * Check if given token is 
+     */
     public static boolean isEndToken(String token) {
         return token.equals("quit") || token.equals("q") 
             || token.equals("exit") || token.equals("bye");
     }
 
-    public static String getTypeName(BufferedReader in, PrintWriter out) {
+    public static String getTypeName(BufferedReader in, PrintWriter out) throws IOException {
         String line = "";
-        try {
-            while(true) {
-                line = in.readLine();
+        ServerMessenger messenger = new ServerMessenger(out);
+        MessageReceiver receiver = new MessageReceiver(in);
 
-                if (line.equals("double") || line.equals("string") || line.equals("int")) {
-                    out.println(">>> setup done");
-                    break;
-                }
+        messenger.begin();
+        messenger.println(">>> Connected. Choose type of the tree: double,string,int");
+        messenger.transmit();
 
-                out.println(">>> Choose valid type: double,string,int");
-            };
-        }
-        catch(IOException exception) {
-            out.println(exception.getMessage());
-            exception.printStackTrace();
-            line = "int";
-        }
+        while(true) {
+            line = receiver.read().trim();
+            messenger.begin();
+
+            if (line.equals("double") || line.equals("string") || line.equals("int")) {
+                messenger.println(">>> setup done");
+                messenger.transmit();
+                break;
+            }
+
+            messenger.println(">>> Choose valid type: double,string,int (instead of:" + line + ")");
+            messenger.transmit();
+        };
 
         return line;
     }
 
     private void parseCommand(String line) {
-        String tokens[] = line.split(" ");
-        String mainCommand = "";
+        messenger.begin();
 
-
-        System.out.println(">>> parsing: " + line);
-
-
-        if (tokens.length == 1) {
-            mainCommand = tokens[0];            
-
-            // Single argument commands
-            // print, min, max, exit, etc.
-            switch (mainCommand) {
-                case PRINT_COMMAND:
-                    out.println(tree);
-                    break;
-                case MIN_COMMAND:
-                    out.println(tree.min());
-                    break;
-                case MAX_COMMAND:
-                    out.println(tree.max());
-                    break;
-            
-                default:
-                    if (isEndToken(mainCommand)) {
-                        isRunning = false;
-                        out.println(">>> Exiting...");
-                        return;
-                    }
-                    out.println(">>> Invalid option");
-            }
-
-            return;
+        try {
+            commands.parse(line.trim().split(" "));
+        } catch (ValidationException e) {
+            messenger.println(">>> " + e.getMessage());
         }
 
-
-        if (tokens.length > 1) {
-
-            System.out.println(">>> tokens: " + Arrays.toString(tokens));
-            mainCommand = tokens[0];
-
-            // Main commands: 
-            // add <n1>,<n2>,...
-            // delete <n1>,<n2>,...
-            // search n1
-
-            // Parse list-like
-            boolean isAdd = mainCommand.equals(ADD_COMMAND);
-            switch (mainCommand) {
-                case ADD_COMMAND:
-                case DELETE_COMMAND:
-                    String values[] = tokens[1].split(",");
-                    for (String val : values) {
-                        if (isAdd) {
-                            tree.insert(setter.apply(val));
-                        } else {
-                            tree.delete(setter.apply(val));
-                        }
-                    }
-                    out.println(">>> Performed: " + mainCommand);             
-                    break;
-                
-                case SEARCH_COMMAND:
-                    Iterator<E> it = tree.find(setter.apply(tokens[1]));
-                    
-
-                default:
-                    out.println(">>> Unhandled command: " + line);
-                    break;
-            }
-            return;
-        }
-        
-        out.println(">>> Unhandled command: " + line);
+        messenger.transmit();
     }
 
     public void run() {
-        System.out.println("Running");
         try{
             String line;
             while (isRunning) {
-                line = in.readLine();
+                line = receiver.read();
+
+                if (line == null) {
+                    return;
+                }
+
                 parseCommand(line);
             }
         }
         catch(IOException exception) {
-            out.println(exception.getMessage());
             exception.printStackTrace();
         }
     }
