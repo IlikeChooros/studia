@@ -222,7 +222,7 @@ public class TreeManager<E extends Comparable<E>> {
             }
         }
         catch(IOException exception) {
-            exception.printStackTrace();
+            System.out.println(exception.getMessage());
         }
     }
 }
