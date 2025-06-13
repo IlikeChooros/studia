@@ -8,7 +8,10 @@ import java.net.UnknownHostException;
 import javafx.application.Platform;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextField;
+import javafx.scene.layout.Background;
+import javafx.scene.layout.BackgroundFill;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.Region;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextFlow;
 
@@ -21,13 +24,55 @@ public class ConsoleViewer extends BorderPane {
     private MessageReceiver receiver = null;
     private ServerMessenger messenger = null;
 
-    private void appendText(String text) {
+    private enum MessageType {
+        ERROR, RECEIVED, ECHO
+    }
+
+    private Text stylizeText(Text t, MessageType type) {
+        String color;
+        switch (type) {
+            case ERROR:
+                color = "#ef9a9a";
+                break;
+            case ECHO:
+                color = "#fff9c4";
+                break;
+            
+            case RECEIVED:
+            default:
+                color = "#e0e0e0";
+                break;
+        }
+        t.setStyle(String.format(
+            "-fx-font-weight: normal;" + 
+            "-fx-font-size: 18px;" + 
+            "-fx-fill: %s;",
+        color));
+
+        return t;
+    }
+
+    private void appendText(String text, MessageType type) {
         // Add new text object
         synchronized(commandField) {
-            commandField.getChildren().add(new Text(text));
+            commandField.getChildren().add(stylizeText(new Text(text), type));
         }
-        scrollPane.layout();
-        scrollPane.setVvalue(1.0);
+        synchronized(scrollPane) {
+            scrollPane.layout();
+            scrollPane.setVvalue(1.0);
+            scrollPane.autosize();
+        }
+    }
+
+    private void setupStyles(Region object, String color, int fontsize) {
+        object.setStyle(String.format(
+            "-fx-background-color: %s;" +
+         "    -fx-border-radius: 5px;" + //
+         "    -fx-border-color: transparent;" + //
+         "    -fx-text-fill: white;" + 
+         "    -fx-font-size: %dpx;",
+         color, fontsize
+        ));
     }
 
     public ConsoleViewer() {
@@ -38,17 +83,21 @@ public class ConsoleViewer extends BorderPane {
         // No buttons, just a text view and text input on the botton for commands, 
         // with simple and elegant UI
         super();
-        commandField.setPrefSize(500, 400);
+        commandField.setPrefSize(600, 400);
         scrollPane = new ScrollPane(commandField);
         scrollPane.setFitToWidth(true);
 
         super.setCenter(scrollPane);
         super.setBottom(textField);
 
+        // Stylize the command prompt
+        setupStyles(commandField, "#212121", 18);
+        setupStyles(textField, "#161616", 20);
+
         textField.setOnAction((event) -> {
             // Append new text to the console, and clear the text
             String command = textField.getText();
-            appendText(command + "\n");
+            appendText(command + "\n", MessageType.ECHO);
             textField.setText(null); 
 
             // Do something with this command
@@ -57,7 +106,7 @@ public class ConsoleViewer extends BorderPane {
             }
             else {
                 if (messenger == null) {
-                    appendText("First call 'connect'\n");
+                    appendText("First call 'connect'\n", MessageType.ERROR);
                     return;
                 }
 
@@ -71,7 +120,7 @@ public class ConsoleViewer extends BorderPane {
 
                         try {
                             String msg = receiver.read();
-                            Platform.runLater(() -> appendText(msg));
+                            Platform.runLater(() -> appendText(msg, MessageType.RECEIVED));
 
                             if (msg.trim().equals("bye")) {
                                 socket.close();
@@ -81,7 +130,7 @@ public class ConsoleViewer extends BorderPane {
                             }
                         }
                         catch (IOException ex) {
-                           Platform.runLater(() -> appendText("Error: " + ex.getMessage() + "\n"));
+                           Platform.runLater(() -> appendText("Error: " + ex.getMessage() + "\n", MessageType.ERROR));
                         }
                     }
                 }.start();
@@ -92,7 +141,7 @@ public class ConsoleViewer extends BorderPane {
     private void connect() {
         // Check if we are already connected
         if (socket != null) {
-            appendText("Already connected");
+            appendText("Already connected", MessageType.ERROR);
             return;
         }
 
@@ -104,13 +153,13 @@ public class ConsoleViewer extends BorderPane {
                 new BufferedReader(new InputStreamReader(socket.getInputStream())));
 
             // Read the message upon connecting
-            appendText(receiver.read());
+            appendText(receiver.read(), MessageType.RECEIVED);
         }
-        catch (UnknownHostException e) {
-            appendText("Error: " + e.getMessage() + "\n");
+        catch (IOException e) {
+            appendText("Error: " + e.getMessage() + "\n", MessageType.ERROR);
         } 
-        catch(IOException e) {
-            appendText("Error: " + e.getMessage() + "\n");
-        }
+        // catch(IOException e) {
+        //     appendText("Error: " + e.getMessage() + "\n");
+        // }
     } 
 }

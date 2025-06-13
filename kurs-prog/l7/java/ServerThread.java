@@ -9,11 +9,11 @@ public class ServerThread extends Thread {
     public ServerThread(Socket socket) {
         this.socket = socket;
     }
-
-    public static boolean isEndToken(String token) {
-        return TreeManager.isEndToken(token);
-    }
  
+    /**
+     * 
+     */
+    @Override
     public void run() {
 
         try {

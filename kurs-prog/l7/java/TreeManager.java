@@ -161,15 +161,10 @@ public class TreeManager<E extends Comparable<E>> {
         }); 
         initCommands();
     }
-    
-    /*
-     * Check if given token is 
-     */
-    public static boolean isEndToken(String token) {
-        return token.equals("quit") || token.equals("q") 
-            || token.equals("exit") || token.equals("bye");
-    }
 
+    /**
+     * Initialize the server, with given type of the tree
+     */
     public static String getTypeName(BufferedReader in, PrintWriter out) throws IOException {
         String line = "";
         ServerMessenger messenger = new ServerMessenger(out);
@@ -196,6 +191,9 @@ public class TreeManager<E extends Comparable<E>> {
         return line;
     }
 
+    /**
+     * Parse the received command, and return the response
+     */
     private void parseCommand(String line) {
         messenger.begin();
 
@@ -208,6 +206,9 @@ public class TreeManager<E extends Comparable<E>> {
         messenger.transmit();
     }
 
+    /**
+     * Run the receiver, and wait for commads
+     */
     public void run() {
         try{
             String line;
