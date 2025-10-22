@@ -141,7 +141,7 @@ class MonteCarloIntegral:
 
 def run_experiment(
         mci: MonteCarloIntegral, k: int, expected: float, 
-        title: str, filename: str | None = None, 
+        title: str | None = None, filename: str | None = None, 
         transform: None | TransformType = None, showplt: bool = True):
     result = mci.go(k)
     y, x = mci.as_plt(k, result)
@@ -160,7 +160,8 @@ def run_experiment(
     ax.plot([meanx[0], meanx[len(meanx)-1]],
              [expected, expected], color="#D3BA23", linewidth=2)
 
-    fig.suptitle(f'{title} k={k}')
+    if title:
+        fig.suptitle(f'{title} k={k}')
     ax.xaxis.set_label('N')
     ax.yaxis.set_label('Approx Value')
     ax.grid(True)
@@ -234,7 +235,7 @@ def main():
 
         for k in KS:
             for mci, expected, transform, title in integrals:
-                run_experiment(mci, k, expected, title, f'{title}-{k}.png', transform, showplt=False)
+                run_experiment(mci, k, expected, None, f'{title}-{k}.png', transform, showplt=False)
 
 if __name__ == '__main__':
     main()
