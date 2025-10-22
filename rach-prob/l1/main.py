@@ -155,10 +155,10 @@ def run_experiment(
 
     fig, ax = plt.subplots()
 
-    ax.scatter(x, y, s=5, color="#5379E0", alpha=0.75)
-    ax.scatter(meanx, meany, s=20, color="#7222B7", alpha=0.9)
+    ax.scatter(x, y, s=5, color="#38B0E8")
+    ax.scatter(meanx, meany, s=20, color="#BA23D3")
     ax.plot([meanx[0], meanx[len(meanx)-1]],
-             [expected, expected], color="#211E89", linewidth=3)
+             [expected, expected], color="#D3BA23", linewidth=2)
 
     fig.suptitle(f'{title} k={k}')
     ax.xaxis.set_label('N')
@@ -169,7 +169,7 @@ def run_experiment(
         fig.savefig(filename, dpi=600)
 
     if showplt:
-        fig.show()
+        plt.show()
 
     plt.close(fig)
 
