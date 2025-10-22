@@ -139,7 +139,10 @@ class MonteCarloIntegral:
         return results
 
 
-def run_experiment(mci: MonteCarloIntegral, k: int, expected: float, title: str, filename: str | None = None, transform: None | TransformType = None):
+def run_experiment(
+        mci: MonteCarloIntegral, k: int, expected: float, 
+        title: str, filename: str | None = None, 
+        transform: None | TransformType = None, showplt: bool = True):
     result = mci.go(k)
     y, x = mci.as_plt(k, result)
 
@@ -150,18 +153,25 @@ def run_experiment(mci: MonteCarloIntegral, k: int, expected: float, title: str,
         meany = transform(meany)
         y = transform(y)
 
-    plt.scatter(x, y, s=5, color="#5379E0", alpha=0.75)
-    plt.scatter(meanx, meany, s=20, color="#7222B7", alpha=0.9)
-    plt.plot([meanx[0], meanx[len(meanx)-1]],
+    fig, ax = plt.subplots()
+
+    ax.scatter(x, y, s=5, color="#5379E0", alpha=0.75)
+    ax.scatter(meanx, meany, s=20, color="#7222B7", alpha=0.9)
+    ax.plot([meanx[0], meanx[len(meanx)-1]],
              [expected, expected], color="#211E89", linewidth=3)
-    plt.title(f'{title} K={k}')
-    plt.xlabel('N')
-    plt.ylabel('Approx Value')
-    plt.grid(True)
+
+    fig.suptitle(f'{title} k={k}')
+    ax.xaxis.set_label('N')
+    ax.yaxis.set_label('Approx Value')
+    ax.grid(True)
 
     if filename != None:
-        plt.savefig(filename)
-    plt.show()
+        fig.savefig(filename, dpi=600)
+
+    if showplt:
+        fig.show()
+
+    plt.close(fig)
 
 
 FUNCS = ('x3', 'cbrt', 'sin', 'poly', 'pi')
@@ -176,6 +186,9 @@ def get_args() -> arg.Namespace:
     p.add_argument('-s', '--filename', default=None, type=str,
                    help='Filename for the saved graph')
     p.add_argument('-t', '--title', default='Monte Carlo Integration', type=str, help='Set the title of the plot')
+    
+    p.add_argument('-r', '--run_all', action='store_true', default=False, 
+                    help='Run all experiments metioned in the exercise (poly, sin, cbrt, pi) with k=[5, 50]')
     return p.parse_args()
 
 
@@ -203,17 +216,25 @@ def main():
 
     # MonteCarloIntegral: function, a, b, [checkFn]
     integrals = (
-        (MonteCarloIntegral(lambda x: x**3, 1, 3), 20.0, None),
-        (MonteCarloIntegral(lambda x: np.cbrt(x), 0, 8), 12.0, None),
-        (MonteCarloIntegral(lambda x: np.sin(x), 0, np.pi), 2.0, None),
-        (MonteCarloIntegral(vectorized_poly, 0, 1), -0.2, None),
-        (MonteCarloIntegral(dummy_circle, -1, 1, 1, is_in_circle), np.pi, transform_circle)
+        (MonteCarloIntegral(lambda x: x**3, 1, 3), 20.0, None, 'x^3'),
+        (MonteCarloIntegral(lambda x: np.cbrt(x), 0, 8), 12.0, None, 'Cbrt'),
+        (MonteCarloIntegral(lambda x: np.sin(x), 0, np.pi), 2.0, None, 'Sin'),
+        (MonteCarloIntegral(vectorized_poly, 0, 1), -0.2, None, 'Poly'),
+        (MonteCarloIntegral(dummy_circle, -1, 1, 1, is_in_circle), np.pi, transform_circle, 'Pi')
     )
 
     print(args._get_kwargs())
-    mci, expected, transform = integrals[FUNCS.index(args.func)]
-    run_experiment(mci, args.k, expected, args.title, args.filename, transform)
 
+    if not args.run_all:
+        mci, expected, transform, _ = integrals[FUNCS.index(args.func)]
+        run_experiment(mci, args.k, expected, args.title, args.filename, transform)
+    else:
+        KS = [5, 50]
+        print('Running all experiments with k={}'.format(KS))
+
+        for k in KS:
+            for mci, expected, transform, title in integrals:
+                run_experiment(mci, k, expected, title, f'{title}-{k}.png', transform, showplt=False)
 
 if __name__ == '__main__':
     main()

@@ -40,11 +40,11 @@ public class Controller {
     public void run() {
 
         System.out.println("Jcalc");
+        Scanner sc = new Scanner(System.in);
         while (true) {
             System.out.print("> ");
 
             // Read the input for the calculator from the user
-            Scanner sc = new Scanner(System.in);
             String input = sc.nextLine();
 
             String result = "";
@@ -60,6 +60,7 @@ public class Controller {
 
             System.out.println(result);
         }
+        sc.close();
     }
 
 
