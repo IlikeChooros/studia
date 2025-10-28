@@ -235,7 +235,7 @@ def main():
         (MonteCarloIntegral(lambda x: x**3, 1, 3), 20.0, 'x^3', (20.0 - 2, 20.0 + 2)),
         (MonteCarloIntegral(lambda x: np.cbrt(x), 0, 8), 12.0, 'Cbrt', (12.0 - 2, 12.0 + 2)),
         (MonteCarloIntegral(lambda x: np.sin(x), 0, np.pi), 2.0, 'Sin', (2.0 - 0.3, 2.0 + 0.3)),
-        (MonteCarloIntegral(lambda x: 4*x*(x-1)**3, 0, 1), -0.2, 'Poly', (-0.20 - 0.04, -0.20 + 0.04)),
+        (MonteCarloIntegral(lambda x: 4*x*(1-x)**3, 0, 1), 0.2, 'Poly', (0.20 - 0.04, 0.20 + 0.04)),
         (MonteCarloIntegral(None, -1, 1, m=-1, sup=1, checkFn=is_in_circle),
          np.pi, 'Pi', (np.pi - 0.3, np.pi + 0.3))
     )
