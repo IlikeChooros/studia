@@ -1,1 +1,12 @@
-/home/who-ate-my-ram/studia/tech-prog/l2/faktura/src/main/java/app/App.java
+/home/minis/studia/tech-prog/l2/faktura/src/main/java/app/App.java
+/home/minis/studia/tech-prog/l2/faktura/src/main/java/app/Controller.java
+/home/minis/studia/tech-prog/l2/faktura/src/main/java/app/DataLike.java
+/home/minis/studia/tech-prog/l2/faktura/src/main/java/app/DataPool.java
+/home/minis/studia/tech-prog/l2/faktura/src/main/java/app/Firm.java
+/home/minis/studia/tech-prog/l2/faktura/src/main/java/app/Invoice.java
+/home/minis/studia/tech-prog/l2/faktura/src/main/java/app/InvoiceManager.java
+/home/minis/studia/tech-prog/l2/faktura/src/main/java/app/Messenger.java
+/home/minis/studia/tech-prog/l2/faktura/src/main/java/app/Person.java
+/home/minis/studia/tech-prog/l2/faktura/src/main/java/app/Product.java
+/home/minis/studia/tech-prog/l2/faktura/src/main/java/app/QuantProduct.java
+/home/minis/studia/tech-prog/l2/faktura/src/main/java/app/Validator.java

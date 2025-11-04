@@ -3,8 +3,17 @@ package app;
 /**
  * Hello world!
  */
-public class App {
-    public static void main(String[] args) {
-        
+public final class App {
+
+    private App() {
+        // Prevent instantiation
+    }
+
+    /**
+     * @param args the command line arguments
+     */
+    public static void main(final String[] args) {
+        Controller controller = new Controller();
+        controller.run();
     }
 }
