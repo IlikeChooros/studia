@@ -1,14 +1,17 @@
 package app;
 
-import java.util.HashMap;
+import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
+import java.util.Vector;
+import java.util.function.Function;
+import java.util.stream.Stream;
 
 import org.jline.reader.Completer;
 import org.jline.reader.Candidate;
 import org.jline.reader.LineReader;
 import org.jline.reader.ParsedLine;
-import org.jline.reader.impl.completer.StringsCompleter;
+import org.jline.builtins.Completers.TreeCompleter;
+import static org.jline.builtins.Completers.TreeCompleter.node;
 
 public final class CommandHelper {
 
@@ -21,25 +24,76 @@ public final class CommandHelper {
 
     enum CoreCommands {
         /** List of all available commands. */
-        ADD, LIST, UPDATE, REMOVE, LIST_MODULES, HELP
+        ADD("add"), LIST("list"), UPDATE("update"),
+        /** Fuck checkstyle. */
+        REMOVE("remove"), LIST_MODULES("list-modules"), HELP("help"),
+
+        /** Command to save an invoice to pdf. */
+        EXPORT_INVOICE("export-invoice");
+
+        /** Command alias. */
+        private final String alias;
+
+        CoreCommands(final String name) {
+            this.alias = name;
+        }
+
+        @Override
+        public String toString() {
+            return alias;
+        }
+
+        public static String[] commandNames(final boolean includeHelp) {
+            CoreCommands[] commands = CoreCommands.values();
+            Vector<String> names = new Vector<>();
+            for (CoreCommands command : commands) {
+                if (includeHelp || !command.equals(CoreCommands.HELP)) {
+                    names.add(command.toString());
+                }
+            }
+            return names.toArray(new String[0]);
+        }
     }
 
     enum Modules {
         /** List of all available modules. */
-        PERSON, FIRM, PRODUCT, INVOICE
+        PERSON, FIRM, PRODUCT, INVOICE;
+
+        @Override
+        public String toString() {
+            return name().toLowerCase();
+        }
+
+        public static String[] moduleNames() {
+            Modules[] modules = Modules.values();
+            String[] names = new String[modules.length];
+            for (int i = 0; i < modules.length; i++) {
+                names[i] = modules[i].toString();
+            }
+            return names;
+        }
     }
 
     static class ContextAwareCompleter implements Completer {
         /** Map of context names to their respective completers. */
-        private final Map<String, Completer>
-            contextCompleters = new HashMap<>();
+        private final Completer defaultCompleter;
+
+        /** Data associated with the current context. */
+        private Function<String, Vector<?>> filter;
 
         ContextAwareCompleter() {
-            contextCompleters.put("default",
-                new StringsCompleter("add", "list", "update",
-                    "remove", "list-modules", "help", "quit", "exit"));
-            contextCompleters.put("user",
-                new StringsCompleter("admin", "guest", "user1", "user2"));
+            defaultCompleter = new TreeCompleter(
+                node("help", node((Object[]) Stream.concat(
+                    Arrays.stream(Modules.moduleNames()),
+                    Arrays.stream(CoreCommands.commandNames(false)))
+                    .toArray(String[]::new))),
+                node("list", node((Object[]) Modules.moduleNames())),
+                node("add", node((Object[]) Modules.moduleNames())),
+                node("update", node((Object[]) Modules.moduleNames())),
+                node("remove", node((Object[]) Modules.moduleNames())),
+                node("list-modules"),
+                node("export-invoice")
+            );
         }
 
         @Override
@@ -47,14 +101,25 @@ public final class CommandHelper {
             final ParsedLine line, final List<Candidate> candidates) {
             // Get current context from reader variables
             String context = (String) reader.getVariable(COMPLETER_CONTEXT_VAR);
-            if (context == null) {
-                context = "default";
+            if (context == null || context.equals("default")) {
+                defaultCompleter.complete(reader, line, candidates);
+            } else {
+                // Dynamic context-based completion
+                if (filter != null) {
+                    // use the current word the user is typing as the prefix
+                    String prefix = line == null ? "" : line.word();
+                    Vector<?> data = filter.apply(prefix);
+                    for (Object item : data) {
+                        candidates.add(new Candidate(item.toString()));
+                    }
+                }
+                // Do nothing if no filter is set
             }
+        }
 
-            // Use the appropriate completer for this context
-            Completer contextCompleter = contextCompleters.getOrDefault(
-                context, contextCompleters.get("default"));
-            contextCompleter.complete(reader, line, candidates);
+        public void setContextFilter(
+            final Function<String, Vector<?>> filterFn) {
+            this.filter = filterFn;
         }
     }
 
@@ -62,7 +127,7 @@ public final class CommandHelper {
      * Get a context-aware completer.
      * @return the context-aware completer
      */
-    public static Completer getCompleter() {
+    public static ContextAwareCompleter getCompleter() {
         return new ContextAwareCompleter();
     }
 
@@ -78,6 +143,22 @@ public final class CommandHelper {
             }
         }
         return null;
+    }
+
+    /**
+     * Check if a command string is an exit command.
+     * @param commandStr the command string
+     * @return true if it is an exit command
+     */
+    public static boolean isExitCommand(final String commandStr) {
+        switch (commandStr) {
+            case "q":
+            case "quit":
+            case "exit":
+                return true;
+            default:
+                return false;
+        }
     }
 
     /**
@@ -99,11 +180,12 @@ public final class CommandHelper {
                 return CoreCommands.LIST_MODULES;
             case "help":
                 return CoreCommands.HELP;
-            case "q":
-            case "quit":
-            case "exit":
-                System.exit(0);
+            case "export-invoice":
+                return CoreCommands.EXPORT_INVOICE;
             default:
+                if (isExitCommand(commandStr)) {
+                    System.exit(0);
+                }
                 return null;
         }
     }
@@ -124,6 +206,7 @@ public final class CommandHelper {
             messenger.help("update <module> - Update an element in the module");
             messenger.help("remove <module> - "
                 + "Remove an element from the module");
+            messenger.help("export-invoice - Export the current invoice");
             messenger.help("Type 'help <command> | <module>'"
                 + " to get more information about the command/module.");
             return;
@@ -165,7 +248,7 @@ public final class CommandHelper {
         }
 
         for (CoreCommands cmd : CoreCommands.values()) {
-            if (cmd.name().equalsIgnoreCase(command)) {
+            if (cmd.toString().equalsIgnoreCase(command)) {
                 switch (cmd) {
                     case ADD:
                         messenger.help("add - add a new element");
@@ -189,6 +272,12 @@ public final class CommandHelper {
                             + "display available modules.");
                         messenger.help("Syntax: list-modules");
                         break;
+                    case EXPORT_INVOICE:
+                        messenger.help("export-invoice - "
+                            + "export the current invoice to a PDF file.");
+                        messenger.help("Syntax: export-invoice [<filename> |"
+                            + " <id> <filename>]");
+                        break;
                     case HELP:
                     default:
                         messenger.help("help - display help "
@@ -200,6 +289,6 @@ public final class CommandHelper {
             }
         }
 
-        messenger.error("Unknown command: " + command);
+        messenger.error("Unknown command: (mess)" + command);
     }
 }

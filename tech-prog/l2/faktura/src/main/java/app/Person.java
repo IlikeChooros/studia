@@ -1,6 +1,9 @@
 package app;
 
-public class Person implements DataLike {
+public class Person extends BaseData {
+
+    /** ID counter for generating unique IDs. */
+    private static int idCounter = 0;
 
     /** First name. */
     private String firstName;
@@ -21,11 +24,13 @@ public class Person implements DataLike {
         this.firstName = f;
         this.lastName = l;
         this.idNumber = id;
+        this.id = idCounter++;
     }
 
     @Override
     public final String toString() {
-        return firstName + " " + lastName + " (ID: " + idNumber + ")";
+        return String.format("%s %s, PESEL: %s",
+            firstName, lastName, idNumber);
     }
 
     /**

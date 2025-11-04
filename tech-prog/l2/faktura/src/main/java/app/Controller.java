@@ -5,7 +5,6 @@ import java.util.Date;
 import java.util.Vector;
 import java.util.function.Function;
 
-import org.jline.console.impl.Builtins.Command;
 import org.jline.reader.LineReader;
 import org.jline.reader.LineReaderBuilder;
 import org.jline.reader.impl.history.DefaultHistory;
@@ -13,11 +12,6 @@ import org.jline.terminal.Terminal;
 import org.jline.terminal.TerminalBuilder;
 
 public class Controller {
-
-    /**
-     * The invoice manager.
-     */
-    private InvoiceManager man = new InvoiceManager(null);
 
     /** The terminal for user input and output. */
     private Terminal terminal;
@@ -28,6 +22,9 @@ public class Controller {
     /** The messenger for formatted messages. */
     private Messenger messenger;
 
+    /** The context-aware completer for command suggestions. */
+    private CommandHelper.ContextAwareCompleter contextCompleter;
+
     /**
      * Initializes the Controller.
      */
@@ -36,14 +33,22 @@ public class Controller {
             terminal = TerminalBuilder.builder()
                 .system(true)
                 .build();
+            messenger = new Messenger(terminal);
+            contextCompleter = CommandHelper.getCompleter();
             reader = LineReaderBuilder.builder()
                 .terminal(terminal)
                 .history(new DefaultHistory())
-                .completer(CommandHelper.getCompleter())
+                .completer(contextCompleter)
                 .build();
-            messenger = new Messenger(terminal);
         } catch (Exception e) {
-            messenger.error("Error initializing terminal: " + e.getMessage());
+            if (messenger != null) {
+                messenger.error(
+                    "Error initializing terminal: " + e.getMessage());
+            } else {
+                System.err.println(
+                    "Error initializing terminal: " + e.getMessage());
+            }
+            e.printStackTrace();
             System.exit(1);
         }
     }
@@ -77,7 +82,15 @@ public class Controller {
     }
 
     private String readInput(final String prompt) {
-        return reader.readLine(prompt);
+        return reader.readLine(prompt).trim();
+    }
+
+    private static String[] convert(final Vector<?> vec) {
+        String[] arr = new String[vec.size()];
+        for (int i = 0; i < vec.size(); i++) {
+            arr[i] = vec.get(i).toString();
+        }
+        return arr;
     }
 
     private void addPerson() {
@@ -94,12 +107,23 @@ public class Controller {
         String name = prompt("Enter product name", null, null, null);
         String priceStr = prompt("Enter unit price",
             Validator::isValidFloat, "Invalid price", null);
+
+        contextCompleter.setContextFilter(prompt -> {
+            Vector<Validator.Units> results = new Vector<>();
+            for (Validator.Units u : Validator.Units.values()) {
+                if (u.name().toLowerCase().startsWith(prompt.toLowerCase())) {
+                    results.add(u);
+                }
+            }
+            return results;
+        });
         String unit = prompt("Enter unit of measure", Validator::isValidUnit,
                 "Invalid unit, available: " + Validator.getAllUnits(), null);
         float price = Float.parseFloat(priceStr);
-        pool.addProduct(new Product(name, price, unit));
+        Product product = new Product(name, price, unit);
+        pool.addProduct(product);
         messenger.success(String.format(
-            "Product %s (%.2f / %s) added", name, price, unit));
+            "Product %s added", product.toString()));
     }
 
     private void addFirm() {
@@ -112,6 +136,62 @@ public class Controller {
             "Firm %s (%s) added", name, taxID));
     }
 
+    private Object select(
+        final String msg,
+        final Function<String, Vector<?>> searchFn,
+        final Function<Integer, Object> indexFn) {
+        // If the user specifies an index, return that person
+        // else perform a search by name and make
+        // a suggestion for the first match
+        // other matches added as tab completions
+        reader.setVariable(CommandHelper.COMPLETER_CONTEXT_VAR, "select");
+        contextCompleter.setContextFilter(searchFn);
+
+        while (true) {
+            String data = prompt(msg, null, null, null).trim();
+
+            if (CommandHelper.isExitCommand(data)) {
+                return null;
+            }
+
+            // Try to parse as index
+            try {
+                int index = Integer.parseInt(data);
+                return indexFn.apply(index);
+            } catch (Exception e) {
+                // Not an index, proceed to search
+            }
+
+            Vector<?> matches = searchFn.apply(data);
+            if (matches.isEmpty()) {
+                messenger.info("No matches found for: " + data);
+                continue;
+            }
+
+            if (matches.size() == 1) {
+                return matches.get(0);
+            } else {
+                messenger.info(String.format(
+                    "%d matches found", matches.size()));
+            }
+        }
+    }
+
+    private Person selectPerson(final String msg) {
+        return (Person) select(msg, prompt -> pool.searchPersons(prompt),
+            index -> pool.getPersons().get(index));
+    }
+
+    private Firm selectFirm(final String msg) {
+        return (Firm) select(msg, prompt -> pool.searchFirms(prompt),
+            index -> pool.getFirms().get(index));
+    }
+
+    private Product selectProduct(final String msg) {
+        return (Product) select(msg, prompt -> pool.searchProducts(prompt),
+            index -> pool.getProducts().get(index));
+    }
+
     private void addInvoice() {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 
@@ -122,14 +202,18 @@ public class Controller {
         String paymentDateStr = prompt(
             "Enter payment date yyyy-MM-dd (default: today)",
             Validator::isValidDate, null, sdf.format(new Date()));
-        // Simple by id selection for buyer and seller
-        String buyerId = prompt("Enter buyer index",
-            Validator::isValidInt, "Invalid index", null);
-        String sellerId = prompt("Enter seller index",
-            Validator::isValidInt, "Invalid index", null);
 
-        Person buyer = pool.getPersons().get(Integer.parseInt(buyerId));
-        Person seller = pool.getPersons().get(Integer.parseInt(sellerId));
+        Person buyer = selectPerson("Enter buyer");
+        if (buyer == null) {
+            messenger.info("Invoice creation cancelled.");
+            return;
+        }
+
+        Person seller = selectPerson("Enter seller");
+        if (seller == null) {
+            messenger.info("Invoice creation cancelled.");
+            return;
+        }
 
         Date creationDate = null;
         Date paymentDate = null;
@@ -145,20 +229,18 @@ public class Controller {
         // Add products with quantities
         Vector<QuantProduct> quantProducts = new Vector<>();
         while (true) {
-            String productId = prompt(
-                "Enter product index (or 'done' to finish)",
-                input -> input.equalsIgnoreCase("done")
-                    || Validator.isValidInt(input),
-                "Invalid index", null);
-            if (productId.equalsIgnoreCase("done")) {
+
+            Product product = selectProduct(
+                "Enter product (q to finish): ");
+
+            if (product == null) {
                 break;
             }
-            String quantityStr = prompt("Enter quantity",
-                Validator::isValidInt, "Invalid quantity", null);
 
-            Product product = pool.getProducts().
-                get(Integer.parseInt(productId));
-            int quantity = Integer.parseInt(quantityStr);
+            String quantityStr = prompt("Enter quantity",
+                Validator::isValidFloat, "Invalid quantity", null);
+
+            float quantity = Float.parseFloat(quantityStr);
             quantProducts.add(new QuantProduct(product, quantity));
         }
 
@@ -209,14 +291,16 @@ public class Controller {
                 formatter = obj -> {
                     Invoice inv = (Invoice) obj;
                     return String.format(
-                        "Invoice: \n\t"
-                        + " - Firm: %s\n\t"
-                        + " - Buyer: %s\n\t"
-                        + " - Seller: %s\n\t"
-                        + " - Creation Date: %s\n\t"
-                        + " - Payment Date: %s\n\t"
-                        + " - Total: %s",
-                        inv.getFirm().toString(),
+                        "Invoice(ID: %d): \n\t"
+                        + "  - Firm: %s\n\t"
+                        + "  - Buyer: %s\n\t"
+                        + "  - Seller: %s\n\t"
+                        + "  - Creation Date: %s\n\t"
+                        + "  - Payment Date: %s\n\t"
+                        + "  - Total: %s",
+                        inv.getId(),
+                        (inv.getFirm() != null ? inv.getFirm().toString()
+                            : "Unknown"),
                         inv.getBuyer().toString(),
                         inv.getSeller().toString(),
                         Formatter.formatDate(inv.getCreationDate()),
@@ -259,6 +343,97 @@ public class Controller {
                 messenger.error("Unknown module to add.");
                 break;
         }
+        reader.setVariable(CommandHelper.COMPLETER_CONTEXT_VAR, null);
+    }
+
+    private void remove(
+        final String msg,
+        final String successMsg,
+        final Function<String, Vector<?>> searchFn,
+        final Function<Integer, Object> indexFn,
+        final Function<Object, Void> removeFn) {
+
+        Object item = select(msg, searchFn, indexFn);
+        if (item != null) {
+            removeFn.apply(item);
+            messenger.success(successMsg);
+        } else {
+            messenger.info("Removal cancelled.");
+        }
+    }
+
+    private void removePerson() {
+        remove("Enter person to remove: ",
+            "Person removed successfully.",
+            prompt -> pool.searchPersons(prompt),
+            index -> pool.getPersons().get(index),
+            item -> {
+                pool.removePerson((Person) item);
+                return null;
+            });
+    }
+
+    private void removeFirm() {
+        remove("Enter firm to remove: ",
+            "Firm removed successfully.",
+            prompt -> pool.searchFirms(prompt),
+            index -> pool.getFirms().get(index),
+            item -> {
+                pool.removeFirm((Firm) item);
+                return null;
+            });
+    }
+
+    private void removeProduct() {
+        remove("Enter product to remove: ",
+            "Product removed successfully.",
+            prompt -> pool.searchProducts(prompt),
+            index -> pool.getProducts().get(index),
+            item -> {
+                pool.removeProduct((Product) item);
+                return null;
+            });
+    }
+
+    private void removeInvoice() {
+        remove("Enter invoice to remove: ",
+            "Invoice removed successfully.",
+            prompt -> {
+                Vector<Invoice> results = new Vector<>();
+                for (Invoice inv : pool.getInvoices()) {
+                    if (Integer.toString(inv.getId())
+                        .startsWith(prompt)) {
+                        results.add(inv);
+                    }
+                }
+                return results;
+            },
+            index -> pool.getInvoices().get(index),
+            item -> {
+                pool.removeInvoice((Invoice) item);
+                return null;
+            });
+    }
+
+    private void handleRemove(final CommandHelper.Modules module) {
+        switch (module) {
+            case PERSON:
+                removePerson();
+                break;
+            case FIRM:
+                removeFirm();
+                break;
+            case PRODUCT:
+                removeProduct();
+                break;
+            case INVOICE:
+                removeInvoice();
+                break;
+            default:
+                messenger.error("Unknown module to remove.");
+                break;
+        }
+        reader.setVariable(CommandHelper.COMPLETER_CONTEXT_VAR, null);
     }
 
     private void commandParser(final String input) {
@@ -277,6 +452,8 @@ public class Controller {
             return;
         }
 
+        reader.setVariable(CommandHelper.COMPLETER_CONTEXT_VAR, "context");
+        contextCompleter.setContextFilter(null);
         switch (command) {
             case ADD:
                 if (module != null) {
@@ -300,8 +477,19 @@ public class Controller {
                 break;
             case REMOVE:
                 if (module != null) {
-                    // Call the appropriate remove method based on the module
+                    handleRemove(module);
+                } else {
+                    messenger.error("No module specified for remove command.");
                 }
+                break;
+            case EXPORT_INVOICE:
+                if (parts.length != 3) {
+                    messenger.error("Invalid syntax for export-invoice."
+                            + " Use export-invoice <id> <filename>");
+                    return;
+                }
+                PdfInvoiceGenerator.saveToPdf(parts[2], 0.23f,
+                    pool.getInvoices().get(Integer.parseInt(parts[1])));
                 break;
             case LIST_MODULES:
                 listModules();
@@ -311,6 +499,9 @@ public class Controller {
                 CommandHelper.help(messenger, rest);
                 break;
         }
+
+        reader.setVariable(CommandHelper.COMPLETER_CONTEXT_VAR, null);
+        contextCompleter.setContextFilter(null);
     }
 
     /**
@@ -321,8 +512,12 @@ public class Controller {
         messenger.info("Type 'help' to get started.");
         while (true) {
             String input = readInput(Messenger.fmtInput(""));
-            if (input != null && !input.isEmpty()) {
-                commandParser(input);
+            try {
+                if (input != null && !input.isEmpty()) {
+                    commandParser(input);
+                }
+            } catch (Exception e) {
+                messenger.error("Error processing command: " + e.getMessage());
             }
         }
     }

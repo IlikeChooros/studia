@@ -11,22 +11,22 @@ public class DataPool {
     /**
      * The collection of Person objects.
      */
-    private final Vector<Person> persons;
+    private Vector<Person> persons;
 
     /**
      * The collection of Firm objects.
      */
-    private final Vector<Firm> firms;
+    private Vector<Firm> firms;
 
     /**
      * The collection of Product objects.
      */
-    private final Vector<Product> products;
+    private Vector<Product> products;
 
     /**
      * The collection of Invoice objects.
      */
-    private final Vector<Invoice> invoices;
+    private Vector<Invoice> invoices;
 
     /**
      * Constructs an empty DataPool.
@@ -141,5 +141,95 @@ public class DataPool {
      */
     public final Vector<Invoice> getInvoices() {
         return invoices;
+    }
+
+    private static <T> Vector<T> search(final Vector<T> collection,
+                                        final String query) {
+        Vector<T> results = new Vector<>();
+        for (T item : collection) {
+            if (item.toString().toLowerCase()
+                .contains(query.toLowerCase())) {
+                results.add(item);
+            }
+        }
+        return results;
+    }
+
+    /**
+     * Search for persons by name or ID number.
+     *
+     * @param query the search query
+     * @return a vector of Person objects matching the query
+     */
+    public final Vector<Person> searchPersons(final String query) {
+        return search(persons, query);
+    }
+
+    /**
+     * Search for products by name.
+     *
+     * @param query the search query
+     * @return a vector of Product objects matching the query
+     */
+    public final Vector<Product> searchProducts(final String query) {
+        return search(products, query);
+    }
+
+    /**
+     * Search for firms by name or NIP.
+     *
+     * @param query the search query
+     * @return a vector of Firm objects matching the query
+     */
+    public final Vector<Firm> searchFirms(final String query) {
+        return search(firms, query);
+    }
+
+    private static <T> Vector<T> remove(final Vector<T> collection,
+                                        final T item) {
+        Vector<T> results = new Vector<>();
+        for (T element : collection) {
+            if (!element.equals(item)) {
+                results.add(element);
+            }
+        }
+        return results;
+    }
+
+    /**
+     * Remove a person from the pool.
+     *
+     * @param person the Person to remove
+     */
+    public final void removePerson(final Person person) {
+        persons = remove(persons, person);
+    }
+
+
+    /**
+     * Remove a firm from the pool.
+     *
+     * @param firm the Firm to remove
+     */
+    public final void removeFirm(final Firm firm) {
+        firms = remove(firms, firm);
+    }
+
+    /**
+     * Remove a product from the pool.
+     *
+     * @param product the Product to remove
+     */
+    public final void removeProduct(final Product product) {
+        products = remove(products, product);
+    }
+
+    /**
+     * Remove an invoice from the pool.
+     *
+     * @param invoice the Invoice to remove
+     */
+    public final void removeInvoice(final Invoice invoice) {
+        invoices = remove(invoices, invoice);
     }
 }

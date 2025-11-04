@@ -46,6 +46,14 @@
       <artifactId>jline</artifactId>
       <version>3.30.0</version>
     </dependency>
+
+    <!-- iText 8 core library -->
+      <dependency>
+          <groupId>com.itextpdf</groupId>
+          <artifactId>itext-core</artifactId>
+          <version>8.0.5</version>
+          <type>pom</type>
+      </dependency>
   </dependencies>
 
   <build>

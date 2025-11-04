@@ -3,7 +3,7 @@ package app;
 /**
  * Represents a company/firm with name, address and tax identification (NIP).
  */
-public class Firm implements DataLike {
+public class Firm extends BaseData {
     /** Company name. */
     private String name;
     /** Company address. */

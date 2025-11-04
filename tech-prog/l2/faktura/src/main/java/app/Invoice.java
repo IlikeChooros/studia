@@ -2,7 +2,7 @@ package app;
 
 import java.util.Date;
 
-class Invoice implements DataLike {
+class Invoice extends BaseData {
 
     /** Creation date of the invoice. */
     private Date creationDate = new Date();
@@ -78,7 +78,8 @@ class Invoice implements DataLike {
         sb.append("Products:\n");
         for (QuantProduct qp : products) {
             sb.append("- ").append(qp.getProduct().toString())
-                .append(", Quantity: ").append(qp.getQuantity())
+                .append(", Quantity: ").append(
+                    String.format("%.2f", qp.getQuantity()))
                 .append(", Total: ").append(
                     Formatter.formatCurrency(qp.getCumCost()))
                 .append("\n");

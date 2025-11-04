@@ -1,12 +1,12 @@
 package app;
 
-public class QuantProduct implements DataLike {
+public class QuantProduct extends BaseData {
 
     /** Product associated with the quantity. */
     private Product product;
 
     /** Quantity of the product. */
-    private int quantity;
+    private float quantity;
 
     /**
      * Create a new QuantProduct.
@@ -14,7 +14,7 @@ public class QuantProduct implements DataLike {
      * @param prod the product
      * @param quant the quantity of the product
      */
-    public QuantProduct(final Product prod, final int quant) {
+    public QuantProduct(final Product prod, final float quant) {
         this.product = prod;
         this.quantity = quant;
     }
@@ -42,7 +42,7 @@ public class QuantProduct implements DataLike {
      *
      * @return the quantity of the product
      */
-    public int getQuantity() {
+    public float getQuantity() {
         return quantity;
     }
 

@@ -3,7 +3,7 @@ package app;
 /**
  * Represents a product with a name, cost and unit of measure.
  */
-public class Product implements DataLike {
+public class Product extends BaseData {
     /** Product name. */
     private String name;
     /** Product cost (unit price). */
