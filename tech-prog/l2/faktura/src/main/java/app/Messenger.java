@@ -1,7 +1,21 @@
 package app;
 
+import org.jline.terminal.Terminal;
 
 public final class Messenger {
+
+    /** The terminal to use for input/output. */
+    private Terminal terminal;
+
+    /**
+     * Create a new Messenger.
+     *
+     * @param term the terminal to use for input/output
+     */
+    public Messenger(final Terminal term) {
+        this.terminal = term;
+    }
+
     /**
      * Input prompt format.
      */
@@ -32,8 +46,64 @@ public final class Messenger {
      */
     private static final String SUCCESS_FMT = "\033[1;32m[+] %s\033[0m\n";
 
-    private Messenger() {
-        throw new AssertionError("Utility class should not be instantiated");
+    /**
+     * Format an input prompt message.
+     *
+     * @param msg the message to format
+     * @return the formatted message
+     */
+    public static String fmtInput(final String msg) {
+        return String.format(INPUT_FMT, msg);
+    }
+
+    /**
+     * Format an error message.
+     *
+     * @param msg the message to format
+     * @return the formatted message
+     */
+    public static String fmtError(final String msg) {
+        return String.format(ERROR_FMT, msg);
+    }
+
+    /**
+     * Format a data message.
+     *
+     * @param msg the message to format
+     * @return the formatted message
+     */
+    public static String fmtData(final String msg) {
+        return String.format(DATA_FMT, msg);
+    }
+
+    /**
+     * Format an info message.
+     *
+     * @param msg the message to format
+     * @return the formatted message
+     */
+    public static String fmtInfo(final String msg) {
+        return String.format(INFO_FMT, msg);
+    }
+
+    /**
+     * Format a help message.
+     *
+     * @param msg the message to format
+     * @return the formatted message
+     */
+    public static String fmtHelp(final String msg) {
+        return String.format(HELP_FMT, msg);
+    }
+
+    /**
+     * Format a success message.
+     *
+     * @param msg the message to format
+     * @return the formatted message
+     */
+    public static String fmtSuccess(final String msg) {
+        return String.format(SUCCESS_FMT, msg);
     }
 
     /**
@@ -41,8 +111,8 @@ public final class Messenger {
      *
      * @param msg the message to print
      */
-    public static void input(final String msg) {
-        System.out.printf(INPUT_FMT, msg);
+    public void input(final String msg) {
+        terminal.writer().printf(INPUT_FMT, msg);
     }
 
     /**
@@ -50,8 +120,8 @@ public final class Messenger {
      *
      * @param msg the message to print
      */
-    public static void error(final String msg) {
-        System.out.printf(ERROR_FMT, msg);
+    public void error(final String msg) {
+        terminal.writer().printf(ERROR_FMT, msg);
     }
 
     /**
@@ -59,8 +129,8 @@ public final class Messenger {
      *
      * @param msg the message to print
      */
-    public static void data(final String msg) {
-        System.out.printf(DATA_FMT, msg);
+    public void data(final String msg) {
+        terminal.writer().printf(DATA_FMT, msg);
     }
 
     /**
@@ -68,8 +138,8 @@ public final class Messenger {
      *
      * @param msg the message to print
      */
-    public static void info(final String msg) {
-        System.out.printf(INFO_FMT, msg);
+    public void info(final String msg) {
+        terminal.writer().printf(INFO_FMT, msg);
     }
 
     /**
@@ -77,8 +147,8 @@ public final class Messenger {
      *
      * @param msg the message to print
      */
-    public static void help(final String msg) {
-        System.out.printf(HELP_FMT, msg);
+    public void help(final String msg) {
+        terminal.writer().printf(HELP_FMT, msg);
     }
 
     /**
@@ -86,7 +156,7 @@ public final class Messenger {
      *
      * @param msg the message to print
      */
-    public static void success(final String msg) {
-        System.out.printf(SUCCESS_FMT, msg);
+    public void success(final String msg) {
+        terminal.writer().printf(SUCCESS_FMT, msg);
     }
 }

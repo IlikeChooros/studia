@@ -24,12 +24,18 @@ public class DataPool {
     private final Vector<Product> products;
 
     /**
+     * The collection of Invoice objects.
+     */
+    private final Vector<Invoice> invoices;
+
+    /**
      * Constructs an empty DataPool.
      */
     public DataPool() {
         persons = new Vector<>();
         firms = new Vector<>();
         products = new Vector<>();
+        invoices = new Vector<>();
     }
 
     /**
@@ -57,6 +63,15 @@ public class DataPool {
      */
     public final void addProduct(final Product product) {
         products.add(product);
+    }
+
+    /**
+     * Add an invoice to the pool.
+     *
+     * @param invoice the Invoice to add; must not be null
+     */
+    public final void addInvoice(final Invoice invoice) {
+        invoices.add(invoice);
     }
 
     /**
@@ -117,5 +132,14 @@ public class DataPool {
      */
     public final Vector<Product> getProducts() {
         return products;
+    }
+
+    /**
+     * Get the collection of Invoice objects.
+     *
+     * @return the vector of Invoice objects
+     */
+    public final Vector<Invoice> getInvoices() {
+        return invoices;
     }
 }

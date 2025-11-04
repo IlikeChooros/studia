@@ -3,69 +3,86 @@ package app;
 import java.util.Date;
 
 class Invoice implements DataLike {
-    public Date CreationDate = new Date();
-    public Date PaymentDate = new Date();
-    public Person Buyer;
-    public Person Seller;
-    public QuantProduct[] Products;
 
-    public Invoice(Date creationDate, Date paymentDate, Person buyer, Person seller, QuantProduct[] products) {
-        this.CreationDate = creationDate;
-        this.PaymentDate = paymentDate;
-        this.Buyer = buyer;
-        this.Seller = seller;
-        this.Products = products;
+    /** Creation date of the invoice. */
+    private Date creationDate = new Date();
+
+    /** Payment date of the invoice. */
+    private Date paymentDate = new Date();
+
+    /** Buyer of the invoice. */
+    private Person buyer;
+
+    /** Seller of the invoice. */
+    private Person seller;
+
+    /** Firm associated with the invoice. */
+    private Firm firm;
+
+    /** Products listed on the invoice. */
+    private QuantProduct[] products;
+
+    Invoice(final Date cd, final Date payment,
+        final Person customer, final Person seller,
+        final QuantProduct[] productList,
+        final Firm firm) {
+        this.creationDate = cd;
+        this.paymentDate = payment;
+        this.buyer = customer;
+        this.seller = seller;
+        this.products = productList;
+        this.firm = firm;
     }
 
-    // enum FieldName {
-    //     PURCHASE_DATE,
-    //     PAYMENT_DATE,
-    //     BUYER,
-    //     SELLER,
-    //     PRODUCTS;
+    public Date getCreationDate() {
+        return creationDate;
+    }
 
-    //     @Override
-    //     public String toString() {
-    //         switch (this) {
-    //             case PURCHASE_DATE:
-    //                 return "Data Wystawienia";
-    //             case PAYMENT_DATE:
-    //                 return "Data Platności";
-    //             case BUYER:
-    //                 return "Kupujący";
-    //             case SELLER:
-    //                 return "Sprzedawca";
-    //             case PRODUCTS:
-    //                 return "Produkty";
-    //             default:
-    //                 return "";
-    //         }
-    //     }
-    // }
+    public Date getPaymentDate() {
+        return paymentDate;
+    }
 
-    // public String[] GetAllFieldNames() {
-        // return new String[]{"Data Wystawienia", "Data Platności", "Kupujący", "Sprzedawca", "Produkty"};
-    // }
+    public Person getBuyer() {
+        return buyer;
+    }
 
-    // public void UpdateField(String fieldName, Object... values) {
-    //     switch (fieldName) {
-    //         case "Data Wystawienia":
-    //             this.CreationDate = (Date) values[0];
-    //             break;
-    //         case "Data Platności":
-    //             this.PaymentDate = (Date) values[0];
-    //             break;
-    //         case "Kupujący":
-    //             this.Buyer = (Person) values[0];
-    //             break;
-    //         case "Sprzedawca":
-    //             this.Seller = (Person) values[0];
-    //             break;
-    //         case "Produkty":
-    //             this.Products[(int)values[0]].UpdateField((String)values[1], values[2]);
-    //             break;
-    //     }
-    // }
+    public Person getSeller() {
+        return seller;
+    }
+
+    public Firm getFirm() {
+        return firm;
+    }
+
+    public QuantProduct[] getProducts() {
+        return products;
+    }
+
+    public float getTotal() {
+        float total = 0.0f;
+        for (QuantProduct qp : products) {
+            total += qp.getCumCost();
+        }
+        return total;
+    }
+
+    @Override
+    public final String toString() {
+        // Print a table-like structure
+        StringBuilder sb = new StringBuilder();
+        sb.append("Invoice Details:\n");
+        sb.append("Creation Date: ").append(creationDate).append("\n");
+        sb.append("Payment Date: ").append(paymentDate).append("\n");
+        sb.append("Buyer: ").append(buyer.toString()).append("\n");
+        sb.append("Seller: ").append(seller.toString()).append("\n");
+        sb.append("Products:\n");
+        for (QuantProduct qp : products) {
+            sb.append("- ").append(qp.getProduct().toString())
+                .append(", Quantity: ").append(qp.getQuantity())
+                .append(", Total: ").append(
+                    Formatter.formatCurrency(qp.getCumCost()))
+                .append("\n");
+        }
+        return sb.toString();
+    }
 }
-
-

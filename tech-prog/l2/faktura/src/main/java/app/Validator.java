@@ -7,6 +7,16 @@ public final class Validator {
     }
 
     /**
+     * Validates a date string in the format YYYY-MM-DD.
+     *
+     * @param date the date string to validate
+     * @return true if the date is valid, false otherwise
+     */
+    public static boolean isValidDate(final String date) {
+        return date != null && date.matches("\\d{4}-\\d{2}-\\d{2}");
+    }
+
+    /**
      * Validates a NIP (Polish Tax Identification Number).
      * @param nip
      * @return true if valid

@@ -1,277 +1,247 @@
 package app;
 
-import java.io.BufferedReader;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Vector;
 import java.util.function.Function;
 
+import org.jline.console.impl.Builtins.Command;
+import org.jline.reader.LineReader;
+import org.jline.reader.LineReaderBuilder;
+import org.jline.reader.impl.history.DefaultHistory;
+import org.jline.terminal.Terminal;
+import org.jline.terminal.TerminalBuilder;
+
 public class Controller {
-
-    enum CoreCommands {
-        /** List of all available commands. */
-        ADD, LIST, UPDATE, REMOVE, LIST_MODULES, HELP
-    }
-
-    enum Modules {
-        /** List of all available modules. */
-        PERSON, FIRM, PRODUCT, INVOICE
-    }
 
     /**
      * The invoice manager.
      */
     private InvoiceManager man = new InvoiceManager(null);
 
+    /** The terminal for user input and output. */
+    private Terminal terminal;
+
+    /** The line reader for user input. */
+    private LineReader reader;
+
+    /** The messenger for formatted messages. */
+    private Messenger messenger;
+
+    /**
+     * Initializes the Controller.
+     */
+    public Controller() {
+        try {
+            terminal = TerminalBuilder.builder()
+                .system(true)
+                .build();
+            reader = LineReaderBuilder.builder()
+                .terminal(terminal)
+                .history(new DefaultHistory())
+                .completer(CommandHelper.getCompleter())
+                .build();
+            messenger = new Messenger(terminal);
+        } catch (Exception e) {
+            messenger.error("Error initializing terminal: " + e.getMessage());
+            System.exit(1);
+        }
+    }
+
     /**
      * The global data pool.
      */
-    public static final DataPool POOL = new DataPool();
+    private final DataPool pool = MockData.generate();
 
-    private static String prompt(final String msg,
-        final Function<String, Boolean> f, final String errmsg) {
-        Messenger.input(msg);
-        String input = readInput();
+    private String prompt(final String msg,
+        final Function<String, Boolean> f, final String errmsg,
+        final String defaultValue) {
 
-        if (f == null) {
-            return input;
-        }
+        while (true) {
+            String input = readInput(Messenger.fmtInput(msg));
 
-        if (f.apply(input)) {
-            return input;
-        } else {
-            Messenger.error(errmsg);
-            return prompt(msg, f, errmsg);
+            if (input.isEmpty() && defaultValue != null) {
+                return defaultValue;
+            }
+
+            if (f == null) {
+                return input;
+            }
+
+            if (f.apply(input)) {
+                return input;
+            } else {
+                messenger.error(errmsg);
+            }
         }
     }
 
-    private static String readInput() {
-        // StringBuilder sb = new StringBuilder();
-        // BufferedReader br = new BufferedReader(
-        //     new java.io.InputStreamReader(System.in));
-        // try {
-        //     String line;
-        //     while ((line = br.readLine()) != null) {
-        //         sb.append(line);
-        //     }
-        // } catch (Exception e) {
-        //     e.printStackTrace();
-        // }
-        // return sb.toString();
-        return System.console().readLine();
+    private String readInput(final String prompt) {
+        return reader.readLine(prompt);
     }
 
-    private static void addPerson() {
-        String firstName = prompt("Enter first name", null, null);
-        String lastName = prompt("Enter last name", null, null);
+    private void addPerson() {
+        String firstName = prompt("Enter first name", null, null, null);
+        String lastName = prompt("Enter last name", null, null, null);
         String pesel = prompt("Enter PESEL", Validator::isValidPESEL,
-                "Invalid PESEL");
-        POOL.addPerson(new Person(firstName, lastName, pesel));
-        Messenger.success(String.format("Person %s %s (%s) added",
+                "Invalid PESEL", null);
+        pool.addPerson(new Person(firstName, lastName, pesel));
+        messenger.success(String.format("Person %s %s (%s) added",
             firstName, lastName, pesel));
     }
 
-    private static void addProduct() {
-        String name = prompt("Enter product name", null, null);
+    private void addProduct() {
+        String name = prompt("Enter product name", null, null, null);
         String priceStr = prompt("Enter unit price",
-            Validator::isValidFloat, "Invalid price");
+            Validator::isValidFloat, "Invalid price", null);
         String unit = prompt("Enter unit of measure", Validator::isValidUnit,
-                "Invalid unit, available: " + Validator.getAllUnits());
+                "Invalid unit, available: " + Validator.getAllUnits(), null);
         float price = Float.parseFloat(priceStr);
-        POOL.addProduct(new Product(name, price, unit));
-        Messenger.success(String.format(
+        pool.addProduct(new Product(name, price, unit));
+        messenger.success(String.format(
             "Product %s (%.2f / %s) added", name, price, unit));
     }
 
-    private static void addFirm() {
-        String name = prompt("Enter firm name", null, null);
-        String address = prompt("Enter firm address", null, null);
+    private void addFirm() {
+        String name = prompt("Enter firm name", null, null, null);
+        String address = prompt("Enter firm address", null, null, null);
         String taxID = prompt("Enter tax ID", Validator::isValidNIP,
-            "Invalid tax ID");
-        POOL.addFirm(new Firm(name, address, taxID));
-        Messenger.success(String.format(
+            "Invalid tax ID", null);
+        pool.addFirm(new Firm(name, address, taxID));
+        messenger.success(String.format(
             "Firm %s (%s) added", name, taxID));
     }
 
-    private static void listModules() {
-        Messenger.data("Available modules:");
-        for (Modules mod : Modules.values()) {
-            Messenger.help("- " + mod.name().toLowerCase());
-        }
-    }
+    private void addInvoice() {
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 
-    private static void list(final Vector<?> items,
-        final Function<Object, String> formatter) {
-        for (int i = 0; i < items.size(); i++) {
-            Messenger.data(String.format("%d: %s", i,
-                formatter.apply(items.get(i))));
-        }
-    }
+        String creationDateStr = prompt(
+            "Enter creation date yyyy-MM-dd (default: today)",
+            Validator::isValidDate, null, sdf.format(new Date()));
 
-    private void help(final String command) {
+        String paymentDateStr = prompt(
+            "Enter payment date yyyy-MM-dd (default: today)",
+            Validator::isValidDate, null, sdf.format(new Date()));
+        // Simple by id selection for buyer and seller
+        String buyerId = prompt("Enter buyer index",
+            Validator::isValidInt, "Invalid index", null);
+        String sellerId = prompt("Enter seller index",
+            Validator::isValidInt, "Invalid index", null);
 
-        if (command == null || command.isEmpty()) {
-            Messenger.help("Available modules:");
-            Messenger.help("add <module>    - Add a new element to the module");
-            Messenger.help("list <module>   - "
-                + "Display the list of elements in the module");
-            Messenger.help("list-modules    - Display available modules");
-            Messenger.help("update <module> - Update an element in the module");
-            Messenger.help("remove <module> - "
-                + "Remove an element from the module");
-            Messenger.help("Type 'help <command> | <module>'"
-                + " to get more information about the command/module.");
+        Person buyer = pool.getPersons().get(Integer.parseInt(buyerId));
+        Person seller = pool.getPersons().get(Integer.parseInt(sellerId));
+
+        Date creationDate = null;
+        Date paymentDate = null;
+
+        try {
+            creationDate = sdf.parse(creationDateStr);
+            paymentDate = sdf.parse(paymentDateStr);
+        } catch (Exception e) {
+            messenger.error("Error parsing dates.");
             return;
         }
 
-        for (Modules mod : Modules.values()) {
-            if (mod.name().equalsIgnoreCase(command)) {
-                switch (mod) {
-                    case PERSON:
-                        Messenger.help("Module person - "
-                            + "managing natural persons.");
-                        Messenger.help("Available commands: add person, "
-                            + "list person, update person <id>, remove person <id>");
-                        break;
-                    case FIRM:
-                        Messenger.help("Module firm - "
-                            + "managing companies.");
-                        Messenger.help("Available commands: add firm, "
-                            + "list firm, update firm <id>, remove firm <id>");
-                        break;
-                    case PRODUCT:
-                        Messenger.help("Module product - "
-                            + "managing products.");
-                        Messenger.help("Available commands: add product,"
-                            + "list product, update product, remove product");
-                        break;
-                    case INVOICE:
-                        Messenger.help("Module invoice - "
-                            + "managing invoices.");
-                        Messenger.help("Available commands: add invoice, "
-                            + "list invoice, update invoice, remove invoice");
-                        break;
-                    default:
-                        break;
-                }
-                return;
+        // Add products with quantities
+        Vector<QuantProduct> quantProducts = new Vector<>();
+        while (true) {
+            String productId = prompt(
+                "Enter product index (or 'done' to finish)",
+                input -> input.equalsIgnoreCase("done")
+                    || Validator.isValidInt(input),
+                "Invalid index", null);
+            if (productId.equalsIgnoreCase("done")) {
+                break;
             }
+            String quantityStr = prompt("Enter quantity",
+                Validator::isValidInt, "Invalid quantity", null);
+
+            Product product = pool.getProducts().
+                get(Integer.parseInt(productId));
+            int quantity = Integer.parseInt(quantityStr);
+            quantProducts.add(new QuantProduct(product, quantity));
         }
 
-        for (CoreCommands cmd : CoreCommands.values()) {
-            if (cmd.name().equalsIgnoreCase(command)) {
-                switch (cmd) {
-                    case ADD:
-                        Messenger.help("add - add a new element");
-                        Messenger.help("Syntax: add <module>");
-                        break;
-                    case LIST:
-                        Messenger.help("list - display all elements"
-                            + " of the module");
-                        Messenger.help("Syntax: list <module>");
-                        break;
-                    case UPDATE:
-                        Messenger.help("update - update an element");
-                        Messenger.help("Syntax: update <module> <id>");
-                        break;
-                    case REMOVE:
-                        Messenger.help("remove - remove an element");
-                        Messenger.help("Syntax: remove <module> <id>");
-                        break;
-                    case LIST_MODULES:
-                        Messenger.help("list-modules - "
-                            + "display available modules.");
-                        Messenger.help("Syntax: list-modules");
-                        break;
-                    case HELP:
-                    default:
-                        Messenger.help("help - display help "
-                            + "for commands or modules.");
-                        Messenger.help("Syntax: help [command | module]");
-                        break;
-                }
-                return;
-            }
-        }
-
-        Messenger.error("Unknown command: " + command);
+        // Convert Vector to array
+        QuantProduct[] productsArray = new QuantProduct[quantProducts.size()];
+        quantProducts.toArray(productsArray);
+        pool.addInvoice(new Invoice(creationDate, paymentDate,
+            buyer, seller, productsArray, null));
+        messenger.success("Invoice added successfully.");
     }
 
-    private Modules toModule(final String moduleStr) {
-        for (Modules mod : Modules.values()) {
-            if (mod.name().equalsIgnoreCase(moduleStr)) {
-                return mod;
-            }
-        }
-        return null;
-    }
-
-    private CoreCommands toCommand(final String commandStr) {
-        switch (commandStr) {
-            case "add":
-                return CoreCommands.ADD;
-            case "list":
-                return CoreCommands.LIST;
-            case "update":
-                return CoreCommands.UPDATE;
-            case "remove":
-                return CoreCommands.REMOVE;
-            case "list-modules":
-                return CoreCommands.LIST_MODULES;
-            case "help":
-                return CoreCommands.HELP;
-            case "q":
-            case "quit":
-            case "exit":
-                System.exit(0);
-            default:
-                return null;
+    private void listModules() {
+        messenger.help("Available modules:");
+        for (CommandHelper.Modules mod : CommandHelper.Modules.values()) {
+            messenger.help("- " + mod.name().toLowerCase());
         }
     }
 
-    private void handleList(final Modules module) {
+    private void list(final Vector<?> items,
+        final Function<Object, String> formatter) {
+        for (int i = 0; i < items.size(); i++) {
+            String fmt;
+            if (formatter != null) {
+                fmt = formatter.apply(items.get(i));
+            } else {
+                fmt = items.get(i).toString();
+            }
+            messenger.data(String.format("%d: %s", i, fmt));
+        }
+    }
+
+    private void handleList(final CommandHelper.Modules module) {
+        Vector<?> items = null;
         Function<Object, String> formatter = null;
-        Vector<?> items = new Vector<>();
 
         switch (module) {
             case PERSON:
-                formatter = person -> String.format("Name: %s, Id: %s",
-                    ((Person) person).getName(),
-                    ((Person) person).getIdNumber());
-                items = POOL.getPersons();
+                items = pool.getPersons();
                 break;
             case FIRM:
-                formatter = firm -> String.format("Name: %s, NIP: %s",
-                    ((Firm) firm).getName(),
-                    ((Firm) firm).getNIP());
-                items = POOL.getFirms();
+                items = pool.getFirms();
                 break;
             case PRODUCT:
-                formatter = product -> String.format(
-                    "Name: %s, Price: %.2f / %s",
-                    ((Product) product).getName(),
-                    ((Product) product).getCost(),
-                    ((Product) product).getUnit());
-                items = POOL.getProducts();
+                items = pool.getProducts();
                 break;
             case INVOICE:
-                // listInvoices();
+                items = pool.getInvoices();
+                formatter = obj -> {
+                    Invoice inv = (Invoice) obj;
+                    return String.format(
+                        "Invoice: \n\t"
+                        + " - Firm: %s\n\t"
+                        + " - Buyer: %s\n\t"
+                        + " - Seller: %s\n\t"
+                        + " - Creation Date: %s\n\t"
+                        + " - Payment Date: %s\n\t"
+                        + " - Total: %s",
+                        inv.getFirm().toString(),
+                        inv.getBuyer().toString(),
+                        inv.getSeller().toString(),
+                        Formatter.formatDate(inv.getCreationDate()),
+                        Formatter.formatDate(inv.getPaymentDate()),
+                        Formatter.formatCurrency(inv.getTotal()));
+                };
                 break;
             default:
                 break;
         }
 
-        if (formatter == null) {
-            Messenger.error("Unknown module to list.");
+        if (items == null) {
+            messenger.error("Unknown module to list.");
             return;
         }
+
         if (items.isEmpty()) {
-            Messenger.info("No items found.");
+            messenger.info("No items found.");
             return;
         }
 
         list(items, formatter);
     }
 
-    private void handleAdd(final Modules module) {
+    private void handleAdd(final CommandHelper.Modules module) {
         switch (module) {
             case PERSON:
                 addPerson();
@@ -283,10 +253,10 @@ public class Controller {
                 addProduct();
                 break;
             case INVOICE:
-                // addInvoice();
+                addInvoice();
                 break;
             default:
-                Messenger.error("Unknown module to add.");
+                messenger.error("Unknown module to add.");
                 break;
         }
     }
@@ -297,16 +267,22 @@ public class Controller {
             return;
         }
 
-        CoreCommands command = toCommand(parts[0]);
+        CommandHelper.CoreCommands command = CommandHelper.toCommand(parts[0]);
         String rest = parts.length > 1 ? parts[1] : "";
-        Modules module = parts.length > 1 ? toModule(parts[1]) : null;
+        CommandHelper.Modules module =
+            parts.length > 1 ? CommandHelper.toModule(parts[1]) : null;
+
+        if (command == null) {
+            messenger.error("Unknown command: " + parts[0]);
+            return;
+        }
 
         switch (command) {
             case ADD:
                 if (module != null) {
                     handleAdd(module);
                 } else {
-                    Messenger.error("No module specified for add command.");
+                    messenger.error("No module specified for add command.");
                 }
                 break;
             case LIST:
@@ -330,11 +306,9 @@ public class Controller {
             case LIST_MODULES:
                 listModules();
                 break;
-            case HELP:
-                help(rest);
-                break;
             default:
-                Messenger.error("Unknown command: " + parts[0]);
+            case HELP:
+                CommandHelper.help(messenger, rest);
                 break;
         }
     }
@@ -343,11 +317,10 @@ public class Controller {
      * The main program loop.
      */
     public final void run() {
-        Messenger.info("Invoice Management System (IMS) v0.1.0");
-        Messenger.info("Type 'help' to get started.");
+        messenger.info("Invoice Management System (IMS) v0.1.0");
+        messenger.info("Type 'help' to get started.");
         while (true) {
-            Messenger.input("");
-            String input = System.console().readLine();
+            String input = readInput(Messenger.fmtInput(""));
             if (input != null && !input.isEmpty()) {
                 commandParser(input);
             }

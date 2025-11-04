@@ -23,6 +23,11 @@ public class Person implements DataLike {
         this.idNumber = id;
     }
 
+    @Override
+    public final String toString() {
+        return firstName + " " + lastName + " (ID: " + idNumber + ")";
+    }
+
     /**
      * Get the name of the person.
      * @return The full name of the person.

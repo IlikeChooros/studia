@@ -1,36 +1,54 @@
 package app;
 
 public class QuantProduct implements DataLike {
-    public Product Product;
-    public int Quantity;
 
-    public QuantProduct(Product prod, int quantity) {
-        this.Product = prod;
-        this.Quantity = quantity;
+    /** Product associated with the quantity. */
+    private Product product;
+
+    /** Quantity of the product. */
+    private int quantity;
+
+    /**
+     * Create a new QuantProduct.
+     *
+     * @param prod the product
+     * @param quant the quantity of the product
+     */
+    public QuantProduct(final Product prod, final int quant) {
+        this.product = prod;
+        this.quantity = quant;
     }
 
-    // Cumulative sum of costs :))))
-    public float Cum() {
-        return Quantity * Product.Cost;
+    /**
+     * Get the cumulative cost.
+     *
+     * @return the cumulative cost
+     */
+    public float getCumCost() {
+        return quantity * product.getCost();
     }
 
-    // @Override
-    // public String[] GetAllFieldNames() {
-    //     return new String[]{"Nazwa", "Koszt", "Ilość"};
-    // }
+    /**
+     * Get the product.
+     *
+     * @return the product
+     */
+    public Product getProduct() {
+        return product;
+    }
 
-    // @Override
-    // public void UpdateField(String field, Object... values) {
-    //     switch (field) {
-    //         case "Nazwa":
-    //             this.Product.Name = (String) values[0];
-    //             break;
-    //         case "Koszt":
-    //             this.Product.Cost = (Float) values[0];
-    //             break;
-    //         case "Ilość":
-    //             this.Quantity = (int) values[0];
-    //             break;
-    //     }
-    // }
+    /**
+     * Get the quantity of the product.
+     *
+     * @return the quantity of the product
+     */
+    public int getQuantity() {
+        return quantity;
+    }
+
+    @Override
+    public final String toString() {
+        return product.toString() + ", Quantity: " + quantity
+            + ", Total: " + Formatter.formatCurrency(getCumCost());
+    }
 }

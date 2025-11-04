@@ -9,16 +9,11 @@ public class InvoiceManager {
         this.invoice = invoice;
     }
 
-    public void SetInvoice(Invoice invoice) {
+    public void setInvoice(Invoice invoice) {
         this.invoice = invoice;
     }
 
-    // Print to stdout
-    public void Display() {
-
-    }
-
-    public void SaveToPdf() {
+    public void saveToPdf() {
         
     }
 }

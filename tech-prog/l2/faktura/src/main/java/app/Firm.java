@@ -50,4 +50,9 @@ public class Firm implements DataLike {
     public String getNIP() {
         return nip;
     }
+
+    @Override
+    public final String toString() {
+        return name + ", Address: " + address + ", NIP: " + nip;
+    }
 }

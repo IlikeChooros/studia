@@ -18,7 +18,7 @@ public class Product implements DataLike {
      * @param cost the product cost (unit price)
      * @param unit the unit of measure
      */
-    public Product(final String name, final float cost, final String unit) {
+    Product(final String name, final float cost, final String unit) {
         this.name = name;
         this.cost = cost;
         this.unit = unit;
@@ -49,5 +49,11 @@ public class Product implements DataLike {
      */
     public String getUnit() {
         return unit;
+    }
+
+    @Override
+    public final String toString() {
+        return name + ", " + Formatter.formatCurrency(cost)
+            + " / " + unit;
     }
 }
