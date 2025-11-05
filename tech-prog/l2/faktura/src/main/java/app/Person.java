@@ -48,4 +48,59 @@ public class Person extends BaseData {
     public String getIdNumber() {
         return idNumber;
     }
+
+    @Override
+    public final java.util.Map<String, String> getAllFieldNames() {
+        java.util.Map<String, String> fieldMap
+            = new java.util.LinkedHashMap<>();
+        fieldMap.put("firstName", "First Name");
+        fieldMap.put("lastName", "Last Name");
+        fieldMap.put("idNumber", "ID Number (PESEL)");
+        return fieldMap;
+    }
+
+    @Override
+    public final boolean updateField(final String field,
+        final Object... values) {
+        if (values.length == 0) {
+            return false;
+        }
+
+        switch (field) {
+            case "firstName":
+                if (values[0].getClass() != String.class) {
+                    return false;
+                }
+                this.firstName = (String) values[0];
+                return true;
+            case "lastName":
+                if (values[0].getClass() != String.class) {
+                    return false;
+                }
+                this.lastName = (String) values[0];
+                return true;
+            case "idNumber":
+                if (values[0].getClass() != String.class) {
+                    return false;
+                }
+                this.idNumber = (String) values[0];
+                return true;
+            default:
+                return false;
+        }
+    }
+
+    @Override
+    public final Object getValue(final String fieldName) {
+        switch (fieldName) {
+            case "firstName":
+                return firstName;
+            case "lastName":
+                return lastName;
+            case "idNumber":
+                return idNumber;
+            default:
+                return null;
+        }
+    }
 }

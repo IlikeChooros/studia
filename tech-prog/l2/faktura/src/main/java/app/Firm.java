@@ -14,14 +14,15 @@ public class Firm extends BaseData {
     /**
      * Create a new Firm.
      *
-     * @param name the company name
-     * @param address the company address
-     * @param nip the tax identification number (NIP)
+     * @param firmName the company name
+     * @param firmAddress the company address
+     * @param taxID the tax identification number (NIP)
      */
-    public Firm(final String name, final String address, final String nip) {
-        this.name = name;
-        this.address = address;
-        this.nip = nip;
+    public Firm(final String firmName,
+        final String firmAddress, final String taxID) {
+        this.name = firmName;
+        this.address = firmAddress;
+        this.nip = taxID;
     }
 
     /**
@@ -54,5 +55,48 @@ public class Firm extends BaseData {
     @Override
     public final String toString() {
         return name + ", Address: " + address + ", NIP: " + nip;
+    }
+
+    @Override
+    public final java.util.Map<String, String> getAllFieldNames() {
+        java.util.Map<String, String> fieldNames = new java.util.HashMap<>();
+        fieldNames.put("name", "Company Name");
+        fieldNames.put("address", "Company Address");
+        fieldNames.put("nip", "Tax Identification Number (NIP)");
+        return fieldNames;
+    }
+
+    @Override
+    public final boolean updateField(
+        final String field, final Object... values) {
+        if (values.length != 1 || values[0].getClass() != String.class) {
+            return false;
+        }
+
+        if (field.equalsIgnoreCase("name")) {
+            this.name = (String) values[0];
+            return true;
+        } else if (field.equalsIgnoreCase("address")) {
+            this.address = (String) values[0];
+            return true;
+        } else if (field.equalsIgnoreCase("nip")) {
+            this.nip = (String) values[0];
+            return true;
+        }
+        return false;
+    }
+
+    @Override
+    public final Object getValue(final String fieldName) {
+        switch (fieldName.toLowerCase()) {
+            case "name":
+                return name;
+            case "address":
+                return address;
+            case "nip":
+                return nip;
+            default:
+                return null;
+        }
     }
 }

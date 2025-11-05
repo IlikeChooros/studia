@@ -21,7 +21,7 @@ final class PdfInvoiceGenerator {
         // Prevent instantiation
     }
 
-    public static void saveToPdf(final String outPath,
+    public static boolean saveToPdf(final String outPath,
         final float vat, final Invoice inv) {
         try (PdfWriter writer = new PdfWriter(outPath);
                 PdfDocument pdf = new PdfDocument(writer);
@@ -118,10 +118,11 @@ final class PdfInvoiceGenerator {
                     .setTextAlignment(TextAlignment.RIGHT));
 
             doc.add(table);
-
         } catch (IOException e) {
             System.err.println("PDF error: " + e.getMessage());
+            return false;
         }
+        return true;
     }
 
     private static String safe(final Object o) {

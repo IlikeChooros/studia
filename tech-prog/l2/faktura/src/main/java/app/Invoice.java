@@ -1,6 +1,8 @@
 package app;
 
 import java.util.Date;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 class Invoice extends BaseData {
 
@@ -23,15 +25,15 @@ class Invoice extends BaseData {
     private QuantProduct[] products;
 
     Invoice(final Date cd, final Date payment,
-        final Person customer, final Person seller,
+        final Person customer, final Person invSeller,
         final QuantProduct[] productList,
-        final Firm firm) {
+        final Firm invFirm) {
         this.creationDate = cd;
         this.paymentDate = payment;
         this.buyer = customer;
-        this.seller = seller;
+        this.seller = invSeller;
         this.products = productList;
-        this.firm = firm;
+        this.firm = invFirm;
     }
 
     public Date getCreationDate() {
@@ -85,5 +87,67 @@ class Invoice extends BaseData {
                 .append("\n");
         }
         return sb.toString();
+    }
+
+
+    @Override
+    public final Map<String, String> getAllFieldNames() {
+        Map<String, String> fieldMap = new LinkedHashMap<>();
+        fieldMap.put("creationDate", "Creation Date");
+        fieldMap.put("paymentDate", "Payment Date");
+        fieldMap.put("buyer", "Buyer");
+        fieldMap.put("seller", "Seller");
+        fieldMap.put("firm", "Firm");
+        fieldMap.put("products", "Products");
+        return fieldMap;
+    }
+
+    @Override
+    public final boolean updateField(final String field,
+        final Object... values) {
+        if (values.length == 0) {
+            return false;
+        }
+
+        switch (field) {
+            case "creationDate":
+                if (values[0].getClass() != Date.class) {
+                    return false;
+                }
+                this.creationDate = (Date) values[0];
+                return true;
+            case "paymentDate":
+                if (values[0].getClass() != Date.class) {
+                    return false;
+                }
+                this.paymentDate = (Date) values[0];
+                return true;
+            case "buyer":
+                if (values[0].getClass() != Person.class) {
+                    return false;
+                }
+                this.buyer = (Person) values[0];
+                return true;
+            case "seller":
+                if (values[0].getClass() != Person.class) {
+                    return false;
+                }
+                this.seller = (Person) values[0];
+                return true;
+            case "firm":
+                if (values[0].getClass() != Firm.class) {
+                    return false;
+                }
+                this.firm = (Firm) values[0];
+                return true;
+            case "products":
+                if (values[0].getClass() != QuantProduct[].class) {
+                    return false;
+                }
+                this.products = (QuantProduct[]) values[0];
+                return true;
+            default:
+                return false;
+        }
     }
 }

@@ -2,6 +2,7 @@ package app;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Map;
 import java.util.Vector;
 import java.util.function.Function;
 
@@ -139,7 +140,8 @@ public class Controller {
     private Object select(
         final String msg,
         final Function<String, Vector<?>> searchFn,
-        final Function<Integer, Object> indexFn) {
+        final Function<Integer, ?> indexFn,
+        final String defaultValue) {
         // If the user specifies an index, return that person
         // else perform a search by name and make
         // a suggestion for the first match
@@ -148,18 +150,10 @@ public class Controller {
         contextCompleter.setContextFilter(searchFn);
 
         while (true) {
-            String data = prompt(msg, null, null, null).trim();
+            String data = prompt(msg, null, null, defaultValue).trim();
 
             if (CommandHelper.isExitCommand(data)) {
                 return null;
-            }
-
-            // Try to parse as index
-            try {
-                int index = Integer.parseInt(data);
-                return indexFn.apply(index);
-            } catch (Exception e) {
-                // Not an index, proceed to search
             }
 
             Vector<?> matches = searchFn.apply(data);
@@ -179,17 +173,12 @@ public class Controller {
 
     private Person selectPerson(final String msg) {
         return (Person) select(msg, prompt -> pool.searchPersons(prompt),
-            index -> pool.getPersons().get(index));
-    }
-
-    private Firm selectFirm(final String msg) {
-        return (Firm) select(msg, prompt -> pool.searchFirms(prompt),
-            index -> pool.getFirms().get(index));
+            index -> pool.getPersons().get(index), null);
     }
 
     private Product selectProduct(final String msg) {
         return (Product) select(msg, prompt -> pool.searchProducts(prompt),
-            index -> pool.getProducts().get(index));
+            index -> pool.getProducts().get(index), null);
     }
 
     private void addInvoice() {
@@ -214,6 +203,11 @@ public class Controller {
             messenger.info("Invoice creation cancelled.");
             return;
         }
+
+        Firm firm = (Firm) select("Enter firm (leave empty for none): ",
+            prompt -> pool.searchFirms(prompt),
+            index -> pool.getFirms().get(index),
+            "q");
 
         Date creationDate = null;
         Date paymentDate = null;
@@ -248,7 +242,7 @@ public class Controller {
         QuantProduct[] productsArray = new QuantProduct[quantProducts.size()];
         quantProducts.toArray(productsArray);
         pool.addInvoice(new Invoice(creationDate, paymentDate,
-            buyer, seller, productsArray, null));
+            buyer, seller, productsArray, firm));
         messenger.success("Invoice added successfully.");
     }
 
@@ -350,7 +344,7 @@ public class Controller {
         final String msg,
         final String successMsg,
         final Function<String, Vector<?>> searchFn,
-        final Function<Integer, Object> indexFn,
+        final Function<Integer, ?> indexFn,
         final Function<Object, Void> removeFn) {
 
         Object item = select(msg, searchFn, indexFn);
@@ -436,6 +430,96 @@ public class Controller {
         reader.setVariable(CommandHelper.COMPLETER_CONTEXT_VAR, null);
     }
 
+    private void update(final String msg,
+        final Function<String, Vector<?>> searchFn,
+        final Function<Integer, Object> indexFn,
+        final Function<Object, Void> updateFn) {
+        Object item = select(msg, searchFn, indexFn);
+        if (item != null) {
+            updateFn.apply(item);
+        }
+    }
+
+    private void handleUpdate(final CommandHelper.Modules module) {
+        Function<String, Vector<?>> searchFn = null;
+        Function<Integer, Object> indexFn = null;
+        Function<Object, Void> updateFn = obj -> {
+            // By default, use the BaseData update method
+            InnerBaseData dataObj = (InnerBaseData) obj;
+            Map<String, String> fields = dataObj.getAllFieldNames();
+            contextCompleter.setContextFilter(filter -> {
+                Vector<String> results = new Vector<>();
+                for (String field : fields.keySet()) {
+                    if (field.contains(filter)) {
+                        results.add(field);
+                    }
+                }
+                return results;
+            });
+
+            boolean cancelled = true;
+            while (true) {
+                String field = prompt(
+                    "Enter field to update (or 'q' to finish): ",
+                    input -> fields.containsKey(input)
+                        || CommandHelper.isExitCommand(input),
+                    "Invalid field name. Available fields: "
+                        + String.join(", ", fields.keySet()),
+                    null);
+                if (CommandHelper.isExitCommand(field)) {
+                    break;
+                }
+
+                String value = prompt(
+                    "Enter new value for " + fields.get(field) + ": ",
+                    null, null, null);
+
+                if (dataObj.updateField(field, value)) {
+                    cancelled = false;
+                    messenger.success(
+                        String.format("Field %s updated successfully.", field));
+                } else {
+                    messenger.error(
+                        String.format("Failed to update field %s.", field));
+                }
+            }
+
+            if (cancelled) {
+                messenger.info("No changes made.");
+            } else {
+                messenger.success("All changes applied.");
+            }
+            return null;
+        };
+
+        switch (module) {
+            case PERSON:
+                searchFn = prompt -> pool.searchPersons(prompt);
+                indexFn = index -> pool.getPersons().get(index);
+                break;
+            case FIRM:
+                searchFn = prompt -> pool.searchFirms(prompt);
+                indexFn = index -> pool.getFirms().get(index);
+                break;
+            case PRODUCT:
+                searchFn = prompt -> pool.searchProducts(prompt);
+                indexFn = index -> pool.getProducts().get(index);
+                break;
+            case INVOICE:
+                // To be implemented
+                break;
+            default:
+                break;
+        }
+
+        if (searchFn != null && indexFn != null) {
+            update("Select item for update: ", searchFn, indexFn, updateFn);
+        } else {
+            messenger.error("Unknown module to update.");
+        }
+        reader.setVariable(CommandHelper.COMPLETER_CONTEXT_VAR, null);
+    }
+
     private void commandParser(final String input) {
         String[] parts = input.split(" ");
         if (parts.length == 0) {
@@ -472,7 +556,9 @@ public class Controller {
                 break;
             case UPDATE:
                 if (module != null) {
-                    // Call the appropriate update method based on the module
+                    handleUpdate(module);
+                } else {
+                    messenger.error("No module specified for update command.");
                 }
                 break;
             case REMOVE:
@@ -488,8 +574,13 @@ public class Controller {
                             + " Use export-invoice <id> <filename>");
                     return;
                 }
-                PdfInvoiceGenerator.saveToPdf(parts[2], 0.23f,
+                boolean ok = PdfInvoiceGenerator.saveToPdf(parts[2], 0.23f,
                     pool.getInvoices().get(Integer.parseInt(parts[1])));
+                if (ok) {
+                    messenger.success("Invoice exported successfully.");
+                } else {
+                    messenger.error("Failed to export invoice.");
+                }
                 break;
             case LIST_MODULES:
                 listModules();

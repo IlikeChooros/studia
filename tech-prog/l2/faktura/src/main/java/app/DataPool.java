@@ -8,6 +8,10 @@ import java.util.Vector;
  * Provides methods to add and retrieve Person, Firm and Product instances.
  */
 public class DataPool {
+
+    /** Maximum number of search results to return. */
+    private static final int MAX_SEARCH_RESULTS = 5;
+
     /**
      * The collection of Person objects.
      */
@@ -150,6 +154,10 @@ public class DataPool {
             if (item.toString().toLowerCase()
                 .contains(query.toLowerCase())) {
                 results.add(item);
+
+                if (results.size() >= MAX_SEARCH_RESULTS) {
+                    break;
+                }
             }
         }
         return results;
