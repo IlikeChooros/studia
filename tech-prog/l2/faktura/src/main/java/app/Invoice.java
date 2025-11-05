@@ -150,4 +150,24 @@ class Invoice extends BaseData {
                 return false;
         }
     }
+
+    @Override
+    public final Object getValue(final String fieldName) {
+        switch (fieldName) {
+            case "creationDate":
+                return creationDate;
+            case "paymentDate":
+                return paymentDate;
+            case "buyer":
+                return buyer;
+            case "seller":
+                return seller;
+            case "firm":
+                return firm;
+            case "products":
+                return products;
+            default:
+                return null;
+        }
+    }
 }
