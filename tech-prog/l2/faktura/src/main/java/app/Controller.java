@@ -347,7 +347,7 @@ public class Controller {
         final Function<Integer, ?> indexFn,
         final Function<Object, Void> removeFn) {
 
-        Object item = select(msg, searchFn, indexFn);
+        Object item = select(msg, searchFn, indexFn, null);
         if (item != null) {
             removeFn.apply(item);
             messenger.success(successMsg);
@@ -434,7 +434,7 @@ public class Controller {
         final Function<String, Vector<?>> searchFn,
         final Function<Integer, Object> indexFn,
         final Function<Object, Void> updateFn) {
-        Object item = select(msg, searchFn, indexFn);
+        Object item = select(msg, searchFn, indexFn, null);
         if (item != null) {
             updateFn.apply(item);
         }
@@ -506,7 +506,24 @@ public class Controller {
                 indexFn = index -> pool.getProducts().get(index);
                 break;
             case INVOICE:
-                // To be implemented
+                searchFn = prompt -> {
+                    Vector<Invoice> results = new Vector<>();
+                    try {
+                        // parse prompt as integer ID
+                        if (prompt.isEmpty()) {
+                            return pool.getInvoices();
+                        }
+                        int id = Integer.parseInt(prompt);
+                        Invoice invoice = pool.getInvoices().get(id);
+                        if (invoice != null) {
+                            results.add(invoice);
+                        }
+                    } catch (NumberFormatException e) {
+                        // Handle invalid number format
+                    }
+                    return results;
+                };
+                indexFn = index -> pool.getInvoices().get(index);
                 break;
             default:
                 break;
