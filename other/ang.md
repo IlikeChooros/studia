@@ -64,13 +64,3 @@ Complete the sentences with the correct word from the glossary:
 4. What is the benefit of being able to stop the algorithm early?
 
 5. Explain the domain-agnostic nature of the MCTS algorithm.
-
-#### Summary
-
-The article presents the heuristic search algorithm known as Monte Carlo Tree Search (MCTS). It explains that MCTS is often used in decision‑making problems and games with very large possibilities, because it avoids having to explore every option exhaustively. Instead, it builds a search tree gradually using four steps: Selection (choosing promising nodes), Expansion (adding new possible states), Simulation (also called roll‑out, where random moves are played from that new state) and Backpropagation (updating results back up the tree). 
-
-The algorithm balances exploration (trying new moves) and exploitation (choosing moves known to be good). It is domain‑agnostic, meaning it doesn’t need much prior knowledge of a game or system, and is an anytime algorithm, so you can stop it early and still get a decision. It also handles asymmetric tree growth, focusing more attention on promising branches rather than evenly exploring all (as opposed to breath-first algorithms like min-max).
-
-However, MCTS has downsides: it can demand lots of memory (since the tree grows large), require many iterations to get good results (which usually are expensive to compute), and still risk being unreliable if too few nodes are visited in large spaces.
-
-Also, the method is used not only for classic board games (like Go, Chess) but also for robotics planning, cybersecurity tasks, and text generation.
