@@ -52,6 +52,10 @@ public final class Validator {
      * @return true if the string represents a valid non-negative float
      */
     public static boolean isValidFloat(final String price) {
+        if (price == null) {
+            return false;
+        }
+
         try {
             float p = Float.parseFloat(price);
             return p >= 0;
