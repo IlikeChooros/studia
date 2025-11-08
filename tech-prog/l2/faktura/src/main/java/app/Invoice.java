@@ -4,7 +4,7 @@ import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-class Invoice extends BaseData {
+class Invoice implements DataLike {
 
     /** Creation date of the invoice. */
     private Date creationDate = new Date();

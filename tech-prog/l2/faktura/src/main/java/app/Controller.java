@@ -1,11 +1,5 @@
 package app;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.Map;
-import java.util.Vector;
-import java.util.function.Function;
-
 import org.jline.reader.LineReader;
 import org.jline.reader.LineReaderBuilder;
 import org.jline.reader.impl.history.DefaultHistory;
@@ -25,6 +19,30 @@ public class Controller {
 
     /** The context-aware completer for command suggestions. */
     private CommandHelper.ContextAwareCompleter contextCompleter;
+
+    /** The product manager for managing products. */
+    private final ProductManager productManager;
+
+    /** The person manager for managing persons. */
+    private final PersonManager personManager;
+
+    /** The firm manager for managing firms. */
+    private final FirmManager firmManager;
+
+    /** The invoice manager for managing invoices. */
+    private final InvoiceManager invoiceManager;
+
+    /** The add view for adding data. */
+    private final ViewAdd addView;
+
+    /** The list view for listing data. */
+    private final ViewList listView;
+
+    /** The remove view for removing data. */
+    private final ViewRemove removeView;
+
+    /** The update view for updating data. */
+    private final ViewUpdate updateView;
 
     /**
      * Initializes the Controller.
@@ -52,198 +70,55 @@ public class Controller {
             e.printStackTrace();
             System.exit(1);
         }
-    }
 
-    /**
-     * The global data pool.
-     */
-    private final DataPool pool = MockData.generate();
+        productManager = MockData.getProducts();
+        personManager = MockData.getPersons();
+        firmManager = MockData.getFirms();
+        invoiceManager = new InvoiceManager();
 
-    private String prompt(final String msg,
-        final Function<String, Boolean> f, final String errmsg,
-        final String defaultValue) {
+        addView = new ViewAdd(
+            messenger,
+            contextCompleter,
+            reader,
+            productManager,
+            personManager,
+            firmManager,
+            invoiceManager
+        );
 
-        while (true) {
-            String input = readInput(Messenger.fmtInput(msg));
+        listView = new ViewList(
+            messenger,
+            contextCompleter,
+            reader,
+            productManager,
+            personManager,
+            firmManager,
+            invoiceManager
+        );
 
-            if (input.isEmpty() && defaultValue != null) {
-                return defaultValue;
-            }
+        removeView = new ViewRemove(
+            messenger,
+            contextCompleter,
+            reader,
+            productManager,
+            personManager,
+            firmManager,
+            invoiceManager
+        );
 
-            if (f == null) {
-                return input;
-            }
-
-            if (f.apply(input)) {
-                return input;
-            } else {
-                messenger.error(errmsg);
-            }
-        }
+        updateView = new ViewUpdate(
+            messenger,
+            contextCompleter,
+            reader,
+            productManager,
+            personManager,
+            firmManager,
+            invoiceManager
+        );
     }
 
     private String readInput(final String prompt) {
         return reader.readLine(prompt).trim();
-    }
-
-    private static String[] convert(final Vector<?> vec) {
-        String[] arr = new String[vec.size()];
-        for (int i = 0; i < vec.size(); i++) {
-            arr[i] = vec.get(i).toString();
-        }
-        return arr;
-    }
-
-    private void addPerson() {
-        String firstName = prompt("Enter first name", null, null, null);
-        String lastName = prompt("Enter last name", null, null, null);
-        String pesel = prompt("Enter PESEL", Validator::isValidPESEL,
-                "Invalid PESEL", null);
-        pool.addPerson(new Person(firstName, lastName, pesel));
-        messenger.success(String.format("Person %s %s (%s) added",
-            firstName, lastName, pesel));
-    }
-
-    private void addProduct() {
-        String name = prompt("Enter product name", null, null, null);
-        String priceStr = prompt("Enter unit price",
-            Validator::isValidFloat, "Invalid price", null);
-
-        contextCompleter.setContextFilter(prompt -> {
-            Vector<Validator.Units> results = new Vector<>();
-            for (Validator.Units u : Validator.Units.values()) {
-                if (u.name().toLowerCase().startsWith(prompt.toLowerCase())) {
-                    results.add(u);
-                }
-            }
-            return results;
-        });
-        String unit = prompt("Enter unit of measure", Validator::isValidUnit,
-                "Invalid unit, available: " + Validator.getAllUnits(), null);
-        float price = Float.parseFloat(priceStr);
-        Product product = new Product(name, price, unit);
-        pool.addProduct(product);
-        messenger.success(String.format(
-            "Product %s added", product.toString()));
-    }
-
-    private void addFirm() {
-        String name = prompt("Enter firm name", null, null, null);
-        String address = prompt("Enter firm address", null, null, null);
-        String taxID = prompt("Enter tax ID", Validator::isValidNIP,
-            "Invalid tax ID", null);
-        pool.addFirm(new Firm(name, address, taxID));
-        messenger.success(String.format(
-            "Firm %s (%s) added", name, taxID));
-    }
-
-    private Object select(
-        final String msg,
-        final Function<String, Vector<?>> searchFn,
-        final Function<Integer, ?> indexFn,
-        final String defaultValue) {
-        // If the user specifies an index, return that person
-        // else perform a search by name and make
-        // a suggestion for the first match
-        // other matches added as tab completions
-        reader.setVariable(CommandHelper.COMPLETER_CONTEXT_VAR, "select");
-        contextCompleter.setContextFilter(searchFn);
-
-        while (true) {
-            String data = prompt(msg, null, null, defaultValue).trim();
-
-            if (CommandHelper.isExitCommand(data)) {
-                return null;
-            }
-
-            Vector<?> matches = searchFn.apply(data);
-            if (matches.isEmpty()) {
-                messenger.info("No matches found for: " + data);
-                continue;
-            }
-
-            if (matches.size() == 1) {
-                return matches.get(0);
-            } else {
-                messenger.info(String.format(
-                    "%d matches found", matches.size()));
-            }
-        }
-    }
-
-    private Person selectPerson(final String msg) {
-        return (Person) select(msg, prompt -> pool.searchPersons(prompt),
-            index -> pool.getPersons().get(index), null);
-    }
-
-    private Product selectProduct(final String msg) {
-        return (Product) select(msg, prompt -> pool.searchProducts(prompt),
-            index -> pool.getProducts().get(index), null);
-    }
-
-    private void addInvoice() {
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-
-        String creationDateStr = prompt(
-            "Enter creation date yyyy-MM-dd (default: today)",
-            Validator::isValidDate, null, sdf.format(new Date()));
-
-        String paymentDateStr = prompt(
-            "Enter payment date yyyy-MM-dd (default: today)",
-            Validator::isValidDate, null, sdf.format(new Date()));
-
-        Person buyer = selectPerson("Enter buyer");
-        if (buyer == null) {
-            messenger.info("Invoice creation cancelled.");
-            return;
-        }
-
-        Person seller = selectPerson("Enter seller");
-        if (seller == null) {
-            messenger.info("Invoice creation cancelled.");
-            return;
-        }
-
-        Firm firm = (Firm) select("Enter firm (leave empty for none): ",
-            prompt -> pool.searchFirms(prompt),
-            index -> pool.getFirms().get(index),
-            "q");
-
-        Date creationDate = null;
-        Date paymentDate = null;
-
-        try {
-            creationDate = sdf.parse(creationDateStr);
-            paymentDate = sdf.parse(paymentDateStr);
-        } catch (Exception e) {
-            messenger.error("Error parsing dates.");
-            return;
-        }
-
-        // Add products with quantities
-        Vector<QuantProduct> quantProducts = new Vector<>();
-        while (true) {
-
-            Product product = selectProduct(
-                "Enter product (q to finish): ");
-
-            if (product == null) {
-                break;
-            }
-
-            String quantityStr = prompt("Enter quantity",
-                Validator::isValidFloat, "Invalid quantity", null);
-
-            float quantity = Float.parseFloat(quantityStr);
-            quantProducts.add(new QuantProduct(product, quantity));
-        }
-
-        // Convert Vector to array
-        QuantProduct[] productsArray = new QuantProduct[quantProducts.size()];
-        quantProducts.toArray(productsArray);
-        pool.addInvoice(new Invoice(creationDate, paymentDate,
-            buyer, seller, productsArray, firm));
-        messenger.success("Invoice added successfully.");
     }
 
     private void listModules() {
@@ -253,288 +128,84 @@ public class Controller {
         }
     }
 
-    private void list(final Vector<?> items,
-        final Function<Object, String> formatter) {
-        for (int i = 0; i < items.size(); i++) {
-            String fmt;
-            if (formatter != null) {
-                fmt = formatter.apply(items.get(i));
-            } else {
-                fmt = items.get(i).toString();
-            }
-            messenger.data(String.format("%d: %s", i, fmt));
-        }
-    }
-
     private void handleList(final CommandHelper.Modules module) {
-        Vector<?> items = null;
-        Function<Object, String> formatter = null;
-
         switch (module) {
             case PERSON:
-                items = pool.getPersons();
+                listView.listPersons();
                 break;
             case FIRM:
-                items = pool.getFirms();
+                listView.listFirms();
                 break;
             case PRODUCT:
-                items = pool.getProducts();
+                listView.listProducts();
                 break;
             case INVOICE:
-                items = pool.getInvoices();
-                formatter = obj -> {
-                    Invoice inv = (Invoice) obj;
-                    return String.format(
-                        "Invoice(ID: %d): \n\t"
-                        + "  - Firm: %s\n\t"
-                        + "  - Buyer: %s\n\t"
-                        + "  - Seller: %s\n\t"
-                        + "  - Creation Date: %s\n\t"
-                        + "  - Payment Date: %s\n\t"
-                        + "  - Total: %s",
-                        inv.getId(),
-                        (inv.getFirm() != null ? inv.getFirm().toString()
-                            : "Unknown"),
-                        inv.getBuyer().toString(),
-                        inv.getSeller().toString(),
-                        Formatter.formatDate(inv.getCreationDate()),
-                        Formatter.formatDate(inv.getPaymentDate()),
-                        Formatter.formatCurrency(inv.getTotal()));
-                };
+                listView.listInvoices();
                 break;
             default:
+                messenger.error("Unknown module to list.");
                 break;
         }
-
-        if (items == null) {
-            messenger.error("Unknown module to list.");
-            return;
-        }
-
-        if (items.isEmpty()) {
-            messenger.info("No items found.");
-            return;
-        }
-
-        list(items, formatter);
     }
 
     private void handleAdd(final CommandHelper.Modules module) {
         switch (module) {
             case PERSON:
-                addPerson();
+                addView.addPerson();
                 break;
             case FIRM:
-                addFirm();
+                addView.addFirm();
                 break;
             case PRODUCT:
-                addProduct();
+                addView.addProduct();
                 break;
             case INVOICE:
-                addInvoice();
+                addView.addInvoice();
                 break;
             default:
                 messenger.error("Unknown module to add.");
                 break;
         }
-        reader.setVariable(CommandHelper.COMPLETER_CONTEXT_VAR, null);
-    }
-
-    private void remove(
-        final String msg,
-        final String successMsg,
-        final Function<String, Vector<?>> searchFn,
-        final Function<Integer, ?> indexFn,
-        final Function<Object, Void> removeFn) {
-
-        Object item = select(msg, searchFn, indexFn, null);
-        if (item != null) {
-            removeFn.apply(item);
-            messenger.success(successMsg);
-        } else {
-            messenger.info("Removal cancelled.");
-        }
-    }
-
-    private void removePerson() {
-        remove("Enter person to remove: ",
-            "Person removed successfully.",
-            prompt -> pool.searchPersons(prompt),
-            index -> pool.getPersons().get(index),
-            item -> {
-                pool.removePerson((Person) item);
-                return null;
-            });
-    }
-
-    private void removeFirm() {
-        remove("Enter firm to remove: ",
-            "Firm removed successfully.",
-            prompt -> pool.searchFirms(prompt),
-            index -> pool.getFirms().get(index),
-            item -> {
-                pool.removeFirm((Firm) item);
-                return null;
-            });
-    }
-
-    private void removeProduct() {
-        remove("Enter product to remove: ",
-            "Product removed successfully.",
-            prompt -> pool.searchProducts(prompt),
-            index -> pool.getProducts().get(index),
-            item -> {
-                pool.removeProduct((Product) item);
-                return null;
-            });
-    }
-
-    private void removeInvoice() {
-        remove("Enter invoice to remove: ",
-            "Invoice removed successfully.",
-            prompt -> {
-                Vector<Invoice> results = new Vector<>();
-                for (Invoice inv : pool.getInvoices()) {
-                    if (Integer.toString(inv.getId())
-                        .startsWith(prompt)) {
-                        results.add(inv);
-                    }
-                }
-                return results;
-            },
-            index -> pool.getInvoices().get(index),
-            item -> {
-                pool.removeInvoice((Invoice) item);
-                return null;
-            });
     }
 
     private void handleRemove(final CommandHelper.Modules module) {
         switch (module) {
             case PERSON:
-                removePerson();
+                removeView.removePerson();
                 break;
             case FIRM:
-                removeFirm();
+                removeView.removeFirm();
                 break;
             case PRODUCT:
-                removeProduct();
+                removeView.removeProduct();
                 break;
             case INVOICE:
-                removeInvoice();
+                removeView.removeInvoice();
                 break;
             default:
                 messenger.error("Unknown module to remove.");
                 break;
         }
-        reader.setVariable(CommandHelper.COMPLETER_CONTEXT_VAR, null);
-    }
-
-    private void update(final String msg,
-        final Function<String, Vector<?>> searchFn,
-        final Function<Integer, Object> indexFn,
-        final Function<Object, Void> updateFn) {
-        Object item = select(msg, searchFn, indexFn, null);
-        if (item != null) {
-            updateFn.apply(item);
-        }
     }
 
     private void handleUpdate(final CommandHelper.Modules module) {
-        Function<String, Vector<?>> searchFn = null;
-        Function<Integer, Object> indexFn = null;
-        Function<Object, Void> updateFn = obj -> {
-            // By default, use the BaseData update method
-            InnerBaseData dataObj = (InnerBaseData) obj;
-            Map<String, String> fields = dataObj.getAllFieldNames();
-            contextCompleter.setContextFilter(filter -> {
-                Vector<String> results = new Vector<>();
-                for (String field : fields.keySet()) {
-                    if (field.contains(filter)) {
-                        results.add(field);
-                    }
-                }
-                return results;
-            });
-
-            boolean cancelled = true;
-            while (true) {
-                String field = prompt(
-                    "Enter field to update (or 'q' to finish): ",
-                    input -> fields.containsKey(input)
-                        || CommandHelper.isExitCommand(input),
-                    "Invalid field name. Available fields: "
-                        + String.join(", ", fields.keySet()),
-                    null);
-                if (CommandHelper.isExitCommand(field)) {
-                    break;
-                }
-
-                String value = prompt(
-                    "Enter new value for " + fields.get(field) + ": ",
-                    null, null, null);
-
-                if (dataObj.updateField(field, value)) {
-                    cancelled = false;
-                    messenger.success(
-                        String.format("Field %s updated successfully.", field));
-                } else {
-                    messenger.error(
-                        String.format("Failed to update field %s.", field));
-                }
-            }
-
-            if (cancelled) {
-                messenger.info("No changes made.");
-            } else {
-                messenger.success("All changes applied.");
-            }
-            return null;
-        };
-
         switch (module) {
             case PERSON:
-                searchFn = prompt -> pool.searchPersons(prompt);
-                indexFn = index -> pool.getPersons().get(index);
+                updateView.updatePerson();
                 break;
             case FIRM:
-                searchFn = prompt -> pool.searchFirms(prompt);
-                indexFn = index -> pool.getFirms().get(index);
+                updateView.updateFirm();
                 break;
             case PRODUCT:
-                searchFn = prompt -> pool.searchProducts(prompt);
-                indexFn = index -> pool.getProducts().get(index);
+                updateView.updateProduct();
                 break;
             case INVOICE:
-                searchFn = prompt -> {
-                    Vector<Invoice> results = new Vector<>();
-                    try {
-                        // parse prompt as integer ID
-                        if (prompt.isEmpty()) {
-                            return pool.getInvoices();
-                        }
-                        int id = Integer.parseInt(prompt);
-                        Invoice invoice = pool.getInvoices().get(id);
-                        if (invoice != null) {
-                            results.add(invoice);
-                        }
-                    } catch (NumberFormatException e) {
-                        // Handle invalid number format
-                    }
-                    return results;
-                };
-                indexFn = index -> pool.getInvoices().get(index);
+                updateView.updateInvoice();
                 break;
             default:
+                messenger.error("Unknown module to update.");
                 break;
         }
-
-        if (searchFn != null && indexFn != null) {
-            update("Select item for update: ", searchFn, indexFn, updateFn);
-        } else {
-            messenger.error("Unknown module to update.");
-        }
-        reader.setVariable(CommandHelper.COMPLETER_CONTEXT_VAR, null);
     }
 
     private void commandParser(final String input) {
@@ -589,10 +260,10 @@ public class Controller {
                 if (parts.length != 3) {
                     messenger.error("Invalid syntax for export-invoice."
                             + " Use export-invoice <id> <filename>");
-                    return;
+                    break;
                 }
                 boolean ok = PdfInvoiceGenerator.saveToPdf(parts[2], 0.23f,
-                    pool.getInvoices().get(Integer.parseInt(parts[1])));
+                    invoiceManager.getById(Integer.parseInt(parts[1])));
                 if (ok) {
                     messenger.success("Invoice exported successfully.");
                 } else {

@@ -3,7 +3,7 @@ package app;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-public class QuantProduct extends BaseData {
+public class QuantProduct implements DataLike {
 
     /** Product associated with the quantity. */
     private Product product;

@@ -1,9 +1,6 @@
 package app;
 
-public class Person extends BaseData {
-
-    /** ID counter for generating unique IDs. */
-    private static int idCounter = 0;
+public class Person implements DataLike {
 
     /** First name. */
     private String firstName;
@@ -24,7 +21,6 @@ public class Person extends BaseData {
         this.firstName = f;
         this.lastName = l;
         this.idNumber = id;
-        this.id = idCounter++;
     }
 
     @Override
