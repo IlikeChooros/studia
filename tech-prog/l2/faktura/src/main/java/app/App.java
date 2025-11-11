@@ -1,8 +1,6 @@
 package app;
 
-/**
- * Hello world!
- */
+
 public final class App {
 
     private App() {

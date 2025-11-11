@@ -56,6 +56,18 @@ class Invoice implements DataLike {
         return firm;
     }
 
+    public void setProducts(final QuantProduct[] products) {
+        this.products = products;
+    }
+
+    public void setBuyer(final Person buyer) {
+        this.buyer = buyer;
+    }
+
+    public void setSeller(final Person seller) {
+        this.seller = seller;
+    }
+
     public QuantProduct[] getProducts() {
         return products;
     }
@@ -111,12 +123,33 @@ class Invoice implements DataLike {
 
         switch (field) {
             case "creationDate":
+                if (values[0].getClass() == String.class) {
+                    // Try to parse date from string
+                    try {
+                        this.creationDate = Formatter.parseDate(
+                            (String) values[0]);
+                        return true;
+                    } catch (Exception e) {
+                        return false;
+                    }
+                }
+
                 if (values[0].getClass() != Date.class) {
                     return false;
                 }
                 this.creationDate = (Date) values[0];
                 return true;
             case "paymentDate":
+                if (values[0].getClass() == String.class) {
+                    // Try to parse date from string
+                    try {
+                        this.paymentDate = Formatter.parseDate(
+                            (String) values[0]);
+                        return true;
+                    } catch (Exception e) {
+                        return false;
+                    }
+                }
                 if (values[0].getClass() != Date.class) {
                     return false;
                 }
