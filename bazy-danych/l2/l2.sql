@@ -1,10 +1,10 @@
 -- 1: 
 create database aparaty;
 
-create user 'nralbumu' @'localhost' identified by 'haslo';
+create user '283999' @'localhost' identified by 'smolnicki99';
 GRANT select,
     insert,
-    update on aparaty.* for 'nralbumu' @'localhost';
+    update on aparaty.* for '283999' @'localhost';
 -- 2:
 CREATE TABLE IF NOT EXISTS Producent (
     ID int NOT NULL AUTO_INCREMENT PRIMARY KEY,
@@ -73,13 +73,14 @@ INSERT INTO Producent(nazwa, kraj, adresKorespondencyjny) VALUES
 ('PrimeWorks','Włochy','Rome 13'),
 ('BrotFrame','Niemcy','Frankfurt 14');
 
--- INSERT INTO Producent(nazwa) VALUES (NULL);
+INSERT INTO Producent(nazwa) VALUES (NULL);
 
 INSERT INTO Obiektyw(model, minPrzeslona, maxPrzeslona) VALUES
 ('LensA',1.8,16), ('LensB',2.8,22), ('LensC',3.5,18), ('LensD',4,20), ('LensE',2,11),
 ('LensF',1.4,16), ('LensG',5.6,32), ('LensH',2.2,8), ('LensI',3.2,10), ('LensJ',2.5,12),
 ('LensK',4.5,22), ('LensL',6.3,36), ('LensM',3.8,14), ('LensN',1.2,16), ('LensO',7.1,42);
 
+-- INSERT INTO Obiektyw(model, minPrzeslona, maxprzeslona) VALUES ()
 
 INSERT INTO Matryca(przekatna, rozdzielczosc, typ) VALUES
 (1.00,12.0,'APS'), (2.50,24.0,'FF'), (1.60,16.0,'APS'), (1.40,10.0,'Micro'),
@@ -123,7 +124,7 @@ BEGIN
         SELECT ID INTO m FROM Matryca   ORDER BY RAND() LIMIT 1;
 
         INSERT INTO Aparat(model, producent, matryca, obiektyw, waga, typ)
-        VALUES (CONCAT('GenModel_', i), p, m, o, 400 + (i % 200), 'kompaktowy');
+        VALUES (CONCAT('GenModel_', i), p, m, o, 400 + i, 'kompaktowy');
 
         SET i = i + 1;
     END WHILE;
@@ -263,7 +264,7 @@ AFTER DELETE ON Aparat
 FOR EACH ROW
 BEGIN
     DecrementProducentModelCount(OLD.producent);
-END$$
+END$$liczbaModeli
 DELIMITER ;
 
 
