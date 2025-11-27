@@ -92,7 +92,13 @@
         "__string": "cpp",
         "__tree": "cpp",
         "locale": "cpp",
-        "__nullptr": "cpp"
+        "__nullptr": "cpp",
+        "format": "cpp",
+        "__node_handle": "cpp",
+        "__split_buffer": "cpp",
+        "filesystem": "cpp",
+        "queue": "cpp",
+        "stack": "cpp"
     },
 
     "java.project.referencedLibraries": [
