@@ -11,6 +11,10 @@
 #include <thread>
 
 /*
+
+Compile with c++20 standard (for std::format):
+g++ -std=c++20 -O3 -o main main.cpp
+
 m - # of balls
 n - # of bins
 
@@ -82,7 +86,7 @@ stats_t sim_balls_and_bins(number_t n_bins, std::mt19937& local_gen) {
             bins_with_more_than_1++;
         }
 
-        // U(n) Count non-empty (can be optimized probably)
+        // U(n) Count non-empty bins after n balls
         if (ball_no == n_bins) {
             stats.n_empty_bins_after_n = empty_bins;
         }
