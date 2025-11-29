@@ -176,8 +176,8 @@ def plot_n_balls_from_1_to_2(aggregated_data: pd.DataFrame, plot: bool = True, s
 
 def parse_options() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="Parse simulation results and generate plots.")
-    parser.add_argument('--no-plot', action='store_true', default=True, help='Do not display plots.')
-    parser.add_argument('--save-figs', action='store_true', default=True, help='Save figures to output directory.')
+    parser.add_argument('--plot', action='store_true', default=False, help='Display plots.')
+    parser.add_argument('--no-saving', action='store_true', default=False, help='Do not save figures to output directory.')
     parser.add_argument('--func', '-f', type=str, choices=FUNC_MAPPINGS.keys(), default=None,
                         help='Function to plot (u, b, c, d, d-c). If not provided, all functions will be plotted.')
     return parser.parse_args()
@@ -192,11 +192,11 @@ def main():
         print(f"Created figure output directory '{FIG_OUTPUTS}'.")
     
     args = parse_options()
-    plot_flag = not args.no_plot
-    save_fig_flag = args.save_figs
+    plot_flag = args.plot
+    save_fig_flag = not args.no_saving
     func_to_plot = [FUNC_MAPPINGS.get(args.func, '')] if args.func else list(FUNC_MAPPINGS.values())
 
-    if args.no_plot and not args.save_figs:
+    if not args.plot and args.no_saving:
         print("No action specified (neither plotting nor saving figures). Exiting.")
         return
 
