@@ -44,10 +44,10 @@ def plot_with_mean(
 
     ax.set_xscale('linear')
     ax.set_yscale('linear')
-    ax.set_xlabel('Ilość urn')
-    ax.set_ylabel(f'Średnia {ylabel}')
-    ax.set_title(title)
-    ax.legend()
+    # ax.set_xlabel('Ilość urn')
+    # ax.set_ylabel(f'Średnia {ylabel}')
+    # ax.set_title(title)
+    # ax.legend()
     ax.grid(True)
 
     if save_fig:
@@ -71,16 +71,16 @@ def plot_asymptotic_behavior(
     best_fit = np.polyfit(n_vals, asymptotic_vals, best_fit_degree)
     fitted_vals = np.polyval(best_fit, n_vals)
 
-    ax.plot(n_vals, fitted_vals, color="#075891", label='Dopasowana linia trendu', 
+    ax.plot(n_vals, fitted_vals, color="#075891",
              linestyle='-', linewidth=2)
-    ax.scatter(n_vals, asymptotic_vals, label=label, s=24, color="#ED9A35")
+    ax.scatter(n_vals, asymptotic_vals, s=24, color="#ED9A35")
 
     ax.set_xscale('linear')
     ax.set_yscale('linear')
-    ax.set_xlabel('Ilość urn')
-    ax.set_ylabel(ylabel)
-    ax.set_title(title)
-    ax.legend()
+    # ax.set_xlabel('Ilość urn')
+    # ax.set_ylabel(ylabel)
+    # ax.set_title(title)
+    # ax.legend()
     ax.grid(True)
     if plot:
         plt.show()
@@ -122,7 +122,7 @@ def plot_min_balls_no_empty_bin(aggregated_data: pd.DataFrame, plot: bool = True
     plot_asymptotic_behavior(
         aggregated_data, 'min_balls_no_empty_bin', '', 'c(n) / n',
         func=lambda n, v: v.to_numpy() / n, label='c(n)/n', 
-        best_fit_degree=2, plot=plot, save_fig=f'{save_fig}-c(n)-n.png' if save_fig else None
+        best_fit_degree=1, plot=plot, save_fig=f'{save_fig}-c(n)-n.png' if save_fig else None
     )
     plot_asymptotic_behavior(
         aggregated_data, 'min_balls_no_empty_bin', '', 'c(n) / nln(n)',

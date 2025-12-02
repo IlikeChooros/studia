@@ -29,7 +29,7 @@ k = 50 repetitions
 
 */
 constexpr const char* OUTPUT_DIR = "./outputs";
-constexpr const char* FILE_NAME_FMT = "./outputs/outputs{}.csv";
+constexpr const char* FILE_NAME_FMT = "{}/outputs{}.csv";
 constexpr auto SIM_REPETITIONS = 50;
 
 typedef int number_t;
@@ -112,10 +112,11 @@ stats_t sim_balls_and_bins(number_t n_bins, std::mt19937& local_gen) {
 
 void run_experiment(int k, size_t seed) {
     std::fstream file;
-    file.open(std::format(FILE_NAME_FMT, k), std::ios::out);
+    auto file_path = std::format(FILE_NAME_FMT, OUTPUT_DIR, k);
+    file.open(file_path, std::ios::out);
 
     if (!file.is_open()) {
-        std::cerr << "Failed to open file: " << std::format(FILE_NAME_FMT, k) << std::endl;
+        std::cerr << "Failed to open file: " << file_path << std::endl;
         return;
     }
 
