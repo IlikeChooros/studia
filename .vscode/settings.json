@@ -1,5 +1,6 @@
 {
     "files.associations": {
+        ".als.json": "jsonc",
         "any": "cpp",
         "array": "cpp",
         "atomic": "cpp",
@@ -98,7 +99,8 @@
         "__split_buffer": "cpp",
         "filesystem": "cpp",
         "queue": "cpp",
-        "stack": "cpp"
+        "stack": "cpp",
+        "stdbool.h": "c"
     },
 
     "java.project.referencedLibraries": [
